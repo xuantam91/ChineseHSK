@@ -1,0 +1,40 @@
+import type { Config } from "tailwindcss";
+
+const config: Config = {
+  content: [
+    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+  ],
+  theme: {
+    extend: {
+      colors: {
+        primary: {
+          50: "#ecfdf5",
+          100: "#d1fae5",
+          200: "#a7f3d0",
+          300: "#6ee7b7",
+          400: "#34d399",
+          500: "#10b981", // Jade/Emerald theme
+          600: "#059669",
+          700: "#047857",
+          800: "#065f46",
+          900: "#064e3b",
+        },
+        chinese: {
+          red: "#dc2626",
+          gold: "#f59e0b",
+          ink: "#111827",
+          paper: "#fdfbf7",
+        },
+      },
+      fontFamily: {
+        sans: ["system-ui", "-apple-system", "sans-serif"],
+        chinese: ["PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "sans-serif"],
+      },
+    },
+  },
+  plugins: [],
+};
+
+export default config;
