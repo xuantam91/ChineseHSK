@@ -20,27 +20,45 @@ describe('HSK 4 - 9 Curriculum Dataset & Overviews', () => {
   });
 
   it('contains structured lessons for HSK4 with workplace & interview dialogues', () => {
-    expect(HSK4_LESSONS.length).toBeGreaterThan(0);
-    const lesson1 = HSK4_LESSONS[0];
-    expect(lesson1.level).toBe('HSK4');
-    expect(lesson1.dialogue.length).toBeGreaterThan(0);
-    expect(lesson1.speechDrills.length).toBeGreaterThan(0);
-    expect(lesson1.vocabulary.length).toBeGreaterThan(0);
-    expect(lesson1.grammarNotes.length).toBeGreaterThan(0);
+    expect(HSK4_LESSONS.length).toBe(4);
+    HSK4_LESSONS.forEach((lesson, idx) => {
+      expect(lesson.lessonNumber).toBe(idx + 1);
+      expect(lesson.level).toBe('HSK4');
+      expect(lesson.dialogue.length).toBeGreaterThanOrEqual(4);
+      expect(lesson.speechDrills.length).toBeGreaterThanOrEqual(2);
+      expect(lesson.vocabulary.length).toBeGreaterThanOrEqual(2);
+      expect(lesson.grammarNotes.length).toBeGreaterThanOrEqual(1);
+      expect(lesson.quizQuestions.length).toBeGreaterThanOrEqual(1);
+    });
   });
 
   it('contains structured lessons for HSK5 with news & economic trends', () => {
-    expect(HSK5_LESSONS.length).toBeGreaterThan(0);
+    expect(HSK5_LESSONS.length).toBe(4);
+    HSK5_LESSONS.forEach((lesson, idx) => {
+      expect(lesson.lessonNumber).toBe(idx + 1);
+      expect(lesson.level).toBe('HSK5');
+      expect(lesson.dialogue.length).toBeGreaterThanOrEqual(3);
+      expect(lesson.speechDrills.length).toBeGreaterThanOrEqual(1);
+      expect(lesson.vocabulary.length).toBeGreaterThanOrEqual(2);
+      expect(lesson.grammarNotes.length).toBeGreaterThanOrEqual(1);
+      expect(lesson.quizQuestions.length).toBeGreaterThanOrEqual(1);
+    });
     const lesson1 = HSK5_LESSONS[0];
-    expect(lesson1.level).toBe('HSK5');
     expect(lesson1.summaryVi).toContain('nghe tin tức');
   });
 
   it('contains structured lessons for HSK6 with commercial negotiation & idioms', () => {
-    expect(HSK6_LESSONS.length).toBeGreaterThan(0);
-    const lesson1 = HSK6_LESSONS[0];
-    expect(lesson1.level).toBe('HSK6');
-    expect(lesson1.speechDrills[0].hanzi).toContain('互利共赢');
+    expect(HSK6_LESSONS.length).toBe(4);
+    HSK6_LESSONS.forEach((lesson, idx) => {
+      expect(lesson.lessonNumber).toBe(idx + 1);
+      expect(lesson.level).toBe('HSK6');
+      expect(lesson.dialogue.length).toBeGreaterThanOrEqual(2);
+      expect(lesson.speechDrills.length).toBeGreaterThanOrEqual(1);
+      expect(lesson.vocabulary.length).toBeGreaterThanOrEqual(1);
+      expect(lesson.grammarNotes.length).toBeGreaterThanOrEqual(1);
+      expect(lesson.quizQuestions.length).toBeGreaterThanOrEqual(1);
+    });
+    expect(HSK6_LESSONS[0].speechDrills[0].hanzi).toContain('互利共赢');
   });
 
   it('defines HSK 7-9 framework modules for academic, debate, and diplomacy', () => {
