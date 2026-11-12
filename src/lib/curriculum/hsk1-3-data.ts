@@ -92,6 +92,7 @@ export interface HSKLesson {
   title: string;
   subtitleVi: string;
   topicIcon: string;
+  imageUrl?: string;
   estimatedMinutes: number;
   summaryVi: string;
   dialogue: DialogueLine[];
@@ -511,6 +512,7 @@ export const HSK1_LESSONS: HSKLesson[] = [
     title: 'Bài 1: Chào hỏi & Làm quen',
     subtitleVi: '你好, 你好吗, 我很好, 谢谢, 再见',
     topicIcon: 'MessageCircle',
+    imageUrl: '/images/lessons/hsk1_lesson01_greeting.jpg',
     estimatedMinutes: 25,
     summaryVi: 'Làm quen với khẩu hình chào hỏi căn bản nhất, thực hành thanh điệu và ứng dụng quy tắc biến âm 3+3.',
     dialogue: [
@@ -771,6 +773,7 @@ export const HSK1_LESSONS: HSKLesson[] = [
     title: 'Bài 2: Tên & Quốc tịch',
     subtitleVi: '你叫什么名字, 我是中国人/我是越南人',
     topicIcon: 'Globe',
+    imageUrl: '/images/lessons/hsk1_lesson02_nationality.jpg',
     estimatedMinutes: 30,
     summaryVi: 'Hỏi tên, giới thiệu danh xưng và trao đổi quốc tịch bằng mẫu câu chữ 是 và đại từ nghi vấn 什么, 哪.',
     dialogue: [
@@ -1031,6 +1034,7 @@ export const HSK1_LESSONS: HSKLesson[] = [
     title: 'Bài 3: Gia đình & Đại từ nhân xưng',
     subtitleVi: '爸爸, 妈妈, 哥哥, 姐姐, 几口人',
     topicIcon: 'Users',
+    imageUrl: '/images/lessons/hsk1_lesson03_family.jpg',
     estimatedMinutes: 30,
     summaryVi: 'Học cách xưng hô các thành viên gia đình, lượng từ 口 và động từ sở hữu 有 / 没有.',
     dialogue: [

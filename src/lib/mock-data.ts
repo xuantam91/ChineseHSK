@@ -281,6 +281,18 @@ export const DEMO_LESSONS: Record<string, Lesson[]> = {
       isRequired: true,
       blocks: [
         {
+          id: 'blk-img-01',
+          lessonId: 'lesson-01-01',
+          type: 'image',
+          sequenceOrder: 1,
+          isRequired: false,
+          data: {
+            url: '/images/lessons/hsk1_lesson01_greeting.jpg',
+            caption: 'Bối cảnh: Hai sinh viên chào hỏi làm quen trong khuôn viên trường đại học',
+            altText: 'Chào hỏi làm quen tiếng Trung',
+          },
+        },
+        {
           id: 'blk-01',
           lessonId: 'lesson-01-01',
           type: 'rich_text',
