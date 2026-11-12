@@ -23,6 +23,10 @@ export const blockTypeEnum = z.enum([
   'instructions',
   'quiz',
   'external_resource',
+  'speech_practice',
+  'shadowing',
+  'roleplay_dialogue',
+  'pinyin_chart',
 ]);
 
 export const curriculumDaySchema = z.object({

@@ -34,6 +34,8 @@ export type PublishStatus = 'draft' | 'published' | 'archived' | 'active';
 
 export type DayType = 'learning' | 'review' | 'quiz' | 'rest' | 'checkpoint';
 
+export type HSKLevel = 'HSK1' | 'HSK2' | 'HSK3' | 'HSK4' | 'HSK5' | 'HSK6' | 'HSK7-9';
+
 export type BlockType =
   | 'rich_text'
   | 'video'
@@ -44,7 +46,11 @@ export type BlockType =
   | 'flashcard_set'
   | 'instructions'
   | 'quiz'
-  | 'external_resource';
+  | 'external_resource'
+  | 'speech_practice'
+  | 'shadowing'
+  | 'roleplay_dialogue'
+  | 'pinyin_chart';
 
 export type AssetProvider = 'google_drive' | 's3' | 'cloudinary' | 'local';
 export type AssetAccessMode = 'direct' | 'embed' | 'fallback_link' | 'anyone_with_link';
@@ -178,6 +184,56 @@ export interface ExternalResourcePayload {
   [key: string]: unknown;
 }
 
+export interface SpeechPracticePayload {
+  phrase: string;
+  pinyin: string;
+  meaningVi: string;
+  audioUrl?: string;
+  hints?: string;
+  hanzi?: string;
+  meaning_vi?: string;
+  audio_url?: string;
+  [key: string]: unknown;
+}
+
+export interface ShadowingPayload {
+  title: string;
+  sentences: Array<{
+    id: string;
+    hanzi: string;
+    pinyin: string;
+    vietnamese: string;
+    meaningVi?: string;
+    audioUrl?: string;
+    audio_url?: string;
+  }>;
+  description?: string;
+  [key: string]: unknown;
+}
+
+export interface RoleplayPayload {
+  title: string;
+  roleA: string;
+  roleB: string;
+  dialogue: Array<{
+    speaker: 'A' | 'B';
+    speakerName: string;
+    hanzi: string;
+    pinyin: string;
+    vietnamese: string;
+    speaker_name?: string;
+    audioUrl?: string;
+  }>;
+  description?: string;
+  [key: string]: unknown;
+}
+
+export interface PinyinChartPayload {
+  defaultTab?: 'initials' | 'finals' | 'tones';
+  default_tab?: 'initials' | 'finals' | 'tones';
+  [key: string]: unknown;
+}
+
 export type LessonBlockPayload =
   | RichTextPayload
   | VideoPayload
@@ -189,6 +245,10 @@ export type LessonBlockPayload =
   | InstructionsPayload
   | QuizBlockPayload
   | ExternalResourcePayload
+  | SpeechPracticePayload
+  | ShadowingPayload
+  | RoleplayPayload
+  | PinyinChartPayload
   | Record<string, unknown>;
 
 export interface QuizQuestionOption {

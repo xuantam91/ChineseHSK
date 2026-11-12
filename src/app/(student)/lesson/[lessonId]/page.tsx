@@ -23,6 +23,10 @@ import { MediaBlock } from '@/components/lesson/MediaBlock';
 import { PdfBlock } from '@/components/lesson/PdfBlock';
 import { FlashcardBlock } from '@/components/lesson/FlashcardBlock';
 import { QuizBlock } from '@/components/lesson/QuizBlock';
+import { SpeechPractice } from '@/components/lesson/SpeechPractice';
+import { ShadowingPlayer } from '@/components/lesson/ShadowingPlayer';
+import { RoleplayDialogue } from '@/components/lesson/RoleplayDialogue';
+import { PinyinChart } from '@/components/lesson/PinyinChart';
 import { DEMO_LESSONS } from '@/lib/mock-data';
 import {
   getCompletedBlockIds,
@@ -161,6 +165,69 @@ export default function LessonReaderPage({
                 handleToggleBlock(block.id);
               }
             }}
+          />
+        )}
+        {block.type === 'speech_practice' && (
+          <SpeechPractice
+            hanzi={
+              (block.data as any)?.hanzi ||
+              (block.data as any)?.phrase ||
+              '你好'
+            }
+            pinyin={(block.data as any)?.pinyin || 'nǐ hǎo'}
+            meaningVi={
+              (block.data as any)?.meaningVi ||
+              (block.data as any)?.meaning_vi ||
+              'Xin chào'
+            }
+            audioUrl={(block.data as any)?.audioUrl}
+            onCompleted={(res) => {
+              if (res.isPassed) {
+                handleToggleBlock(block.id);
+              }
+            }}
+          />
+        )}
+        {block.type === 'shadowing' && (
+          <ShadowingPlayer
+            title={(block.data as any)?.title || 'Luyện nghe & Nhại lại (Shadowing)'}
+            sentences={((block.data as any)?.sentences || []).map((s: any, idx: number) => ({
+              id: s.id || `s-${idx}`,
+              hanzi: s.hanzi || '',
+              pinyin: s.pinyin || '',
+              meaningVi: s.meaningVi || s.vietnamese || '',
+              audioUrl: s.audioUrl || s.audio_url,
+              speaker: s.speaker,
+            }))}
+            onAllCompleted={() => handleToggleBlock(block.id)}
+          />
+        )}
+        {block.type === 'roleplay_dialogue' && (
+          <RoleplayDialogue
+            title={(block.data as any)?.title || 'Hội thoại tương tác theo vai'}
+            characterA={{
+              name: (block.data as any)?.roleA || (block.data as any)?.characterA?.name || 'Nhân vật A',
+              avatar: (block.data as any)?.characterA?.avatar || '👨‍💼',
+            }}
+            characterB={{
+              name: (block.data as any)?.roleB || (block.data as any)?.characterB?.name || 'Nhân vật B',
+              avatar: (block.data as any)?.characterB?.avatar || '👩‍💼',
+            }}
+            lines={((block.data as any)?.lines || (block.data as any)?.dialogue || []).map((l: any, i: number) => ({
+              id: l.id || `line-${i}`,
+              role: (l.role || l.speaker || 'A') as 'A' | 'B',
+              speakerName: l.speakerName || l.speaker_name || (l.role === 'B' ? 'Nhân vật B' : 'Nhân vật A'),
+              hanzi: l.hanzi || '',
+              pinyin: l.pinyin || '',
+              meaningVi: l.meaningVi || l.vietnamese || '',
+              audioUrl: l.audioUrl,
+            }))}
+            onComplete={() => handleToggleBlock(block.id)}
+          />
+        )}
+        {block.type === 'pinyin_chart' && (
+          <PinyinChart
+            defaultTab={(block.data as any)?.defaultTab || 'initials'}
           />
         )}
       </div>

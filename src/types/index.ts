@@ -1,5 +1,7 @@
 export type AgeGroup = 'kids_6_11' | 'teens_12_17' | 'adults_18_plus';
 
+export type HSKLevel = 'HSK1' | 'HSK2' | 'HSK3' | 'HSK4' | 'HSK5' | 'HSK6' | 'HSK7-9';
+
 export type DayStatus = 'locked' | 'today' | 'overdue' | 'in_progress' | 'completed' | 'rest' | 'rest_day';
 
 export type BlockType = 
@@ -9,7 +11,11 @@ export type BlockType =
   | 'video'
   | 'pdf'
   | 'flashcard_set'
-  | 'quiz';
+  | 'quiz'
+  | 'speech_practice'
+  | 'shadowing'
+  | 'roleplay_dialogue'
+  | 'pinyin_chart';
 
 export interface UserProfile {
   id: string;
@@ -100,6 +106,57 @@ export interface QuizBlockData {
   questions: QuizQuestionClient[];
 }
 
+export interface SpeechPracticePayload {
+  phrase: string;
+  pinyin: string;
+  meaningVi: string;
+  audioUrl?: string;
+  hints?: string;
+  hanzi?: string;
+  meaning_vi?: string;
+  audio_url?: string;
+  [key: string]: unknown;
+}
+
+export interface ShadowingPayload {
+  title: string;
+  sentences: Array<{
+    id: string;
+    hanzi: string;
+    pinyin: string;
+    vietnamese: string;
+    meaningVi?: string;
+    audioUrl?: string;
+    audio_url?: string;
+  }>;
+  description?: string;
+  [key: string]: unknown;
+}
+
+export interface RoleplayPayload {
+  title: string;
+  roleA: string;
+  roleB: string;
+  dialogue: Array<{
+    speaker: 'A' | 'B';
+    speakerName: string;
+    hanzi: string;
+    pinyin: string;
+    vietnamese: string;
+    speaker_name?: string;
+    audioUrl?: string;
+    meaningVi?: string;
+  }>;
+  description?: string;
+  [key: string]: unknown;
+}
+
+export interface PinyinChartPayload {
+  defaultTab?: 'initials' | 'finals' | 'tones';
+  default_tab?: 'initials' | 'finals' | 'tones';
+  [key: string]: unknown;
+}
+
 export interface LessonBlock {
   id: string;
   lessonId?: string;
@@ -118,7 +175,11 @@ export interface LessonBlock {
     | MediaBlockData
     | PdfBlockData
     | FlashcardBlockData
-    | QuizBlockData;
+    | QuizBlockData
+    | SpeechPracticePayload
+    | ShadowingPayload
+    | RoleplayPayload
+    | PinyinChartPayload;
 }
 
 export interface Lesson {
@@ -253,4 +314,20 @@ export type {
   QuizAttempt,
   QuizAnswer,
 } from './database';
+
+export type {
+  EvaluationResult,
+  SpeechEvaluationInput,
+  ToneAccuracyResult,
+  SyllableFeedback,
+} from '@/lib/speech/evaluator';
+export type { SpeechPracticeProps } from '@/components/lesson/SpeechPractice';
+export type { ShadowingSentence, ShadowingPlayerProps } from '@/components/lesson/ShadowingPlayer';
+export type {
+  DialogueCharacter,
+  DialogueLine,
+  RoleplayDialogueProps,
+} from '@/components/lesson/RoleplayDialogue';
+export type { PhonemeItem, ToneItem } from '@/components/lesson/PinyinChart';
+
 
