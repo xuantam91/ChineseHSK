@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { VocabBlockData, VocabItem } from '@/types';
 import { Volume2, Check, Copy } from 'lucide-react';
 import { Badge } from '@/components/ui/Badge';
+import { VocabVisualIcon } from '@/components/ui/VocabVisualIcon';
 
 export interface VocabBlockProps {
   data: VocabBlockData;
@@ -76,15 +77,20 @@ export function VocabBlock({ data }: VocabBlockProps) {
             >
               <div>
                 <div className="flex items-start justify-between gap-3 mb-2">
-                  <div className="flex items-baseline gap-3">
-                    {/* Hanzi */}
-                    <span className="font-chinese text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight">
-                      {item.hanzi}
-                    </span>
-                    {/* Pinyin */}
-                    <span className="text-base md:text-lg font-semibold text-emerald-700 tracking-wide">
-                      {item.pinyin}
-                    </span>
+                  <div className="flex items-center gap-3">
+                    <VocabVisualIcon hanzi={item.hanzi} pinyin={item.pinyin} size="md" />
+                    <div>
+                      <div className="flex items-baseline gap-2">
+                        {/* Hanzi */}
+                        <span className="font-chinese text-2xl md:text-3xl font-extrabold text-gray-900 tracking-tight">
+                          {item.hanzi}
+                        </span>
+                        {/* Pinyin */}
+                        <span className="text-sm md:text-base font-semibold text-emerald-700 tracking-wide">
+                          {item.pinyin}
+                        </span>
+                      </div>
+                    </div>
                   </div>
 
                   <div className="flex items-center gap-1">

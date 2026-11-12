@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { FlashcardBlockData, FlashcardItem } from '@/types';
 import { RotateCw, ChevronLeft, ChevronRight, CheckCircle2, Shuffle, Volume2 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
+import { VocabVisualIcon } from '@/components/ui/VocabVisualIcon';
 
 export interface FlashcardBlockProps {
   data: FlashcardBlockData;
@@ -135,19 +136,21 @@ export function FlashcardBlock({ data }: FlashcardBlockProps) {
           {!isFlipped ? (
             /* Front of Card */
             <div className="flex flex-col items-center justify-center h-[calc(100%-48px)] text-center">
-              <span className="font-chinese text-5xl sm:text-6xl font-black text-gray-900 mb-3 tracking-wide">
+              <VocabVisualIcon hanzi={currentCard.front} pinyin={currentCard.pinyin} size="lg" className="mb-2 shadow-sm" />
+              <span className="font-chinese text-4xl sm:text-5xl font-black text-gray-900 mb-2 tracking-wide">
                 {currentCard.front}
               </span>
-              <span className="text-xl sm:text-2xl font-bold text-emerald-700 tracking-wider">
+              <span className="text-lg sm:text-xl font-bold text-emerald-700 tracking-wider">
                 {currentCard.pinyin}
               </span>
-              <p className="text-[11px] text-gray-400 mt-6 flex items-center gap-1">
+              <p className="text-[11px] text-gray-400 mt-4 flex items-center gap-1">
                 <RotateCw className="w-3 h-3" /> Chạm để lật xem nghĩa
               </p>
             </div>
           ) : (
             /* Back of Card */
             <div className="flex flex-col items-center justify-center h-[calc(100%-48px)] text-center px-2">
+              <VocabVisualIcon hanzi={currentCard.front} pinyin={currentCard.pinyin} size="md" className="mb-2 bg-emerald-800/80 border-emerald-700 text-white" />
               <span className="text-xs uppercase tracking-widest text-emerald-300 font-bold mb-1">
                 Ý nghĩa tiếng Việt
               </span>

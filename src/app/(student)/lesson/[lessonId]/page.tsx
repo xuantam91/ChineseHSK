@@ -27,6 +27,7 @@ import { SpeechPractice } from '@/components/lesson/SpeechPractice';
 import { ShadowingPlayer } from '@/components/lesson/ShadowingPlayer';
 import { RoleplayDialogue } from '@/components/lesson/RoleplayDialogue';
 import { PinyinChart } from '@/components/lesson/PinyinChart';
+import { ImageBlock } from '@/components/lesson/ImageBlock';
 import { DEMO_LESSONS } from '@/lib/mock-data';
 import {
   getCompletedBlockIds,
@@ -154,6 +155,7 @@ export default function LessonReaderPage({
           <MediaBlock data={block.data as MediaBlockData} />
         )}
         {block.type === 'pdf' && <PdfBlock data={block.data as PdfBlockData} />}
+        {block.type === 'image' && <ImageBlock data={block.data as any} />}
         {block.type === 'flashcard_set' && (
           <FlashcardBlock data={block.data as FlashcardBlockData} />
         )}

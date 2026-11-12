@@ -12,6 +12,18 @@ import {
   Layers,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/Badge';
+import { MouthDiagram, ArticulationZone } from './MouthDiagram';
+
+function getArticulationZone(id: string): ArticulationZone {
+  if (['b', 'p', 'm'].includes(id)) return 'bilabial';
+  if (['f'].includes(id)) return 'labiodental';
+  if (['d', 't', 'n', 'l'].includes(id)) return 'alveolar';
+  if (['g', 'k', 'h'].includes(id)) return 'velar';
+  if (['j', 'q', 'x'].includes(id)) return 'palatal';
+  if (['zh', 'ch', 'sh', 'r'].includes(id)) return 'retroflex';
+  if (['z', 'c', 's'].includes(id)) return 'dental_sibilant';
+  return 'alveolar';
+}
 
 export interface PhonemeItem {
   id: string;
@@ -866,6 +878,14 @@ export function PinyinChart({ defaultTab = 'initials', className = '' }: PinyinC
                     <Volume2 className="w-5 h-5" />
                   </button>
                 </div>
+
+                {/* Sơ đồ khẩu hình và luồng khí trực quan */}
+                <MouthDiagram
+                  zone={getArticulationZone(selectedPhoneme.id)}
+                  phoneme={selectedPhoneme.symbol}
+                  vietnameseGuide={selectedPhoneme.vietnameseGuide}
+                  mouthTip={selectedPhoneme.mouthTip}
+                />
 
                 {/* Pronunciation guide */}
                 <div className="space-y-1">

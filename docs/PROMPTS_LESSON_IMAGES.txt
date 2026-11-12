@@ -1,0 +1,193 @@
+# ==============================================================================
+# BỘ PROMPT TẠO ẢNH CHỦ ĐỀ BÀI HỌC HSK 1 - 6 (DÀNH CHO GOOGLE FLOW / IMAGEN / MIDJOURNEY)
+# ==============================================================================
+# Hướng dẫn sử dụng:
+# - Copy từng đoạn prompt tiếng Anh bên dưới dán vào Google Flow (Imagen 3 / Midjourney v6).
+# - Tỷ lệ khung hình khuyến nghị: --ar 16:9 hoặc --ar 4:3 (ngang) cho banner bài học.
+# - Phong cách thống nhất: Modern semi-flat vector illustration with clean lines, warm pastel palette,
+#   cozy modern East Asian aesthetic, high detail, studio lighting, no text/typo artifacts.
+# ==============================================================================
+
+### [CHỦ ĐỀ CHUNG / STYLE GUIDE]
+Style Prompt Suffix:
+"in modern vector flat art style with soft textured shadows, warm inviting lighting, clean outlines, minimalistic East Asian aesthetic, aesthetic pastel color palette, cinematic composition, 4k resolution, no words, no text, no watermark --ar 16:9"
+
+
+# ==============================================================================
+# GIAI ĐOẠN 1: HSK 1 — SƠ CẤP NHẬP MÔN
+# ==============================================================================
+
+---
+[HSK 1 - BÀI 1: CHÀO HỎI & LÀM QUEN (你好 - XIN CHÀO)]
+File Name Target: hsk1_lesson01_greeting.png
+Prompt:
+"A warm, welcoming scene of two friendly young students—a young man and a woman—bowing slightly with hands together in a polite greeting in front of a modern Beijing campus courtyard with traditional brick arches and bamboo plants. Sunlight streaming through green leaves, cheerful atmosphere, modern flat vector art, warm pastel hues, cozy aesthetic, high detail, no text --ar 16:9"
+
+---
+[HSK 1 - BÀI 2: TÊN & QUỐC TỊCH (BẠN TÊN GÌ, NGƯỜI NƯỚC NÀO)]
+File Name Target: hsk1_lesson02_nationality.png
+Prompt:
+"A group of diverse international college students sitting around an outdoor wooden table smiling and introducing themselves, holding small student ID cards and world map coffee mugs. Modern university library with glass walls in the background, autumn gingko leaves falling gently, vibrant modern editorial illustration style, pastel tones, clean lines, no text --ar 16:9"
+
+---
+[HSK 1 - BÀI 3: GIA ĐÌNH & ĐẠI TỪ NHÂN XƯNG (NHÀ BẠN CÓ MẤY NGƯỜI)]
+File Name Target: hsk1_lesson03_family.png
+Prompt:
+"A cozy, heartfelt living room scene showing a three-generation Asian family gathered together on a sofa: smiling grandparents, parents, and two happy children sipping warm tea from small ceramic cups. Warm soft morning light pouring through paper screen windows, potted plants, clean vector illustration, cozy home vibes, pastel colors, no text --ar 16:9"
+
+---
+[HSK 1 - BÀI 4: SỐ ĐẾM, THỜI GIAN & NGÀY THÁNG (BÂY GIỜ MẤY GIỜ, THỨ MẤY)]
+File Name Target: hsk1_lesson04_time_calendar.png
+Prompt:
+"A stylish modern desk scene featuring an elegant analog wall clock pointing to nine thirty, a sleek desktop calendar with date marks, a notebook with a pen, a steaming cup of green tea, and morning golden sunlight creating gentle shadows across the wooden table. Aesthetic flat vector art, clean minimal layout, tranquil atmosphere, no text --ar 16:9"
+
+---
+[HSK 1 - BÀI 5: MUA SẮM CƠ BẢN & TIỀN TỆ (CÁI NÀY BAO NHIÊU TIỀN)]
+File Name Target: hsk1_lesson05_shopping.png
+Prompt:
+"A vibrant traditional street fruit and grocery stall in China with colorful neatly stacked fresh apples, oranges, and tea canisters. A friendly smiling vendor showing fresh produce to a young shopper holding a reusable canvas tote bag, red paper lanterns hanging softly above, charming vector art, warm vivid lighting, no text --ar 16:9"
+
+
+# ==============================================================================
+# GIAI ĐOẠN 2: HSK 2 — GIAO TIẾP ĐỜI SỐNG HẰNG NGÀY
+# ==============================================================================
+
+---
+[HSK 2 - BÀI 1: GỌI MÓN TẠI QUÁN ĂN (BẠN MUỐN ĂN GÌ)]
+File Name Target: hsk2_lesson01_restaurant.png
+Prompt:
+"A bustling, cozy traditional Chinese noodle restaurant interior. Two friends sitting at a wooden booth table looking at a menu, steaming bamboo steamers with dumplings (xiaolongbao), bowls of beef noodles, and jasmine tea on the table. A friendly waiter taking notes nearby, soft glowing ambient lanterns, cozy vector illustration, appetizing vibe, no text --ar 16:9"
+
+---
+[HSK 2 - BÀI 2: HỎI ĐƯỜNG & PHƯƠNG TIỆN CÔNG CỘNG (ĐI BẰNG XE GÌ)]
+File Name Target: hsk2_lesson02_directions_transport.png
+Prompt:
+"A modern Chinese city intersection with a futuristic clean subway entrance sign, a green-and-yellow taxi stopping smoothly by the curb, and pedestrians walking. A young traveler with a small backpack looking at a street sign while a local resident points the direction with a friendly gesture. Clean flat vector style, bright daylight, urban aesthetic, no text --ar 16:9"
+
+---
+[HSK 2 - BÀI 3: THỜI TIẾT & BỐN MÙA (HÔM NAY THỜI TIẾT THẾ NÀO)]
+File Name Target: hsk2_lesson03_weather_seasons.png
+Prompt:
+"A four-part scenic landscape transition banner showcasing spring cherry blossoms, sunny summer lake with lotus flowers, golden autumn maple trees, and peaceful winter snow softly resting on traditional curved eaves. Cohesive pastel color palette, balanced composition, serene modern vector landscape, no text --ar 16:9"
+
+---
+[HSK 2 - BÀI 4: SỞ THÍCH & THỜI GIAN RẢNH (THỂ THAO & ÂM NHẠC)]
+File Name Target: hsk2_lesson04_hobbies.png
+Prompt:
+"A lively community park scene on a sunny weekend: young people playing soccer on a green field in the background, a person jogging with headphones, another person sitting under a weeping willow tree playing an acoustic guitar. Dynamic vector art, joyful positive energy, lush greenery, pastel colors, no text --ar 16:9"
+
+---
+[HSK 2 - BÀI 5: KHÁM BỆNH & SỨC KHỎE (BẠN THẤY KHÔNG KHỎE Ở ĐÂU)]
+File Name Target: hsk2_lesson05_health_clinic.png
+Prompt:
+"A clean, bright modern medical clinic examination room. A gentle, professional doctor in a white coat with a stethoscope smiling reassuringly while consulting with a patient sitting across the desk. Indoor plants, warm sunlight through large windows, soothing medical atmosphere, clean minimal vector art, no text --ar 16:9"
+
+
+# ==============================================================================
+# GIAI ĐOẠN 3: HSK 3 — KỂ CHUYỆN & TỰ TIN PHẢN XẠ
+# ==============================================================================
+
+---
+[HSK 3 - BÀI 1: THUÊ PHÒNG & KHÁCH SẠN (ĐẶT PHÒNG ĐƠN HAY ĐÔI)]
+File Name Target: hsk3_lesson01_hotel_checkin.png
+Prompt:
+"An elegant, boutique Asian hotel reception lobby. A polite receptionist behind a marble and wood reception desk handing a keycard to a smiling traveler with rolling luggage. Tasteful calligraphy scroll on the wall, warm ambient lighting, luxurious yet cozy modern flat vector illustration, no text --ar 16:9"
+
+---
+[HSK 3 - BÀI 2: DU LỊCH & ĐẶT VÉ MÁY BAY (SÂN BAY & THỦ TỤC HÀNH LÝ)]
+File Name Target: hsk3_lesson02_airport_travel.png
+Prompt:
+"A bright, spacious modern airport departure hall with massive glass windows overlooking airplanes parked on the tarmac. A young traveler holding a passport and boarding pass walking towards the departure gate with rolling luggage, sunlight reflecting off the floor, inspiring travel vibe, flat vector art, no text --ar 16:9"
+
+---
+[HSK 3 - BÀI 3: SO SÁNH & LỰA CHỌN (A SO VỚI B CÁI NÀO TỐT HƠN)]
+File Name Target: hsk3_lesson03_comparison.png
+Prompt:
+"A thoughtful consumer standing inside a modern lifestyle shop comparing two items—holding an elegant ceramic teapot in one hand and a modern glass kettle in the other, weighing the options with a pleasant smile. Soft studio lighting, minimalist boutique interior, clean vector illustration, no text --ar 16:9"
+
+---
+[HSK 3 - BÀI 4: KỂ VỀ MỘT CHUYẾN ĐI ĐÁNG NHỚ (NHẬT KÝ DU LỊCH)]
+File Name Target: hsk3_lesson04_memorable_trip.png
+Prompt:
+"A picturesque scenic overlook of the Great Wall of China winding through misty lush green mountains under a golden sunset sky. Two travelers taking a photo with a vintage camera, wind blowing gently, breathtaking landscape, artistic travel poster style, vector art with soft gradients, no text --ar 16:9"
+
+
+# ==============================================================================
+# GIAI ĐOẠN 4: HSK 4 — CÔNG SỞ & THƯƠNG MẠI ĐIỆN TỬ
+# ==============================================================================
+
+---
+[HSK 4 - BÀI 1: PHỎNG VẤN XIN VIỆC (GIỚI THIỆU BẢN THÂN CHUYÊN NGHIỆP)]
+File Name Target: hsk4_lesson01_job_interview.png
+Prompt:
+"A professional, bright corporate conference room setting. A confident candidate in a smart business suit sitting across from two smiling interviewers holding resumes. Glass partition overlooking a high-rise city skyline, professional atmosphere, modern corporate editorial vector illustration, muted elegant tones, no text --ar 16:9"
+
+---
+[HSK 4 - BÀI 2: ĐÀM THOẠI CÔNG SỞ & HỌP DỰ ÁN (BÁO CÁO KẾ HOẠCH)]
+File Name Target: hsk4_lesson02_office_meeting.png
+Prompt:
+"A collaborative modern tech startup office meeting room. A team leader presenting a project workflow on a digital whiteboard screen to colleagues taking notes on laptops around a sleek table. Bright natural light, coffee cups, creative brainstorming atmosphere, clean vector art, no text --ar 16:9"
+
+---
+[HSK 4 - BÀI 3: CÂU CHỮ 把 & SẮP XẾP TỔ CHỨC CÔNG VIỆC]
+File Name Target: hsk4_lesson03_ba_sentence_office.png
+Prompt:
+"An organized, satisfying modern workspace scene illustrating deliberate action: a pair of hands neatly placing a colorful folder into a desktop bookshelf, organizing stationery into minimalist holders, and arranging documents on a tidy wooden desk. Clear sense of order and accomplishment, vector flat illustration, no text --ar 16:9"
+
+---
+[HSK 4 - BÀI 4: MẠNG XÃ HỘI & MUA SẮM ONLINE (GIAO HÀNG & HOÀN TIỀN)]
+File Name Target: hsk4_lesson04_ecommerce_delivery.png
+Prompt:
+"A friendly courier in uniform handing an eco-friendly cardboard parcel to a happy customer standing at their apartment doorway. A cute delivery electric scooter parked on the sidewalk in the background, warm afternoon light, vibrant community feeling, clean modern vector illustration, no text --ar 16:9"
+
+
+# ==============================================================================
+# GIAI ĐOẠN 5: HSK 5 — TIN TỨC, KINH TẾ & VĂN HÓA
+# ==============================================================================
+
+---
+[HSK 5 - BÀI 1: NGHE BẢN TIN THỜI SỰ & KINH TẾ (XU HƯỚNG THỊ TRƯỜNG)]
+File Name Target: hsk5_lesson01_news_economy.png
+Prompt:
+"A modern professional television broadcast news studio. A poised news anchor behind a high-tech curved desk with glowing blue digital world map graphics and upward trending economic bar charts displayed on large backdrop screens. Studio spotlighting, authoritative and sophisticated vector art style, no text --ar 16:9"
+
+---
+[HSK 5 - BÀI 2: VĂN HÓA TRÀ ĐẠO & ẨM THỰC TRUYỀN THỐNG TRUNG HOA]
+File Name Target: hsk5_lesson02_tea_culture.png
+Prompt:
+"A tranquil traditional Chinese tea ceremony setting (Gongfu tea). Skilled hands pouring hot water from a clay kettle into an Yixing clay teapot on a bamboo tea tray, delicate steam rising, surrounded by ceramic cups and blooming orchids on a dark polished wooden table. Zen aesthetic, serene lighting, vector illustration, no text --ar 16:9"
+
+---
+[HSK 5 - BÀI 3: CÂU CHỮ 被 & NGUYÊN NHÂN - KẾT QUẢ]
+File Name Target: hsk5_lesson03_bei_passive.png
+Prompt:
+"An expressive conceptual illustration of cause and effect: a team receiving an unexpected surprise project award at a corporate gala, being applauded warmly by peers under warm stage lights. Confetti, emotional narrative, elegant modern vector illustration, no text --ar 16:9"
+
+---
+[HSK 5 - BÀI 4: THUYẾT TRÌNH BẢO VỆ MÔI TRƯỜNG (SỐNG XANH & TÁI CHẾ)]
+File Name Target: hsk5_lesson04_green_presentation.png
+Prompt:
+"An inspiring young speaker standing on a conference stage delivering an engaging presentation about green cities and renewable energy. A large visual presentation screen behind showing green buildings, solar panels, and wind turbines. Audience listening attentively, optimistic atmosphere, vector art, no text --ar 16:9"
+
+
+# ==============================================================================
+# GIAI ĐOẠN 6: HSK 6 — ĐÀM PHÁN THƯƠNG MẠI & THÀNH NGỮ
+# ==============================================================================
+
+---
+[HSK 6 - BÀI 1: ĐÀM PHÁN THƯƠNG MẠI QUỐC TẾ (HỢP TÁC ĐÔI BÊN CÙNG CÓ LỢI)]
+File Name Target: hsk6_lesson01_negotiation.png
+Prompt:
+"Two dignified international business leaders in tailored suits shaking hands warmly across an expansive executive boardroom table following a successful contract signing. High-rise floor-to-ceiling glass windows overlooking a glittering metropolitan harbor, sunset lighting, mutual respect and triumph, refined vector art, no text --ar 16:9"
+
+---
+[HSK 6 - BÀI 2: THÀNH NGỮ THƯỜNG GẶP TRONG GIAO TIẾP CAO CẤP]
+File Name Target: hsk6_lesson02_chengyu_idioms.png
+Prompt:
+"A poetic, artistic allegorical Chinese ink and watercolor painting combined with modern vector lines: depicting classical symbols of perseverance and wisdom—a solitary pine tree rooted firmly on a mountain cliff, a flying crane soaring above clouds, and a flowing clear stream. Deep cultural resonance, philosophical elegance, no text --ar 16:9"
+
+---
+[HSK 6 - BÀI 3: TÂM LÝ & NGHỆ THUẬT GIAO TIẾP XÃ HỘI]
+File Name Target: hsk6_lesson03_social_psychology.png
+Prompt:
+"A sophisticated dinner banquet conversation scene showing diverse professionals engaged in deep, thoughtful dialogue with warm genuine smiles and wine glasses. Soft golden chandelier lighting, elegant table setting, body language portraying empathy, active listening, and social harmony. High-end editorial vector style, no text --ar 16:9"
