@@ -44,6 +44,9 @@ export default function RoadmapPage() {
   useEffect(() => {
     const p = getStoredUserProfile();
     setProfile(p);
+    if (p.currentHskLevel && p.currentHskLevel !== 'HSK1') {
+      setActiveLevel(p.currentHskLevel as HSKViewLevel);
+    }
     const comp = getCompletedLessonIds();
     setDays(getComputedDays(p, comp));
   }, []);

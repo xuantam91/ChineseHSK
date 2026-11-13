@@ -23,7 +23,7 @@ export default function ProgressPage() {
   const quizHistory = [
     {
       id: 'q-hist-1',
-      title: 'Kiểm tra phát âm Pinyin & 4 Thanh điệu [DEMO]',
+      title: 'Kiểm tra phát âm Pinyin & 4 Thanh điệu',
       score: 100,
       passing: 80,
       date: '10/11/2026',
@@ -31,7 +31,7 @@ export default function ProgressPage() {
     },
     {
       id: 'q-hist-2',
-      title: 'Nhận diện thanh mẫu b, p, m, f & Quy tắc biến điệu [DEMO]',
+      title: 'Nhận diện thanh mẫu b, p, m, f & Quy tắc biến điệu',
       score: 90,
       passing: 80,
       date: '08/11/2026',
@@ -39,7 +39,7 @@ export default function ProgressPage() {
     },
     {
       id: 'q-hist-3',
-      title: 'Phản xạ chào hỏi & Giới thiệu bản thân [DEMO]',
+      title: 'Phản xạ chào hỏi & Giới thiệu bản thân',
       score: 85,
       passing: 80,
       date: '06/11/2026',
@@ -88,7 +88,7 @@ export default function ProgressPage() {
           <span>Thống kê chi tiết</span>
         </div>
         <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">
-          Báo cáo Tiến độ Học tập [DEMO]
+          Báo cáo Tiến độ Học tập
         </h1>
         <p className="text-xs sm:text-sm text-gray-500 mt-1">
           Theo dõi chuỗi học, lịch sử kiểm tra và phân tích thói quen học tập của bạn.

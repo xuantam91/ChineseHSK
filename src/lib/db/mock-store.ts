@@ -69,7 +69,7 @@ class MockDataStore {
     // 1. Profiles
     const adminUser: Profile = {
       id: 'usr-admin-01',
-      display_name: 'Admin Giảng Viên [DEMO]',
+      display_name: 'Admin Giảng Viên',
       age_group: 'adults',
       timezone: 'Asia/Ho_Chi_Minh',
       role: 'admin',
@@ -78,7 +78,7 @@ class MockDataStore {
     };
     const studentUser: Profile = {
       id: 'usr-student-01',
-      display_name: 'Học Viên Nguyễn Văn A [DEMO]',
+      display_name: 'Học Viên Nguyễn Văn A',
       age_group: 'adults',
       timezone: 'Asia/Ho_Chi_Minh',
       role: 'student',
@@ -92,7 +92,7 @@ class MockDataStore {
     const program: Program = {
       id: 'prg-chinese-12m',
       slug: 'chinese-12-months',
-      title: 'Lộ trình Tiếng Trung 12 Tháng [DEMO]',
+      title: 'Lộ trình Tiếng Trung 12 Tháng',
       description: 'Chương trình tự học tiếng Trung 12 tháng từ vỡ lòng Pinyin đến HSK 4-5.',
       target_age_group: 'adults',
       status: 'published',
@@ -118,14 +118,14 @@ class MockDataStore {
       id: 'month-01',
       program_version_id: version1.id,
       month_index: 1,
-      title: 'Tháng 1: Nhập môn & Phát âm Pinyin [DEMO]',
+      title: 'Tháng 1: Nhập môn & Phát âm Pinyin',
       sort_order: 1,
     };
     const month2: CurriculumMonth = {
       id: 'month-02',
       program_version_id: version1.id,
       month_index: 2,
-      title: 'Tháng 2: Từ vựng sinh hoạt & Cấu trúc cơ bản [DEMO]',
+      title: 'Tháng 2: Từ vựng sinh hoạt & Cấu trúc cơ bản',
       sort_order: 2,
     };
     this.curriculumMonths.set(month1.id, month1);
@@ -136,14 +136,14 @@ class MockDataStore {
       id: 'week-01',
       curriculum_month_id: month1.id,
       week_index: 1,
-      title: 'Tuần 1: Thanh mẫu & Vận mẫu cơ bản [DEMO]',
+      title: 'Tuần 1: Thanh mẫu & Vận mẫu cơ bản',
       sort_order: 1,
     };
     const week2: CurriculumWeek = {
       id: 'week-02',
       curriculum_month_id: month1.id,
       week_index: 2,
-      title: 'Tuần 2: 4 Thanh điệu & Biến điệu [DEMO]',
+      title: 'Tuần 2: 4 Thanh điệu & Biến điệu',
       sort_order: 2,
     };
     this.curriculumWeeks.set(week1.id, week1);
@@ -155,7 +155,7 @@ class MockDataStore {
       curriculum_week_id: week1.id,
       day_index: 1,
       day_type: 'learning',
-      title: 'Ngày 1: Làm quen 6 Vận mẫu đơn và 4 Thanh điệu [DEMO]',
+      title: 'Ngày 1: Làm quen 6 Vận mẫu đơn và 4 Thanh điệu',
       estimated_minutes: 30,
       unlock_offset_days: 0,
       is_required: true,
@@ -166,7 +166,7 @@ class MockDataStore {
       curriculum_week_id: week1.id,
       day_index: 2,
       day_type: 'learning',
-      title: 'Ngày 2: Nhóm Thanh mẫu môi & đầu lưỡi (b, p, m, f, d, t, n, l) [DEMO]',
+      title: 'Ngày 2: Nhóm Thanh mẫu môi & đầu lưỡi (b, p, m, f, d, t, n, l)',
       estimated_minutes: 35,
       unlock_offset_days: 1,
       is_required: true,
@@ -177,7 +177,7 @@ class MockDataStore {
       curriculum_week_id: week1.id,
       day_index: 3,
       day_type: 'learning',
-      title: 'Ngày 3: Ghép vần cơ bản & Chào hỏi đầu tiên [DEMO]',
+      title: 'Ngày 3: Ghép vần cơ bản & Chào hỏi đầu tiên',
       estimated_minutes: 40,
       unlock_offset_days: 2,
       is_required: true,
@@ -188,7 +188,7 @@ class MockDataStore {
       curriculum_week_id: week1.id,
       day_index: 4,
       day_type: 'rest',
-      title: 'Ngày 4: Ngày nghỉ ngơi & Nghe thụ động [DEMO]',
+      title: 'Ngày 4: Ngày nghỉ ngơi & Nghe thụ động',
       estimated_minutes: 15,
       unlock_offset_days: 3,
       is_required: false,
@@ -199,7 +199,7 @@ class MockDataStore {
       curriculum_week_id: week1.id,
       day_index: 5,
       day_type: 'quiz',
-      title: 'Ngày 5: Kiểm tra mốc Pinyin tuần 1 [DEMO]',
+      title: 'Ngày 5: Kiểm tra mốc Pinyin tuần 1',
       estimated_minutes: 25,
       unlock_offset_days: 4,
       is_required: true,
@@ -217,7 +217,7 @@ class MockDataStore {
       id: 'asset-audio-01',
       provider: 'google_drive',
       drive_file_id: '1aB2cD3eF4gH5iJ6kL7mN8oP9qR0sTuV',
-      name: 'Audio Vận Mẫu Đơn Pinyin.mp3 [DEMO]',
+      name: 'Audio Vận Mẫu Đơn Pinyin.mp3',
       mime_type: 'audio/mpeg',
       web_view_link: 'https://drive.google.com/file/d/1aB2cD3eF4gH5iJ6kL7mN8oP9qR0sTuV/view?usp=sharing',
       resource_key: null,
@@ -231,7 +231,7 @@ class MockDataStore {
       id: 'asset-pdf-01',
       provider: 'google_drive',
       drive_file_id: '1xY2zA3bC4dE5fG6hI7jK8lM9nO0pQrS',
-      name: 'Bang-Chu-Cai-Pinyin-Chuan.pdf [DEMO]',
+      name: 'Bang-Chu-Cai-Pinyin-Chuan.pdf',
       mime_type: 'application/pdf',
       web_view_link: 'https://drive.google.com/file/d/1xY2zA3bC4dE5fG6hI7jK8lM9nO0pQrS/view?usp=sharing',
       resource_key: null,
@@ -248,7 +248,7 @@ class MockDataStore {
     const lesson1: Lesson = {
       id: 'les-01',
       curriculum_day_id: day1.id,
-      title: 'Bài 1: Phát âm 6 Vận mẫu đơn (a, o, e, i, u, ü) [DEMO]',
+      title: 'Bài 1: Phát âm 6 Vận mẫu đơn (a, o, e, i, u, ü)',
       description: 'Nắm vững khẩu hình miệng, luồng hơi và vị trí lưỡi chuẩn cho 6 nguyên âm tiếng Trung.',
       sort_order: 1,
       estimated_minutes: 20,
@@ -262,7 +262,7 @@ class MockDataStore {
       lesson_id: lesson1.id,
       type: 'rich_text',
       payload_jsonb: {
-        content: `### 1. Tổng quan về Vận Mẫu Đơn [DEMO]
+        content: `### 1. Tổng quan về Vận Mẫu Đơn
 Tiếng Trung có 6 vận mẫu đơn cốt lõi: **a, o, e, i, u, ü**.
 - **a**: Miệng mở rộng, lưỡi hạ thấp tự nhiên (giống âm 'a' trong tiếng Việt).
 - **o**: Môi tròn, khẩu hình thu nhỏ vừa phải.
@@ -282,7 +282,7 @@ Tiếng Trung có 6 vận mẫu đơn cốt lõi: **a, o, e, i, u, ü**.
       type: 'audio',
       payload_jsonb: {
         asset_id: assetAudio1.id,
-        title: 'File nghe phát âm 6 vận mẫu đơn [DEMO]',
+        title: 'File nghe phát âm 6 vận mẫu đơn',
         drive_url: assetAudio1.web_view_link,
       },
       sort_order: 2,
@@ -320,7 +320,7 @@ Tiếng Trung có 6 vận mẫu đơn cốt lõi: **a, o, e, i, u, ü**.
       lesson_id: lesson1.id,
       type: 'quiz',
       payload_jsonb: {
-        title: 'Quiz nhanh kiểm tra vận mẫu [DEMO]',
+        title: 'Quiz nhanh kiểm tra vận mẫu',
       },
       sort_order: 4,
       is_required: true,
@@ -336,7 +336,7 @@ Tiếng Trung có 6 vận mẫu đơn cốt lõi: **a, o, e, i, u, ü**.
     const quiz1: Quiz = {
       id: 'quiz-01',
       lesson_id: lesson1.id,
-      title: 'Kiểm tra nhận diện Vận Mẫu Đơn [DEMO]',
+      title: 'Kiểm tra nhận diện Vận Mẫu Đơn',
       passing_score: 80,
       attempt_limit: 5,
       status: 'active',

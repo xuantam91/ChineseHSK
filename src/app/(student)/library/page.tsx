@@ -208,7 +208,7 @@ export default function LibraryPage() {
           <span>Kho tài nguyên & học liệu chuẩn HSK</span>
         </div>
         <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">
-          Thư Viện Đa Phương Tiện Tiếng Trung [DEMO]
+          Thư Viện Đa Phương Tiện Tiếng Trung Chuẩn Quốc Tế
         </h1>
         <p className="text-xs sm:text-sm text-gray-500 mt-1 max-w-3xl">
           Tổng hợp kênh video học Flashcard, ca khúc thiếu nhi, truyện ngụ ngôn, phim hoạt hình và trọn bộ giáo trình chuẩn HSK, Easy Steps, Kuaile Hanyu an toàn.

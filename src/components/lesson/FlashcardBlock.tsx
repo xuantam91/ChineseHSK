@@ -66,7 +66,7 @@ export function FlashcardBlock({ data }: FlashcardBlockProps) {
       <div className="flex items-center justify-between mb-4">
         <div>
           <h3 className="text-base md:text-lg font-bold text-gray-900">
-            {data.title || 'Flashcard Ôn tập [DEMO]'}
+            {data.title || 'Flashcard Ôn tập Từ vựng'}
           </h3>
           <p className="text-xs text-gray-500">
             Đã thuộc: <span className="font-bold text-emerald-700">{masteredCount}/{cards.length}</span> thẻ

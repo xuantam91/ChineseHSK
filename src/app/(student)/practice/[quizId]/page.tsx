@@ -152,7 +152,7 @@ export default function PracticeQuizPage({
         </Link>
 
         <span className="text-xs font-bold px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-          Bài kiểm tra HSK 1 [DEMO]
+          Bài kiểm tra HSK 1
         </span>
       </div>
 

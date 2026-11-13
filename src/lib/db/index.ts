@@ -239,7 +239,7 @@ export const db = {
       program_version: {
         id: version?.id || enrollment.program_version_id,
         version_number: version?.version_number || 'v1.0.0',
-        title: 'Lộ trình Tiếng Trung 12 Tháng [DEMO]',
+        title: 'Lộ trình Tiếng Trung 12 Tháng',
       },
       enrollment: {
         start_date: enrollment.start_date,

@@ -55,7 +55,7 @@ export default function LoginPage() {
         {/* Demo Fast Login Pills */}
         <div className="mb-4 p-3.5 bg-emerald-50/80 rounded-2xl border border-emerald-100 text-xs">
           <div className="font-bold text-emerald-900 mb-2 flex items-center gap-1.5">
-            <span>⚡ Tài khoản thử nghiệm nhanh [DEMO]:</span>
+            <span>⚡ Tài khoản đăng nhập nhanh:</span>
           </div>
           <div className="flex flex-wrap gap-2">
             <button

@@ -2,7 +2,7 @@
 // Chinese Learning Journey — In-Memory Mock Supabase Client Adapter
 // File: src/lib/supabase/mock-adapter.ts
 // Description: Full in-memory Supabase adapter adhering to @supabase/supabase-js
-//              contract with pre-loaded realistic [DEMO] seed data matching seed.sql.
+//              contract with pre-loaded realistic seed data matching seed.sql.
 // ==============================================================================
 
 import { Database } from '@/types/database';
@@ -11,16 +11,16 @@ type TableName = keyof Database['public']['Tables'];
 type RowType<T extends TableName> = Database['public']['Tables'][T]['Row'];
 
 // ------------------------------------------------------------------------------
-// Realistic [DEMO] Seed Fixture
+// Realistic Seed Fixture
 // ------------------------------------------------------------------------------
 const DEMO_SEED: { [K in TableName]?: any[] } = {
   programs: [
     {
       id: '00000000-0000-0000-0000-000000000001',
       slug: 'chinese-hsk-foundation',
-      title: '[DEMO] Hành trình Chinh phục Tiếng Trung Toàn diện (HSK 1 - HSK 3)',
+      title: 'Hành trình Chinh phục Tiếng Trung Toàn diện (HSK 1 - HSK 3)',
       description:
-        '[DEMO] Chương trình học tiếng Trung từ số 0, chuẩn âm Bắc Kinh, bám sát khung HSK mới và giao tiếp thực chiến 365 ngày.',
+        'Chương trình học tiếng Trung từ số 0, chuẩn âm Bắc Kinh, bám sát khung HSK mới và giao tiếp thực chiến 365 ngày.',
       target_age_group: 'all',
       status: 'published',
       created_at: '2026-01-01T00:00:00.000Z',
@@ -36,7 +36,7 @@ const DEMO_SEED: { [K in TableName]?: any[] } = {
       published_at: '2026-01-01T00:00:00.000Z',
       source_url: 'https://notion.so/chinese-curriculum-demo-staging',
       content_checksum: 'sha256-demo-v1-initial-seed-checksum',
-      changelog: '[DEMO] Bản phát hành khởi tạo',
+      changelog: 'Bản phát hành khởi tạo',
       created_at: '2026-01-01T00:00:00.000Z',
       updated_at: '2026-01-01T00:00:00.000Z',
     },
@@ -46,7 +46,7 @@ const DEMO_SEED: { [K in TableName]?: any[] } = {
       id: '00000000-0000-0000-0000-000000000100',
       program_version_id: '00000000-0000-0000-0000-000000000010',
       month_index: 1,
-      title: '[DEMO] Tháng 1: Nhập môn & Bảng phiên âm Pinyin chuẩn',
+      title: 'Tháng 1: Nhập môn & Bảng phiên âm Pinyin chuẩn',
       sort_order: 1,
       created_at: '2026-01-01T00:00:00.000Z',
     },
@@ -56,7 +56,7 @@ const DEMO_SEED: { [K in TableName]?: any[] } = {
       id: '00000000-0000-0000-0000-000000001000',
       curriculum_month_id: '00000000-0000-0000-0000-000000000100',
       week_index: 1,
-      title: '[DEMO] Tuần 1: Thanh mẫu, Vận mẫu & 4 Thanh điệu cơ bản',
+      title: 'Tuần 1: Thanh mẫu, Vận mẫu & 4 Thanh điệu cơ bản',
       sort_order: 1,
       created_at: '2026-01-01T00:00:00.000Z',
     },
@@ -68,7 +68,7 @@ const DEMO_SEED: { [K in TableName]?: any[] } = {
       program_version_id: '00000000-0000-0000-0000-000000000010',
       day_index: 1,
       day_type: 'learning',
-      title: '[DEMO] Ngày 1: Chào hỏi cơ bản (你好 - Xin chào)',
+      title: 'Ngày 1: Chào hỏi cơ bản (你好 - Xin chào)',
       estimated_minutes: 25,
       unlock_offset_days: 0,
       is_required: true,
@@ -81,7 +81,7 @@ const DEMO_SEED: { [K in TableName]?: any[] } = {
       program_version_id: '00000000-0000-0000-0000-000000000010',
       day_index: 2,
       day_type: 'learning',
-      title: '[DEMO] Ngày 2: Cảm ơn & Tạm biệt (谢谢, 再见)',
+      title: 'Ngày 2: Cảm ơn & Tạm biệt (谢谢, 再见)',
       estimated_minutes: 20,
       unlock_offset_days: 1,
       is_required: true,
@@ -94,7 +94,7 @@ const DEMO_SEED: { [K in TableName]?: any[] } = {
       program_version_id: '00000000-0000-0000-0000-000000000010',
       day_index: 3,
       day_type: 'review',
-      title: '[DEMO] Ngày 3: Ôn tập Thanh điệu & Nghe thụ động',
+      title: 'Ngày 3: Ôn tập Thanh điệu & Nghe thụ động',
       estimated_minutes: 15,
       unlock_offset_days: 2,
       is_required: false,
@@ -107,7 +107,7 @@ const DEMO_SEED: { [K in TableName]?: any[] } = {
       program_version_id: '00000000-0000-0000-0000-000000000010',
       day_index: 7,
       day_type: 'checkpoint',
-      title: '[DEMO] Ngày 7: Checkpoint Tuần 1 & Nghỉ ngơi tích cực',
+      title: 'Ngày 7: Checkpoint Tuần 1 & Nghỉ ngơi tích cực',
       estimated_minutes: 30,
       unlock_offset_days: 6,
       is_required: true,
@@ -119,9 +119,9 @@ const DEMO_SEED: { [K in TableName]?: any[] } = {
     {
       id: '00000000-0000-0000-0000-000000100001',
       curriculum_day_id: '00000000-0000-0000-0000-000000010001',
-      title: '[DEMO] Bài 1.1: Phát âm chuẩn Ni Hao (你好) & Biến điệu Thanh 3',
+      title: 'Bài 1.1: Phát âm chuẩn Ni Hao (你好) & Biến điệu Thanh 3',
       description:
-        '[DEMO] Khám phá lời chào phổ biến nhất thế giới bằng tiếng Trung, nắm vững 4 thanh điệu và quy tắc biến điệu hai thanh 3 đi liền nhau.',
+        'Khám phá lời chào phổ biến nhất thế giới bằng tiếng Trung, nắm vững 4 thanh điệu và quy tắc biến điệu hai thanh 3 đi liền nhau.',
       sort_order: 1,
       estimated_minutes: 25,
       is_required: true,
@@ -131,9 +131,9 @@ const DEMO_SEED: { [K in TableName]?: any[] } = {
     {
       id: '00000000-0000-0000-0000-000000100002',
       curriculum_day_id: '00000000-0000-0000-0000-000000010002',
-      title: '[DEMO] Bài 2.1: Cách nói Cảm ơn và Đáp lại lịch thiệp',
+      title: 'Bài 2.1: Cách nói Cảm ơn và Đáp lại lịch thiệp',
       description:
-        '[DEMO] Học cách biểu đạt lòng biết ơn qua 谢谢 (xièxie) và các mẫu câu phản hồi tự nhiên như 不客气 (bú kèqi).',
+        'Học cách biểu đạt lòng biết ơn qua 谢谢 (xièxie) và các mẫu câu phản hồi tự nhiên như 不客气 (bú kèqi).',
       sort_order: 1,
       estimated_minutes: 20,
       is_required: true,
@@ -143,9 +143,9 @@ const DEMO_SEED: { [K in TableName]?: any[] } = {
     {
       id: '00000000-0000-0000-0000-000000100003',
       curriculum_day_id: '00000000-0000-0000-0000-000000010003',
-      title: '[DEMO] Bài 3.1: Luyện tai phản xạ & Nghe thanh điệu thụ động',
+      title: 'Bài 3.1: Luyện tai phản xạ & Nghe thanh điệu thụ động',
       description:
-        '[DEMO] Buổi ôn tập củng cố nhận thức âm học, giúp não bộ quen với các cao độ thanh 1, 2, 3, 4 trong ngữ cảnh thực tế.',
+        'Buổi ôn tập củng cố nhận thức âm học, giúp não bộ quen với các cao độ thanh 1, 2, 3, 4 trong ngữ cảnh thực tế.',
       sort_order: 1,
       estimated_minutes: 15,
       is_required: false,
@@ -155,9 +155,9 @@ const DEMO_SEED: { [K in TableName]?: any[] } = {
     {
       id: '00000000-0000-0000-0000-000000100007',
       curriculum_day_id: '00000000-0000-0000-0000-000000010007',
-      title: '[DEMO] Bài 7.1: Checkpoint Đánh giá Năng lực Tuần 1',
+      title: 'Bài 7.1: Checkpoint Đánh giá Năng lực Tuần 1',
       description:
-        '[DEMO] Bài kiểm tra tổng hợp tuần 1 và hướng dẫn nghỉ ngơi, phục hồi năng lượng học tập.',
+        'Bài kiểm tra tổng hợp tuần 1 và hướng dẫn nghỉ ngơi, phục hồi năng lượng học tập.',
       sort_order: 1,
       estimated_minutes: 30,
       is_required: true,
@@ -185,7 +185,7 @@ const DEMO_SEED: { [K in TableName]?: any[] } = {
       lesson_id: '00000000-0000-0000-0000-000000100001',
       type: 'video',
       payload_jsonb: {
-        title: '[DEMO] Video khẩu hình miệng & 4 thanh điệu tiếng Trung',
+        title: 'Video khẩu hình miệng & 4 thanh điệu tiếng Trung',
         asset_id: '00000000-0000-0000-0000-0000000a0001',
         embed_url: 'https://drive.google.com/file/d/demo-drive-video-pinyin-intro/preview',
       },
@@ -199,7 +199,7 @@ const DEMO_SEED: { [K in TableName]?: any[] } = {
       lesson_id: '00000000-0000-0000-0000-000000100001',
       type: 'audio',
       payload_jsonb: {
-        title: '[DEMO] Nghe phát âm chuẩn: 你好 (ní hǎo)',
+        title: 'Nghe phát âm chuẩn: 你好 (ní hǎo)',
         asset_id: '00000000-0000-0000-0000-0000000a0002',
         audio_url: 'https://drive.google.com/file/d/demo-drive-audio-nihao-pronounce/preview',
       },
@@ -262,7 +262,7 @@ const DEMO_SEED: { [K in TableName]?: any[] } = {
       id: '00000000-0000-0000-0000-0000000a0001',
       provider: 'google_drive',
       drive_file_id: 'demo-drive-video-pinyin-intro',
-      name: '[DEMO] Video Hướng dẫn Phát âm Pinyin & Thanh điệu',
+      name: 'Video Hướng dẫn Phát âm Pinyin & Thanh điệu',
       mime_type: 'video/mp4',
       web_view_link: 'https://drive.google.com/file/d/demo-drive-video-pinyin-intro/preview',
       access_mode: 'embed',
@@ -276,7 +276,7 @@ const DEMO_SEED: { [K in TableName]?: any[] } = {
       id: '00000000-0000-0000-0000-0000000a0002',
       provider: 'google_drive',
       drive_file_id: 'demo-drive-audio-nihao-pronounce',
-      name: '[DEMO] Audio Phát âm chuẩn: nǐ hǎo (thanh 3 + thanh 3)',
+      name: 'Audio Phát âm chuẩn: nǐ hǎo (thanh 3 + thanh 3)',
       mime_type: 'audio/mpeg',
       web_view_link: 'https://drive.google.com/file/d/demo-drive-audio-nihao-pronounce/preview',
       access_mode: 'embed',
@@ -291,7 +291,7 @@ const DEMO_SEED: { [K in TableName]?: any[] } = {
     {
       id: '00000000-0000-0000-0000-0000000c0001',
       lesson_id: '00000000-0000-0000-0000-000000100001',
-      title: '[DEMO] Bài kiểm tra Ngày 1: Nhận diện Thanh điệu & Chào hỏi',
+      title: 'Bài kiểm tra Ngày 1: Nhận diện Thanh điệu & Chào hỏi',
       passing_score: 80,
       attempt_limit: 5,
       status: 'published',
@@ -354,7 +354,7 @@ const DEMO_SEED: { [K in TableName]?: any[] } = {
   profiles: [
     {
       id: 'usr-admin-demo',
-      display_name: 'Admin Giảng Viên [DEMO]',
+      display_name: 'Admin Giảng Viên',
       age_group: 'adult',
       timezone: 'Asia/Ho_Chi_Minh',
       role: 'admin',
@@ -363,7 +363,7 @@ const DEMO_SEED: { [K in TableName]?: any[] } = {
     },
     {
       id: 'usr-student-demo',
-      display_name: 'Học Viên Demo [DEMO]',
+      display_name: 'Học Viên Demo',
       age_group: 'adult',
       timezone: 'Asia/Ho_Chi_Minh',
       role: 'student',
@@ -612,7 +612,7 @@ export class MockSupabaseClient {
             id: 'usr-student-demo',
             email: 'student@demo.example.com',
             user_metadata: {
-              display_name: 'Học Viên Demo [DEMO]',
+              display_name: 'Học Viên Demo',
               role: 'student',
             },
           },
@@ -711,7 +711,7 @@ export function createMockSupabaseAdminClient() {
       user: {
         id: 'usr-admin-demo',
         email: 'admin@demo.example.com',
-        user_metadata: { display_name: 'Admin Giảng Viên [DEMO]', role: 'admin' },
+        user_metadata: { display_name: 'Admin Giảng Viên', role: 'admin' },
       },
     },
     error: null,

@@ -11,7 +11,8 @@ import { getTodayLocal, calculateUnlockDate } from './timezone';
 export const DEMO_USER_PROFILE: UserProfile = {
   id: 'usr_demo_student_01',
   email: 'student.demo@chinese-journey.edu.vn',
-  displayName: 'Minh Thư [DEMO]',
+  displayName: 'Minh Thư',
+  currentHskLevel: 'HSK1',
   avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
   role: 'student',
   ageGroup: 'adults_18_plus',
@@ -25,7 +26,7 @@ export const DEMO_USER_PROFILE: UserProfile = {
 export const DEMO_MONTHS_OVERVIEW: CurriculumMonth[] = [
   {
     monthIndex: 1,
-    title: 'Tháng 1: Nhập môn Ngữ âm Pinyin & Giao tiếp Căn bản [DEMO]',
+    title: 'Tháng 1: Nhập môn Ngữ âm Pinyin & Giao tiếp Căn bản',
     hskLevel: 'HSK 1',
     theme: 'Phát âm chuẩn & Làm quen chữ Hán cơ bản',
     description: 'Nắm vững 21 thanh mẫu, 36 vận mẫu, 4 thanh điệu cùng các câu chào hỏi, tự giới thiệu thường ngày.',
@@ -35,7 +36,7 @@ export const DEMO_MONTHS_OVERVIEW: CurriculumMonth[] = [
   },
   {
     monthIndex: 2,
-    title: 'Tháng 2: Gia đình, Thời gian & Cuộc sống Hằng ngày [DEMO]',
+    title: 'Tháng 2: Gia đình, Thời gian & Cuộc sống Hằng ngày',
     hskLevel: 'HSK 1',
     theme: 'Từ vựng sinh hoạt & Cấu trúc câu đơn giản',
     description: 'Học cách hỏi giờ, ngày tháng năm, giới thiệu các thành viên trong gia đình và thói quen mỗi ngày.',
@@ -45,7 +46,7 @@ export const DEMO_MONTHS_OVERVIEW: CurriculumMonth[] = [
   },
   {
     monthIndex: 3,
-    title: 'Tháng 3: Ăn uống, Mua sắm & Hỏi đường [DEMO]',
+    title: 'Tháng 3: Ăn uống, Mua sắm & Hỏi đường',
     hskLevel: 'HSK 1 - 2',
     theme: 'Giao tiếp tình huống thực tế',
     description: 'Gọi món tại nhà hàng Trung Hoa, hỏi giá cả, mặc cả và định hướng vị trí cơ bản.',
@@ -55,7 +56,7 @@ export const DEMO_MONTHS_OVERVIEW: CurriculumMonth[] = [
   },
   {
     monthIndex: 4,
-    title: 'Tháng 4: Sở thích, Thể thao & Du lịch [DEMO]',
+    title: 'Tháng 4: Sở thích, Thể thao & Du lịch',
     hskLevel: 'HSK 2',
     theme: 'Mở rộng vốn từ và cấu trúc biểu đạt cảm xúc',
     description: 'Bàn luận về âm nhạc, phim ảnh, môn thể thao yêu thích và lập kế hoạch cho chuyến du lịch ngắn.',
@@ -65,7 +66,7 @@ export const DEMO_MONTHS_OVERVIEW: CurriculumMonth[] = [
   },
   {
     monthIndex: 5,
-    title: 'Tháng 5: Công việc, Trường học & Mối quan hệ [DEMO]',
+    title: 'Tháng 5: Công việc, Trường học & Mối quan hệ',
     hskLevel: 'HSK 2 - 3',
     theme: 'Giao tiếp môi trường công sở & học tập',
     description: 'Trao đổi qua email, xin nghỉ phép, thảo luận bài vở và mở rộng kết nối bạn bè.',
@@ -75,7 +76,7 @@ export const DEMO_MONTHS_OVERVIEW: CurriculumMonth[] = [
   },
   {
     monthIndex: 6,
-    title: 'Tháng 6: Thời tiết, Sức khỏe & Cảm xúc [DEMO]',
+    title: 'Tháng 6: Thời tiết, Sức khỏe & Cảm xúc',
     hskLevel: 'HSK 3',
     theme: 'Diễn đạt trạng thái tinh thần và thể chất',
     description: 'Đi khám bệnh, miêu tả triệu chứng, bàn luận về thời tiết 4 mùa và chia sẻ tâm trạng cá nhân.',
@@ -85,7 +86,7 @@ export const DEMO_MONTHS_OVERVIEW: CurriculumMonth[] = [
   },
   {
     monthIndex: 7,
-    title: 'Tháng 7: Ngữ pháp Nâng cao: Câu chữ Ba (把) & Bị động [DEMO]',
+    title: 'Tháng 7: Ngữ pháp Nâng cao: Câu chữ Ba (把) & Bị động',
     hskLevel: 'HSK 3 - 4',
     theme: 'Cấu trúc câu đặc thù trong tiếng Trung',
     description: 'Làm chủ các mẫu câu phức tạp: câu chữ 把, câu chữ 被, bổ ngữ kết quả và bổ ngữ xu hướng.',
@@ -95,7 +96,7 @@ export const DEMO_MONTHS_OVERVIEW: CurriculumMonth[] = [
   },
   {
     monthIndex: 8,
-    title: 'Tháng 8: Văn hóa truyền thống, Lễ hội & Phong tục [DEMO]',
+    title: 'Tháng 8: Văn hóa truyền thống, Lễ hội & Phong tục',
     hskLevel: 'HSK 4',
     theme: 'Đọc hiểu sâu sắc về văn hóa Trung Hoa',
     description: 'Tìm hiểu Tết Nguyên đán, Tết Trung thu, nghệ thuật thư pháp, trà đạo và phong tục dân gian.',
@@ -105,7 +106,7 @@ export const DEMO_MONTHS_OVERVIEW: CurriculumMonth[] = [
   },
   {
     monthIndex: 9,
-    title: 'Tháng 9: Xã hội hiện đại, Công nghệ & Mạng xã hội [DEMO]',
+    title: 'Tháng 9: Xã hội hiện đại, Công nghệ & Mạng xã hội',
     hskLevel: 'HSK 4',
     theme: 'Ngôn ngữ mạng và công nghệ số Trung Quốc',
     description: 'WeChat, thanh toán di động, mua sắm qua Taobao, từ lóng trên mạng và đời sống giới trẻ.',
@@ -115,7 +116,7 @@ export const DEMO_MONTHS_OVERVIEW: CurriculumMonth[] = [
   },
   {
     monthIndex: 10,
-    title: 'Tháng 10: Tự tin Thuyết trình & Đọc báo tiếng Trung [DEMO]',
+    title: 'Tháng 10: Tự tin Thuyết trình & Đọc báo tiếng Trung',
     hskLevel: 'HSK 4 - 5',
     theme: 'Tư duy phản biện và diễn thuyết lưu loát',
     description: 'Luyện đọc các mẩu tin tức thời sự ngắn, tóm tắt ý chính và trình bày quan điểm cá nhân.',
@@ -125,7 +126,7 @@ export const DEMO_MONTHS_OVERVIEW: CurriculumMonth[] = [
   },
   {
     monthIndex: 11,
-    title: 'Tháng 11: Luyện đề Chuyên sâu HSK 4 - 5 [DEMO]',
+    title: 'Tháng 11: Luyện đề Chuyên sâu HSK 4 - 5',
     hskLevel: 'HSK 5',
     theme: 'Chiến thuật thi cử và bẫy đề thi',
     description: 'Phân tích các dạng đề Nghe - Đọc - Viết, kỹ thuật quản lý thời gian và mẹo chọn đáp án chính xác.',
@@ -135,7 +136,7 @@ export const DEMO_MONTHS_OVERVIEW: CurriculumMonth[] = [
   },
   {
     monthIndex: 12,
-    title: 'Tháng 12: Tổng kết Lộ trình & Làm chủ Tự do Giao tiếp [DEMO]',
+    title: 'Tháng 12: Tổng kết Lộ trình & Làm chủ Tự do Giao tiếp',
     hskLevel: 'HSK 5+',
     theme: 'Tự chủ ngôn ngữ và vươn xa',
     description: 'Thực hiện đồ án cá nhân bằng tiếng Trung: bài nói 10 phút, phỏng vấn thử nghiệm và nhận chứng nhận hoàn thành.',
@@ -153,7 +154,7 @@ export const DEMO_DAYS: CurriculumDay[] = [
     weekIndex: 1,
     dayIndex: 1,
     unlockOffsetDays: 0,
-    title: 'Ngày 1: Nhập môn Bảng chữ cái Pinyin & Chào hỏi cơ bản [DEMO]',
+    title: 'Ngày 1: Nhập môn Bảng chữ cái Pinyin & Chào hỏi cơ bản',
     dayType: 'theory',
     estimatedMinutes: 25,
     objectives: [
@@ -171,7 +172,7 @@ export const DEMO_DAYS: CurriculumDay[] = [
     weekIndex: 1,
     dayIndex: 2,
     unlockOffsetDays: 1,
-    title: 'Ngày 2: Thanh mẫu b, p, m, f, d, t, n, l & Lời cảm ơn [DEMO]',
+    title: 'Ngày 2: Thanh mẫu b, p, m, f, d, t, n, l & Lời cảm ơn',
     dayType: 'theory',
     estimatedMinutes: 30,
     objectives: [
@@ -189,7 +190,7 @@ export const DEMO_DAYS: CurriculumDay[] = [
     weekIndex: 1,
     dayIndex: 3,
     unlockOffsetDays: 2,
-    title: 'Ngày 3: Các quy tắc biến điệu quan trọng & Đại từ nhân xưng [DEMO]',
+    title: 'Ngày 3: Các quy tắc biến điệu quan trọng & Đại từ nhân xưng',
     dayType: 'theory',
     estimatedMinutes: 35,
     objectives: [
@@ -206,7 +207,7 @@ export const DEMO_DAYS: CurriculumDay[] = [
     weekIndex: 1,
     dayIndex: 4,
     unlockOffsetDays: 3,
-    title: 'Ngày 4: Luyện nghe ngữ âm & Bài tập phản xạ nhanh [DEMO]',
+    title: 'Ngày 4: Luyện nghe ngữ âm & Bài tập phản xạ nhanh',
     dayType: 'practice',
     estimatedMinutes: 25,
     objectives: [
@@ -223,7 +224,7 @@ export const DEMO_DAYS: CurriculumDay[] = [
     weekIndex: 1,
     dayIndex: 5,
     unlockOffsetDays: 4,
-    title: 'Ngày 5: Số đếm 0 - 99 & Đặt câu hỏi số lượng [DEMO]',
+    title: 'Ngày 5: Số đếm 0 - 99 & Đặt câu hỏi số lượng',
     dayType: 'theory',
     estimatedMinutes: 30,
     objectives: [
@@ -240,7 +241,7 @@ export const DEMO_DAYS: CurriculumDay[] = [
     weekIndex: 1,
     dayIndex: 6,
     unlockOffsetDays: 5,
-    title: 'Ngày 6: Ôn tập tuần 1 & Kiểm tra tiến độ 15 phút [DEMO]',
+    title: 'Ngày 6: Ôn tập tuần 1 & Kiểm tra tiến độ 15 phút',
     dayType: 'assessment',
     estimatedMinutes: 20,
     objectives: [
@@ -257,7 +258,7 @@ export const DEMO_DAYS: CurriculumDay[] = [
     weekIndex: 1,
     dayIndex: 7,
     unlockOffsetDays: 6,
-    title: 'Ngày 7: Ngày nghỉ ngơi phục hồi & Nghe nhạc thư giãn [DEMO]',
+    title: 'Ngày 7: Ngày nghỉ ngơi phục hồi & Nghe nhạc thư giãn',
     dayType: 'rest_day',
     estimatedMinutes: 0,
     objectives: [
@@ -274,7 +275,7 @@ export const DEMO_LESSONS: Record<string, Lesson[]> = {
     {
       id: 'lesson-01-01',
       dayId: 'day-01',
-      title: 'Bài 1: Làm quen hệ thống Pinyin & 4 Thanh điệu [DEMO]',
+      title: 'Bài 1: Làm quen hệ thống Pinyin & 4 Thanh điệu',
       description: 'Khám phá nền móng của phát âm tiếng Trung chuẩn Bắc Kinh.',
       estimatedMinutes: 12,
       sequenceOrder: 1,
@@ -323,7 +324,7 @@ Một âm tiết hoàn chỉnh trong tiếng Trung gồm có 3 phần:
           sequenceOrder: 2,
           isRequired: true,
           data: {
-            title: 'Từ vựng cốt lõi Bài 1 [DEMO]',
+            title: 'Từ vựng cốt lõi Bài 1',
             description: 'Các từ vựng chào hỏi cơ bản nhất bạn sẽ gặp hàng ngày.',
             items: [
               {
@@ -373,7 +374,7 @@ Một âm tiết hoàn chỉnh trong tiếng Trung gồm có 3 phần:
           isRequired: false,
           data: {
             mediaType: 'video',
-            title: 'Video giảng giải khẩu hình 4 Thanh điệu [DEMO]',
+            title: 'Video giảng giải khẩu hình 4 Thanh điệu',
             description: 'Giảng viên hướng dẫn chi tiết vị trí môi và luồng hơi.',
             driveUrl: 'https://drive.google.com/file/d/1DemoDriveFileIdVideo4Tones/view',
             durationSeconds: 340,
@@ -387,7 +388,7 @@ Một âm tiết hoàn chỉnh trong tiếng Trung gồm có 3 phần:
           isRequired: false,
           data: {
             mediaType: 'audio',
-            title: 'Audio phát âm mẫu chuẩn: a, o, e, i, u, ü [DEMO]',
+            title: 'Audio phát âm mẫu chuẩn: a, o, e, i, u, ü',
             description: 'Luyện tập phát âm theo giọng đọc người Bắc Kinh.',
             driveUrl: 'https://drive.google.com/file/d/1DemoDriveFileIdAudioPinyin/view',
             durationSeconds: 180,
@@ -400,7 +401,7 @@ Một âm tiết hoàn chỉnh trong tiếng Trung gồm có 3 phần:
           sequenceOrder: 5,
           isRequired: true,
           data: {
-            title: 'Flashcard lật thẻ ghi nhớ [DEMO]',
+            title: 'Flashcard lật thẻ ghi nhớ',
             cards: [
               {
                 id: 'fc-01',
@@ -442,7 +443,7 @@ Một âm tiết hoàn chỉnh trong tiếng Trung gồm có 3 phần:
     {
       id: 'lesson-01-02',
       dayId: 'day-01',
-      title: 'Bài 2: Giáo trình & Tài liệu đính kèm Google Drive [DEMO]',
+      title: 'Bài 2: Giáo trình & Tài liệu đính kèm Google Drive',
       description: 'Tài liệu tham khảo dạng PDF giáo trình chuẩn HSK 1.',
       estimatedMinutes: 8,
       sequenceOrder: 2,
@@ -455,7 +456,7 @@ Một âm tiết hoàn chỉnh trong tiếng Trung gồm có 3 phần:
           sequenceOrder: 1,
           isRequired: false,
           data: {
-            title: 'Giáo trình chuẩn HSK 1 - Bài 1 PDF [DEMO]',
+            title: 'Giáo trình chuẩn HSK 1 - Bài 1 PDF',
             description: 'Tài liệu chính thức bao gồm bài đọc và bài tập viết chữ Hán nét cơ bản.',
             driveUrl: 'https://drive.google.com/file/d/1DemoDriveFileIdPdfHsk1Book/view',
             pageCount: 14,
@@ -466,7 +467,7 @@ Một âm tiết hoàn chỉnh trong tiếng Trung gồm có 3 phần:
     {
       id: 'lesson-01-03',
       dayId: 'day-01',
-      title: 'Bài 3: Kiểm tra trắc nghiệm nhanh Bài 1 [DEMO]',
+      title: 'Bài 3: Kiểm tra trắc nghiệm nhanh Bài 1',
       description: 'Củng cố kiến thức ngữ âm và từ vựng vừa học.',
       estimatedMinutes: 5,
       sequenceOrder: 3,
@@ -480,7 +481,7 @@ Một âm tiết hoàn chỉnh trong tiếng Trung gồm có 3 phần:
           isRequired: true,
           data: {
             quizId: 'quiz-day-01',
-            title: 'Quiz kiểm tra phản xạ Pinyin & Chào hỏi [DEMO]',
+            title: 'Quiz kiểm tra phản xạ Pinyin & Chào hỏi',
             description: 'Đạt từ 80% điểm số (4/5 câu) để hoàn thành bài.',
             passingScore: 80,
             questions: [
@@ -528,7 +529,7 @@ Một âm tiết hoàn chỉnh trong tiếng Trung gồm có 3 phần:
 export const DEMO_LIBRARY_RESOURCES: LibraryResource[] = [
   {
     id: 'lib-01',
-    title: 'Giáo trình chuẩn HSK 1 - Sách bài học PDF [DEMO]',
+    title: 'Giáo trình chuẩn HSK 1 - Sách bài học PDF',
     category: 'pdf',
     monthIndex: 1,
     fileSize: '15.4 MB',
@@ -538,7 +539,7 @@ export const DEMO_LIBRARY_RESOURCES: LibraryResource[] = [
   },
   {
     id: 'lib-02',
-    title: 'Trọn bộ Audio luyện nghe HSK 1 chuẩn MP3 [DEMO]',
+    title: 'Trọn bộ Audio luyện nghe HSK 1 chuẩn MP3',
     category: 'audio',
     monthIndex: 1,
     fileSize: '45.2 MB',
@@ -548,7 +549,7 @@ export const DEMO_LIBRARY_RESOURCES: LibraryResource[] = [
   },
   {
     id: 'lib-03',
-    title: 'Video hướng dẫn viết 214 Bộ thủ chữ Hán thông dụng [DEMO]',
+    title: 'Video hướng dẫn viết 214 Bộ thủ chữ Hán thông dụng',
     category: 'video',
     monthIndex: 2,
     fileSize: '120 MB',
@@ -558,7 +559,7 @@ export const DEMO_LIBRARY_RESOURCES: LibraryResource[] = [
   },
   {
     id: 'lib-04',
-    title: 'Sổ tay 500 Từ vựng HSK 2 kèm câu ví dụ sinh hoạt [DEMO]',
+    title: 'Sổ tay 500 Từ vựng HSK 2 kèm câu ví dụ sinh hoạt',
     category: 'vocab',
     monthIndex: 3,
     fileSize: '8.1 MB',
@@ -568,7 +569,7 @@ export const DEMO_LIBRARY_RESOURCES: LibraryResource[] = [
   },
   {
     id: 'lib-05',
-    title: 'Giáo trình Nghe nói sơ cấp Hán ngữ Boya Tập 1 PDF [DEMO]',
+    title: 'Giáo trình Nghe nói sơ cấp Hán ngữ Boya Tập 1 PDF',
     category: 'pdf',
     monthIndex: 2,
     fileSize: '22.0 MB',
@@ -578,7 +579,7 @@ export const DEMO_LIBRARY_RESOURCES: LibraryResource[] = [
   },
   {
     id: 'lib-06',
-    title: 'Podcast luyện nghe thụ động: 10 phút tiếng Trung mỗi ngày [DEMO]',
+    title: 'Podcast luyện nghe thụ động: 10 phút tiếng Trung mỗi ngày',
     category: 'audio',
     monthIndex: 4,
     fileSize: '32.5 MB',

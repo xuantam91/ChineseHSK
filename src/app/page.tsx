@@ -118,7 +118,7 @@ export default function LandingPage() {
             </Link>
             <Link href="/dashboard" className="w-full sm:w-auto">
               <Button variant="outline" size="lg" className="w-full sm:w-auto">
-                Khám phá bản Demo [DEMO]
+                Vào học ngay (Phát hành chính thức)
               </Button>
             </Link>
           </div>

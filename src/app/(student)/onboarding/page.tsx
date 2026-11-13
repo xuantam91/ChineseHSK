@@ -4,17 +4,18 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/Card';
-import { AgeGroup } from '@/types';
+import { AgeGroup, HSKLevel } from '@/types';
 import { getTodayLocal } from '@/lib/timezone';
 import { saveUserProfile, getStoredUserProfile } from '@/lib/student-store';
-import { Calendar, Clock, Smile, Sparkles, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { Calendar, Clock, Smile, Sparkles, ArrowRight, CheckCircle2, GraduationCap } from 'lucide-react';
 
 export default function OnboardingPage() {
   const router = useRouter();
   const todayLocal = getTodayLocal();
 
-  const [displayName, setDisplayName] = useState('Minh Thư [DEMO]');
+  const [displayName, setDisplayName] = useState('Minh Thư');
   const [ageGroup, setAgeGroup] = useState<AgeGroup>('adults_18_plus');
+  const [currentHskLevel, setCurrentHskLevel] = useState<HSKLevel>('HSK1');
   const [startDate, setStartDate] = useState(todayLocal);
   const [dailyGoalMinutes, setDailyGoalMinutes] = useState<number>(30);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -28,6 +29,7 @@ export default function OnboardingPage() {
       ...existing,
       displayName,
       ageGroup,
+      currentHskLevel,
       startDate,
       dailyGoalMinutes,
       timezone: 'Asia/Ho_Chi_Minh',
@@ -131,12 +133,53 @@ export default function OnboardingPage() {
           </CardContent>
         </Card>
 
+        {/* HSK Level Selection */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base flex items-center gap-2">
+              <GraduationCap className="w-4 h-4 text-emerald-600" />
+              <span>3. Cấp độ HSK hiện tại của bạn</span>
+            </CardTitle>
+            <CardDescription>
+              Chọn điểm xuất phát: Người mới bắt đầu (HSK 1) hoặc trình độ bạn đã đạt được (HSK 2, 3, 4, 5, 6, 7-9).
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-2.5 sm:grid-cols-2">
+            {[
+              { id: 'HSK1', title: 'Khởi đầu / HSK 1', desc: 'Chưa học tiếng Trung hoặc bắt đầu từ số 0 (Pinyin & Chào hỏi).' },
+              { id: 'HSK2', title: 'Sơ cấp / HSK 2', desc: 'Đã biết Pinyin, giao tiếp đơn giản: mua sắm, gọi món, hỏi đường.' },
+              { id: 'HSK3', title: 'Trung cấp sơ kỳ / HSK 3', desc: 'Giao tiếp đời sống tự tin, du lịch, câu chữ 把, so sánh 比.' },
+              { id: 'HSK4', title: 'Trung cấp / HSK 4', desc: 'Đàm thoại công sở, phỏng vấn xin việc, họp dự án, thương mại.' },
+              { id: 'HSK5', title: 'Cao cấp / HSK 5', desc: 'Đọc hiểu tin tức thời sự kinh tế, thuyết trình, văn hóa trà đạo.' },
+              { id: 'HSK6', title: 'Thành thạo / HSK 6', desc: 'Thành ngữ kinh điển, triết lý văn hóa, tranh biện chuyên sâu.' },
+              { id: 'HSK7-9', title: 'Chuyên gia / HSK 7-9', desc: 'Học thuật, bảo vệ luận án, dịch cabin, ngoại giao đa phương.' },
+            ].map((lvl) => (
+              <button
+                type="button"
+                key={lvl.id}
+                onClick={() => setCurrentHskLevel(lvl.id as HSKLevel)}
+                className={`p-3 rounded-xl border text-left transition-all ${
+                  currentHskLevel === lvl.id
+                    ? 'border-emerald-600 bg-emerald-50/70 ring-1 ring-emerald-600'
+                    : 'border-gray-200 bg-white hover:border-gray-300'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-1">
+                  <h4 className="text-xs font-bold text-gray-900">{lvl.title}</h4>
+                  {currentHskLevel === lvl.id && <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />}
+                </div>
+                <p className="text-[11px] text-gray-500 leading-snug">{lvl.desc}</p>
+              </button>
+            ))}
+          </CardContent>
+        </Card>
+
         {/* Start date & timezone */}
         <Card>
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
               <Calendar className="w-4 h-4 text-emerald-600" />
-              <span>3. Ngày bắt đầu & Múi giờ</span>
+              <span>4. Ngày bắt đầu & Múi giờ</span>
             </CardTitle>
             <CardDescription>
               Mỗi ngày học tiếp theo sẽ được mở khóa tự động lúc 00:00 (Asia/Ho_Chi_Minh).
@@ -166,7 +209,7 @@ export default function OnboardingPage() {
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
               <Clock className="w-4 h-4 text-emerald-600" />
-              <span>4. Mục tiêu thời gian mỗi ngày</span>
+              <span>5. Mục tiêu thời gian mỗi ngày</span>
             </CardTitle>
             <CardDescription>Duy trì tính nhất quán là chìa khóa thành công.</CardDescription>
           </CardHeader>

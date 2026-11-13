@@ -57,15 +57,20 @@ export default function StudentDashboardPage() {
       {/* Top Banner & Greeting */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gradient-to-r from-emerald-800 to-emerald-950 text-white p-6 sm:p-8 rounded-3xl shadow-lg relative overflow-hidden">
         <div className="relative z-10">
-          <div className="inline-flex items-center gap-2 rounded-full bg-emerald-700/60 px-3 py-1 text-emerald-100 text-xs font-semibold mb-3 border border-emerald-600/50">
-            <Calendar className="w-3.5 h-3.5 text-emerald-300" />
-            <span>{todayText || 'Hôm nay'} (Asia/Ho_Chi_Minh)</span>
+          <div className="flex flex-wrap items-center gap-2 mb-3">
+            <div className="inline-flex items-center gap-2 rounded-full bg-emerald-700/60 px-3 py-1 text-emerald-100 text-xs font-semibold border border-emerald-600/50">
+              <Calendar className="w-3.5 h-3.5 text-emerald-300" />
+              <span>{todayText || 'Hôm nay'} (Asia/Ho_Chi_Minh)</span>
+            </div>
+            <div className="inline-flex items-center gap-1.5 rounded-full bg-amber-400/20 px-3 py-1 text-amber-200 text-xs font-bold border border-amber-400/30">
+              <span>Trình độ: {profile.currentHskLevel || 'HSK1'}</span>
+            </div>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
             Chào mừng trở lại, {profile.displayName}! 👋
           </h1>
           <p className="mt-1 text-sm text-emerald-200/90 max-w-xl">
-            Hãy dành {profile.dailyGoalMinutes} phút hôm nay để giữ vững thói quen và hoàn thành mục tiêu Tháng 1 HSK 1.
+            Hãy dành {profile.dailyGoalMinutes} phút hôm nay để giữ vững thói quen và hoàn thành mục tiêu cấp độ {profile.currentHskLevel || 'HSK 1'}.
           </p>
         </div>
 

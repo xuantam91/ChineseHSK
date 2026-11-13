@@ -270,7 +270,7 @@ export default function AdminCurriculumPage() {
                   curriculum_week_id: firstWeek.id,
                   day_index: 10,
                   day_type: 'learning',
-                  title: 'Ngày mới [DEMO]',
+                  title: 'Ngày mới',
                   estimated_minutes: 30,
                   unlock_offset_days: 10,
                   is_required: true,
