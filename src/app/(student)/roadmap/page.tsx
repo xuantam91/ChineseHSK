@@ -25,6 +25,7 @@ import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { Dialog } from '@/components/ui/Dialog';
 import { PinyinChart } from '@/components/lesson/PinyinChart';
+import { NotionMethodologySection } from '@/components/roadmap/NotionMethodologySection';
 import { DEMO_MONTHS_OVERVIEW, DEMO_DAYS } from '@/lib/mock-data';
 import { getStoredUserProfile, getComputedDays, getCompletedLessonIds } from '@/lib/student-store';
 import { CurriculumDay, DayStatus } from '@/types';
@@ -40,6 +41,7 @@ export default function RoadmapPage() {
   const [days, setDays] = useState<CurriculumDay[]>(DEMO_DAYS);
   const [profile, setProfile] = useState(getStoredUserProfile());
   const [isPinyinModalOpen, setIsPinyinModalOpen] = useState(false);
+  const [showMethodology, setShowMethodology] = useState(false);
 
   useEffect(() => {
     const p = getStoredUserProfile();
@@ -145,7 +147,17 @@ export default function RoadmapPage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <Button
+            variant={showMethodology ? 'primary' : 'outline'}
+            size="sm"
+            onClick={() => setShowMethodology(!showMethodology)}
+            leftIcon={<BookOpen className="w-3.5 h-3.5" />}
+            className="text-xs font-semibold"
+          >
+            {showMethodology ? 'Đóng Cẩm Nang' : 'Cẩm Nang Phương Pháp'}
+          </Button>
+
           <Button
             variant="outline"
             size="sm"
@@ -167,6 +179,49 @@ export default function RoadmapPage() {
           </Button>
         </div>
       </div>
+
+      {/* Notion Methodology Section (Expanded or Quick Banner) */}
+      {!showMethodology && (
+        <div className="rounded-2xl border border-emerald-200/80 bg-gradient-to-r from-emerald-50/90 via-teal-50/40 to-white p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-xl bg-emerald-600 text-white shrink-0">
+              <Sparkles className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="text-xs sm:text-sm font-bold text-gray-900">
+                Phương pháp 5 bước tại nhà & Lộ trình phân hóa theo lứa tuổi (Từ Notion)
+              </h3>
+              <p className="text-[11px] sm:text-xs text-gray-500 mt-0.5">
+                Nạp âm thụ động qua loa Craven, tương tác flashcard 2 chiều, 7 lỗi cần tránh và ma trận giáo trình chuẩn.
+              </p>
+            </div>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowMethodology(true)}
+            rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
+            className="text-xs font-bold text-emerald-800 border-emerald-300 hover:bg-emerald-100/60 shrink-0 self-start sm:self-auto"
+          >
+            Xem Cẩm Nang Sư Phạm
+          </Button>
+        </div>
+      )}
+
+      {showMethodology && (
+        <div className="space-y-2">
+          <div className="flex justify-end">
+            <button
+              onClick={() => setShowMethodology(false)}
+              className="text-xs font-semibold text-gray-500 hover:text-gray-800 flex items-center gap-1 bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full transition-colors"
+            >
+              <span>Thu gọn cẩm nang</span>
+              <span>✕</span>
+            </button>
+          </div>
+          <NotionMethodologySection />
+        </div>
+      )}
 
       {/* HSK Level Navigation Filter Tabs */}
       <div className="flex gap-1.5 p-1.5 rounded-2xl bg-gray-100/90 border border-gray-200 overflow-x-auto scrollbar-none">
