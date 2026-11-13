@@ -1267,6 +1267,7 @@ export const HSK1_LESSONS: HSKLesson[] = [
     title: 'Bài 4: Số đếm, Thời gian & Ngày tháng',
     subtitleVi: '一到十, 几点, 星期几, 今天/明天',
     topicIcon: 'Calendar',
+    imageUrl: '/images/lessons/hsk1_lesson04_time_calendar.jpg',
     estimatedMinutes: 35,
     summaryVi: 'Làm chủ số đếm tiếng Hán từ 1 đến 100, quy tắc đọc giờ, phút, thứ ngày tháng theo thứ tự từ lớn đến bé.',
     dialogue: [
@@ -1523,6 +1524,7 @@ export const HSK1_LESSONS: HSKLesson[] = [
     title: 'Bài 5: Mua sắm cơ bản & Tiền tệ',
     subtitleVi: '多少钱, 太贵了, 这个/那个',
     topicIcon: 'ShoppingBag',
+    imageUrl: '/images/lessons/hsk1_lesson05_shopping_market.jpg',
     estimatedMinutes: 30,
     summaryVi: 'Hỏi giá cả, chỉ định đồ vật bằng 这个 / 那个, diễn đạt đắt rẻ và cấu trúc cảm thán 太...了.',
     dialogue: [
@@ -1777,6 +1779,7 @@ export const HSK2_LESSONS: HSKLesson[] = [
     title: 'Bài 1: Gọi món tại quán ăn',
     subtitleVi: '想吃什么, 菜单, 米饭, 炒菜, 结账',
     topicIcon: 'UtensilsCrossed',
+    imageUrl: '/images/lessons/hsk2_lesson01_restaurant_menu.jpg',
     estimatedMinutes: 30,
     summaryVi: 'Giao tiếp thực tế tại nhà hàng: xem thực đơn, gọi món xào, gọi đồ uống, thanh toán và dùng trợ từ ngữ khí 吧.',
     dialogue: [
@@ -1983,6 +1986,7 @@ export const HSK2_LESSONS: HSKLesson[] = [
     title: 'Bài 2: Hỏi đường & Phương tiện',
     subtitleVi: '去哪儿, 往右拐, 坐出租车, 地铁',
     topicIcon: 'Compass',
+    imageUrl: '/images/lessons/hsk2_lesson02_transport_directions.jpg',
     estimatedMinutes: 30,
     summaryVi: 'Hỏi đường, diễn đạt phương hướng (往 + hướng + rẽ/đi), lựa chọn phương tiện giao thông công cộng (tàu điện ngầm, taxi) và cấu trúc khoảng cách 离.',
     dialogue: [
@@ -2188,6 +2192,7 @@ export const HSK2_LESSONS: HSKLesson[] = [
     title: 'Bài 3: Thời tiết & Bốn mùa',
     subtitleVi: '今天天气怎么样, 下雨, 暖和, 比较冷',
     topicIcon: 'CloudRain',
+    imageUrl: '/images/lessons/hsk2_lesson03_seasons_weather.jpg',
     estimatedMinutes: 30,
     summaryVi: 'Hỏi han tình hình thời tiết, nhiệt độ các mùa trong năm, phó từ mức độ 比较 và trợ từ biến đổi 了.',
     dialogue: [
@@ -2393,6 +2398,7 @@ export const HSK2_LESSONS: HSKLesson[] = [
     title: 'Bài 4: Sở thích & Thời gian rảnh',
     subtitleVi: '喜欢听音乐, 踢足球, 跑步',
     topicIcon: 'Activity',
+    imageUrl: '/images/lessons/hsk2_lesson04_hobbies_sports.jpg',
     estimatedMinutes: 30,
     summaryVi: 'Nói về đam mê, hoạt động thể thao cuối tuần (đá bóng, chạy bộ, nghe nhạc), phó từ tần suất 常常 và câu liên động.',
     dialogue: [
@@ -2599,6 +2605,7 @@ export const HSK2_LESSONS: HSKLesson[] = [
     title: 'Bài 5: Khám bệnh & Sức khỏe',
     subtitleVi: '身体不舒服, 感冒, 发烧, 多喝水',
     topicIcon: 'Stethoscope',
+    imageUrl: '/images/lessons/hsk2_lesson05_hospital_doctor.jpg',
     estimatedMinutes: 30,
     summaryVi: 'Miêu tả triệu chứng ốm (sốt, đau đầu, cảm cúm), lắng nghe lời khuyên của bác sĩ với cấu trúc 多/少 + V và trợ từ 了.',
     dialogue: [
@@ -2810,6 +2817,7 @@ export const HSK3_LESSONS: HSKLesson[] = [
     title: 'Bài 1: Thuê phòng & Khách sạn',
     subtitleVi: '预订房间, 单人房, 押金, 服务员',
     topicIcon: 'Hotel',
+    imageUrl: '/images/lessons/hsk3_lesson01_hotel_room.jpg',
     estimatedMinutes: 35,
     summaryVi: 'Làm thủ tục nhận/trả phòng khách sạn, giao tiếp về tiền đặt cọc (押金), các tiện ích phòng ốc và câu chữ 把.',
     dialogue: [
@@ -3023,6 +3031,7 @@ export const HSK3_LESSONS: HSKLesson[] = [
     title: 'Bài 2: Du lịch & Đặt vé máy bay',
     subtitleVi: '买飞机票, 护照, 行李, 什么时候起飞',
     topicIcon: 'Plane',
+    imageUrl: '/images/lessons/hsk3_lesson02_airport_travel.jpg',
     estimatedMinutes: 35,
     summaryVi: 'Các thủ tục làm thủ tục lên máy bay (check-in), kiểm tra hành lý quá cước, cổng lên máy bay và cấu trúc nhấn mạnh 是...的.',
     dialogue: [
@@ -3229,6 +3238,7 @@ export const HSK3_LESSONS: HSKLesson[] = [
     title: 'Bài 3: So sánh & Lựa chọn',
     subtitleVi: 'A比B更..., 一样, 虽然...但是...',
     topicIcon: 'Scale',
+    imageUrl: '/images/lessons/hsk3_lesson03_comparison_shopping.jpg',
     estimatedMinutes: 35,
     summaryVi: 'Sử dụng thuần thục câu chữ 比, cấu trúc so sánh bằng (跟...一样), so sánh kèm phó từ 更 và liên từ đối lập 虽然...但是....',
     dialogue: [
@@ -3435,6 +3445,7 @@ export const HSK3_LESSONS: HSKLesson[] = [
     title: 'Bài 4: Kể về một chuyến đi đáng nhớ',
     subtitleVi: '短文, 叙述经历, 拍照, 难忘',
     topicIcon: 'Camera',
+    imageUrl: '/images/lessons/hsk3_lesson04_great_wall_trip.jpg',
     estimatedMinutes: 40,
     summaryVi: 'Năng lực tự sự ngắn gọn, kể lại kỷ niệm du lịch (Vạn Lý Trường Thành, Cố Cung), chụp ảnh phong cảnh, trợ từ động thái 过 và cấu trúc 一边...一边....',
     dialogue: [

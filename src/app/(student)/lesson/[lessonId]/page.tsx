@@ -28,6 +28,8 @@ import { ShadowingPlayer } from '@/components/lesson/ShadowingPlayer';
 import { RoleplayDialogue } from '@/components/lesson/RoleplayDialogue';
 import { PinyinChart } from '@/components/lesson/PinyinChart';
 import { ImageBlock } from '@/components/lesson/ImageBlock';
+import { SupplementaryMediaBlock } from '@/components/lesson/SupplementaryMediaBlock';
+import { getMediaByLessonId, getThematicFlashcardByLessonId } from '@/lib/curriculum/media-resources';
 import { DEMO_LESSONS } from '@/lib/mock-data';
 import {
   getCompletedBlockIds,
@@ -312,6 +314,13 @@ export default function LessonReaderPage({
         <div className="space-y-6">
           {currentLesson.blocks.map((block) => renderBlock(block))}
         </div>
+
+        {/* Supplementary Multimedia & Thematic Flashcards */}
+        <SupplementaryMediaBlock
+          lessonId={currentLesson.id}
+          supplementaryMedia={getMediaByLessonId(currentLesson.id)}
+          thematicFlashcardSet={getThematicFlashcardByLessonId(currentLesson.id)}
+        />
 
         {/* Bottom Actions Bar */}
         <div className="pt-6 pb-12 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-gray-200">

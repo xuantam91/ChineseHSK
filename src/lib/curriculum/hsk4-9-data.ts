@@ -78,6 +78,7 @@ export const HSK4_LESSONS: HSKLesson[] = [
     title: '面试与求职 — Phỏng vấn xin việc & Giới thiệu bản thân chuyên nghiệp',
     subtitleVi: 'Kỹ năng trả lời phỏng vấn lưu loát, trình bày kinh nghiệm làm việc và mục tiêu nghề nghiệp.',
     topicIcon: 'Briefcase',
+    imageUrl: '/images/lessons/hsk4_lesson01_interview.jpg',
     estimatedMinutes: 35,
     summaryVi: 'Học cách sử dụng từ vựng công sở chuyên nghiệp khi phỏng vấn, giới thiệu kinh nghiệm và giải quyết câu hỏi tình huống.',
     dialogue: [
@@ -247,6 +248,7 @@ export const HSK4_LESSONS: HSKLesson[] = [
     title: '职场与会议 — Đàm thoại công sở & Họp giao ban dự án',
     subtitleVi: 'Báo cáo tiến độ công việc, sắp xếp lịch họp và đề xuất giải pháp nhóm.',
     topicIcon: 'Users',
+    imageUrl: '/images/lessons/hsk4_lesson02_office_meeting.jpg',
     estimatedMinutes: 35,
     summaryVi: 'Luyện nghe hiểu diễn tiến cuộc họp công sở, cách đưa ra ý kiến phản hồi và phân công nhiệm vụ.',
     dialogue: [
@@ -376,7 +378,7 @@ export const HSK4_LESSONS: HSKLesson[] = [
     title: '办公室整理与环境 — Sắp xếp nơi làm việc & Câu chữ 把 nâng cao',
     subtitleVi: 'Tổ chức không gian văn phòng, thao tác thiết bị và câu chữ 把 kết hợp bổ ngữ kết quả/phương hướng.',
     topicIcon: 'FolderKanban',
-    imageUrl: '/images/lessons/hsk4_lesson03_ba_sentence_office.png',
+    imageUrl: '/images/lessons/hsk4_lesson03_desk_organization.jpg',
     estimatedMinutes: 35,
     summaryVi: 'Luyện nói và thực hành chỉ dẫn công việc văn phòng, sử dụng câu chữ 把 để điều phối hồ sơ, vật dụng một cách chính xác.',
     dialogue: [
@@ -505,7 +507,7 @@ export const HSK4_LESSONS: HSKLesson[] = [
     title: '网络购物与物流服务 — Mua sắm trực tuyến & Dịch vụ logistics',
     subtitleVi: 'Tra cứu đơn hàng, liên hệ shipper và quy trình đổi trả hàng trên các nền tảng thương mại điện tử.',
     topicIcon: 'ShoppingBag',
-    imageUrl: '/images/lessons/hsk4_lesson04_ecommerce_delivery.png',
+    imageUrl: '/images/lessons/hsk4_lesson04_logistics_delivery.jpg',
     estimatedMinutes: 35,
     summaryVi: 'Học hội thoại thực tế khi nhận bưu phẩm, kiểm tra hàng hóa, đánh giá dịch vụ và liên hệ shipper.',
     dialogue: [
@@ -640,6 +642,7 @@ export const HSK5_LESSONS: HSKLesson[] = [
     title: '新闻报道与经济趋势 — Nghe hiểu bản tin thời sự & Kinh tế',
     subtitleVi: 'Nắm bắt từ vựng báo chí, chỉ số tăng trưởng kinh tế và xu hướng thị trường.',
     topicIcon: 'TrendingUp',
+    imageUrl: '/images/lessons/hsk5_lesson01_news_anchor.jpg',
     estimatedMinutes: 40,
     summaryVi: 'Rèn luyện phản xạ nghe tin tức thời sự tốc độ chuẩn của phát thanh viên, các cụm từ kinh tế - tài chính then chốt.',
     dialogue: [
@@ -753,7 +756,7 @@ export const HSK5_LESSONS: HSKLesson[] = [
     title: '中国茶道与待客礼仪 — Văn hóa trà đạo & Nghệ thuật ẩm thực truyền thống',
     subtitleVi: 'Tìm hiểu 6 nhóm trà chính, phong cách thưởng trà Gongfu và đạo lý xử thế truyền thống Á Đông.',
     topicIcon: 'Coffee',
-    imageUrl: '/images/lessons/hsk5_lesson02_tea_culture.png',
+    imageUrl: '/images/lessons/hsk5_lesson02_tea_ceremony.jpg',
     estimatedMinutes: 40,
     summaryVi: 'Học cách đàm đạo về văn hóa thưởng trà truyền thống, các công đoạn pha trà Tử Sa và nghi thức tiếp đãi khách quý.',
     dialogue: [
@@ -881,7 +884,7 @@ export const HSK5_LESSONS: HSKLesson[] = [
     title: '优秀团队表彰与被动表达 — Vinh danh dự án xuất sắc & Câu bị động (Chữ 被)',
     subtitleVi: 'Diễn văn chúc mừng thành tựu, cấu trúc bị động trang trọng và phân tích nguyên nhân - kết quả.',
     topicIcon: 'Award',
-    imageUrl: '/images/lessons/hsk5_lesson03_bei_passive.png',
+    imageUrl: '/images/lessons/hsk5_lesson03_team_award.jpg',
     estimatedMinutes: 40,
     summaryVi: 'Học cách sử dụng câu bị động trong văn phong báo cáo, ca ngợi thành tích tập thể và tổng kết kinh nghiệm dự án.',
     dialogue: [
@@ -993,7 +996,7 @@ export const HSK5_LESSONS: HSKLesson[] = [
     title: '环境保护与低碳生活 — Thuyết trình thành phố xanh & Phát triển bền vững',
     subtitleVi: 'Kỹ năng thuyết trình bảo vệ môi trường, năng lượng tái tạo và lối sống giảm thiểu rác thải nhựa.',
     topicIcon: 'Leaf',
-    imageUrl: '/images/lessons/hsk5_lesson04_green_presentation.png',
+    imageUrl: '/images/lessons/hsk5_lesson04_sustainability_speech.jpg',
     estimatedMinutes: 40,
     summaryVi: 'Học cách trình bày bài phát biểu trước đám đông về chủ đề sinh thái, tiết kiệm năng lượng và giải pháp bền vững.',
     dialogue: [
@@ -1112,6 +1115,7 @@ export const HSK6_LESSONS: HSKLesson[] = [
     title: '商务谈判与合作共赢 — Nghệ thuật đàm phán thương mại quốc tế',
     subtitleVi: 'Biểu đạt chiến lược, nhượng bộ có điều kiện và thỏa thuận hợp tác đôi bên cùng có lợi.',
     topicIcon: 'Handshake',
+    imageUrl: '/images/lessons/hsk6_lesson01_business_negotiation.jpg',
     estimatedMinutes: 45,
     summaryVi: 'Học cách sử dụng ngôn từ đàm phán sắc bén, hòa nhã nhưng giữ vững lập trường chiến lược kinh doanh.',
     dialogue: [
@@ -1204,7 +1208,7 @@ export const HSK6_LESSONS: HSKLesson[] = [
     title: '成语典故与中华智慧 — Thành ngữ kinh điển & Triết lý ngôn ngữ',
     subtitleVi: 'Vận dụng thành ngữ 4 chữ chuẩn xác, hiểu rõ điển cố và nâng tầm biểu đạt tự nhiên như người bản xứ.',
     topicIcon: 'ScrollText',
-    imageUrl: '/images/lessons/hsk6_lesson02_chengyu_idioms.png',
+    imageUrl: '/images/lessons/hsk6_lesson02_pine_crane_idioms.jpg',
     estimatedMinutes: 45,
     summaryVi: 'Học cách sử dụng thành ngữ trong các ngữ cảnh cao cấp, giải thích ngụ ngôn và làm giàu văn phong diễn đạt.',
     dialogue: [
@@ -1323,7 +1327,7 @@ export const HSK6_LESSONS: HSKLesson[] = [
     title: '社交心理与沟通艺术 — Tâm lý học giao tiếp & Nghệ thuật ứng xử',
     subtitleVi: 'Thấu hiểu tâm lý đối thoại, nghệ thuật lắng nghe tích cực và giải quyết mâu thuẫn khéo léo.',
     topicIcon: 'HeartHandshake',
-    imageUrl: '/images/lessons/hsk6_lesson03_social_psychology.png',
+    imageUrl: '/images/lessons/hsk6_lesson03_vip_banquet_etiquette.jpg',
     estimatedMinutes: 45,
     summaryVi: 'Học cách vận dụng trí tuệ cảm xúc (EQ), kỹ năng đàm thoại đồng cảm và hóa giải bất đồng trong công việc và quan hệ xã hội.',
     dialogue: [
@@ -1435,7 +1439,7 @@ export const HSK6_LESSONS: HSKLesson[] = [
     title: '媒介素养与深度思考 — Đọc báo chí & Tư duy phản biện thời đại số',
     subtitleVi: 'Phân tích thông tin đa chiều, rèn luyện tư duy phản biện và khả năng tổng hợp luận điểm sâu sắc.',
     topicIcon: 'BookOpen',
-    imageUrl: '/images/lessons/hsk6_lesson04_library_critical_reading.png',
+    imageUrl: '/images/lessons/hsk6_lesson04_scholar_critical_reading.jpg',
     estimatedMinutes: 45,
     summaryVi: 'Học cách đọc hiểu bài xã luận học thuật, phân biệt thông tin giả mạo và trình bày quan điểm logic phản biện.',
     dialogue: [

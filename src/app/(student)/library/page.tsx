@@ -10,25 +10,68 @@ import {
   ExternalLink,
   Search,
   Mic,
-  Volume2,
+  Music,
+  Sparkles,
+  Play,
+  Tv,
+  Film,
+  Smile,
+  Compass,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/Badge';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
+import { Dialog } from '@/components/ui/Dialog';
 import { DEMO_LIBRARY_RESOURCES } from '@/lib/mock-data';
 import { sanitizeDriveUrl } from '@/lib/drive';
+import {
+  CURATED_MEDIA_RESOURCES,
+  CuratedMediaItem,
+} from '@/lib/curriculum/media-resources';
+
+export interface UnifiedResourceItem {
+  id: string;
+  title: string;
+  titleOriginal?: string;
+  description: string;
+  category:
+    | 'all'
+    | 'flashcard'
+    | 'song'
+    | 'pinyin'
+    | 'story'
+    | 'reading'
+    | 'cartoon'
+    | 'pdf'
+    | 'audio'
+    | 'speech';
+  hskLevel: string;
+  monthIndex?: number;
+  url: string;
+  embedUrl?: string;
+  isEmbeddable: boolean;
+  channelOrAuthor?: string;
+  tags?: string[];
+  fileSize?: string;
+  sourceType: 'curated_media' | 'legacy_drive';
+}
 
 export default function LibraryPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedHskLevel, setSelectedHskLevel] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [activeMediaModal, setActiveMediaModal] = useState<UnifiedResourceItem | null>(null);
 
   const categories = [
-    { id: 'all', label: 'Tất cả loại' },
+    { id: 'all', label: 'Tất cả tài nguyên', icon: FolderGit2 },
+    { id: 'flashcard', label: 'Flashcard chủ đề', icon: Sparkles },
+    { id: 'song', label: 'Bài hát & Nhi ca', icon: Music },
+    { id: 'pinyin', label: 'Ngữ âm Pinyin', icon: Mic },
+    { id: 'story', label: 'Kể chuyện & Cổ tích', icon: BookOpen },
+    { id: 'reading', label: 'Luyện đọc sách', icon: Compass },
+    { id: 'cartoon', label: 'Phim hoạt hình', icon: Film },
+    { id: 'pdf', label: 'Giáo trình & Sách PDF', icon: FileText },
     { id: 'audio', label: 'Audio & Shadowing', icon: Headphones },
-    { id: 'speech', label: 'Luyện nói & Mic', icon: Mic },
-    { id: 'pdf', label: 'Giáo trình PDF', icon: FileText },
-    { id: 'video', label: 'Video bài giảng', icon: Video },
-    { id: 'vocab', label: 'Tập từ vựng HSK', icon: BookOpen },
   ];
 
   const hskLevels = [
@@ -39,20 +82,65 @@ export default function LibraryPage() {
     { id: 'HSK 4', label: 'HSK 4' },
     { id: 'HSK 5', label: 'HSK 5' },
     { id: 'HSK 6', label: 'HSK 6' },
-    { id: 'HSK 7-9', label: 'HSK 7-9' },
   ];
 
-  const allResources = [
-    ...DEMO_LIBRARY_RESOURCES,
+  // Map curated media items to UnifiedResourceItem
+  const curatedItems: UnifiedResourceItem[] = CURATED_MEDIA_RESOURCES.map((media) => {
+    let cat: UnifiedResourceItem['category'] = 'flashcard';
+    if (media.category === 'song') cat = 'song';
+    else if (media.category === 'pinyin') cat = 'pinyin';
+    else if (media.category === 'story') cat = 'story';
+    else if (media.category === 'reading') cat = 'reading';
+    else if (media.category === 'cartoon') cat = 'cartoon';
+    else if (media.category === 'textbook_pdf') cat = 'pdf';
+
+    return {
+      id: media.id,
+      title: media.title,
+      titleOriginal: media.titleOriginal,
+      description: media.description,
+      category: cat,
+      hskLevel: media.hskLevel,
+      url: media.sanitizedInfo.safeUrl,
+      embedUrl: media.sanitizedInfo.embedUrl,
+      isEmbeddable: media.sanitizedInfo.isEmbeddable,
+      channelOrAuthor: media.channelOrAuthor,
+      tags: media.recommendedTags,
+      sourceType: 'curated_media',
+    };
+  });
+
+  // Map legacy mock resources to UnifiedResourceItem
+  const legacyItems: UnifiedResourceItem[] = DEMO_LIBRARY_RESOURCES.map((res) => {
+    const driveInfo = sanitizeDriveUrl(res.driveUrl);
+    return {
+      id: res.id,
+      title: res.title,
+      description: res.description,
+      category: res.category === 'vocab' ? 'flashcard' : (res.category as UnifiedResourceItem['category']),
+      hskLevel: res.hskLevel,
+      monthIndex: res.monthIndex,
+      url: driveInfo.viewUrl,
+      isEmbeddable: false,
+      channelOrAuthor: 'Tài liệu Globy',
+      fileSize: res.fileSize,
+      sourceType: 'legacy_drive',
+    };
+  });
+
+  const additionalItems: UnifiedResourceItem[] = [
     {
       id: 'res-pinyin-chart',
       title: 'Bảng Ngữ Âm Pinyin Tương Tác Chuẩn Bản Ngữ (Audio & Khẩu hình)',
       description: 'Toàn bộ 21 thanh mẫu, 36 vận mẫu, 4 thanh điệu chính và quy tắc biến âm 3+3 kèm phát âm bản xứ.',
-      category: 'speech',
+      category: 'pinyin',
       hskLevel: 'HSK 1',
       monthIndex: 1,
-      driveUrl: 'https://drive.google.com/file/d/demo-pinyin-ref/view',
+      url: 'https://drive.google.com/file/d/demo-pinyin-ref/view',
+      isEmbeddable: false,
       fileSize: 'Interactive',
+      channelOrAuthor: 'Học liệu Sư phạm',
+      sourceType: 'legacy_drive',
     },
     {
       id: 'res-hsk1-shadowing',
@@ -61,79 +149,77 @@ export default function LibraryPage() {
       category: 'audio',
       hskLevel: 'HSK 1',
       monthIndex: 1,
-      driveUrl: 'https://drive.google.com/file/d/demo-hsk1-audio/view',
+      url: 'https://drive.google.com/file/d/demo-hsk1-audio/view',
+      isEmbeddable: false,
       fileSize: '42 MB',
-    },
-    {
-      id: 'res-hsk4-interview-audio',
-      title: 'Kho Hội Thoại Thực Chiến HSK 4 — Phỏng vấn & Đàm thoại công sở',
-      description: 'Audio kịch bản phỏng vấn xin việc, họp giao ban, đàm phán tiến độ dự án có transcript song ngữ.',
-      category: 'speech',
-      hskLevel: 'HSK 4',
-      monthIndex: 4,
-      driveUrl: 'https://drive.google.com/file/d/demo-hsk4-workplace/view',
-      fileSize: '55 MB',
-    },
-    {
-      id: 'res-hsk5-news-audio',
-      title: 'Audio Bản Tin Thời Sự & Kinh Tế HSK 5 (Tốc độ phát thanh viên)',
-      description: 'Luyện nghe hiểu tin tức thời sự chính thống, từ vựng tài chính và xu hướng kinh tế mới.',
-      category: 'audio',
-      hskLevel: 'HSK 5',
-      monthIndex: 5,
-      driveUrl: 'https://drive.google.com/file/d/demo-hsk5-news/view',
-      fileSize: '68 MB',
+      channelOrAuthor: 'Kho Audio Globy',
+      sourceType: 'legacy_drive',
     },
   ];
+
+  const allResources: UnifiedResourceItem[] = [...curatedItems, ...legacyItems, ...additionalItems];
 
   const filteredResources = allResources.filter((res) => {
     const matchesCat = selectedCategory === 'all' || res.category === selectedCategory;
     const matchesHsk =
       selectedHskLevel === 'all' ||
-      res.hskLevel.toLowerCase() === selectedHskLevel.toLowerCase();
+      res.hskLevel.toLowerCase().includes(selectedHskLevel.toLowerCase()) ||
+      res.hskLevel === 'All Levels';
+
+    const searchLower = searchQuery.toLowerCase();
     const matchesSearch =
-      res.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      res.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      res.hskLevel.toLowerCase().includes(searchQuery.toLowerCase());
+      res.title.toLowerCase().includes(searchLower) ||
+      (res.titleOriginal && res.titleOriginal.toLowerCase().includes(searchLower)) ||
+      res.description.toLowerCase().includes(searchLower) ||
+      (res.channelOrAuthor && res.channelOrAuthor.toLowerCase().includes(searchLower)) ||
+      (res.tags && res.tags.some((t) => t.toLowerCase().includes(searchLower)));
+
     return matchesCat && matchesHsk && matchesSearch;
   });
 
   const getCategoryIcon = (category: string) => {
     switch (category) {
+      case 'flashcard':
+        return <Sparkles className="w-4 h-4 text-amber-600" />;
+      case 'song':
+        return <Music className="w-4 h-4 text-pink-600" />;
+      case 'pinyin':
       case 'speech':
-        return <Mic className="w-5 h-5 text-emerald-600" />;
+        return <Mic className="w-4 h-4 text-emerald-600" />;
       case 'audio':
-        return <Headphones className="w-5 h-5 text-blue-600" />;
+        return <Headphones className="w-4 h-4 text-blue-600" />;
       case 'pdf':
-        return <FileText className="w-5 h-5 text-red-600" />;
-      case 'video':
-        return <Video className="w-5 h-5 text-purple-600" />;
-      case 'vocab':
+        return <FileText className="w-4 h-4 text-red-600" />;
+      case 'cartoon':
+        return <Film className="w-4 h-4 text-purple-600" />;
+      case 'reading':
+        return <Compass className="w-4 h-4 text-indigo-600" />;
       default:
-        return <BookOpen className="w-5 h-5 text-amber-600" />;
+        return <BookOpen className="w-4 h-4 text-gray-600" />;
     }
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
       {/* Header */}
       <div>
         <div className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 uppercase tracking-wider mb-1">
           <FolderGit2 className="w-4 h-4 text-emerald-600" />
-          <span>Kho lưu trữ tài nguyên học tập</span>
+          <span>Kho tài nguyên & học liệu chuẩn HSK</span>
         </div>
         <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">
-          Thư Viện Tài Liệu HSK 1 — 9 [DEMO]
+          Thư Viện Đa Phương Tiện Tiếng Trung [DEMO]
         </h1>
-        <p className="text-xs sm:text-sm text-gray-500 mt-1">
-          Đầy đủ file PDF giáo trình, audio bản ngữ luyện Shadowing, kịch bản hội thoại và bảng ngữ âm Google Drive an toàn.
+        <p className="text-xs sm:text-sm text-gray-500 mt-1 max-w-3xl">
+          Tổng hợp kênh video học Flashcard, ca khúc thiếu nhi, truyện ngụ ngôn, phim hoạt hình và trọn bộ giáo trình chuẩn HSK, Easy Steps, Kuaile Hanyu an toàn.
         </p>
       </div>
 
       {/* Filter and Search Bar */}
       <div className="space-y-3">
         {/* HSK Level Filter Pills */}
-        <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+          <span className="text-xs font-semibold text-gray-400 mr-1 whitespace-nowrap">Trình độ:</span>
           {hskLevels.map((lvl) => {
             const isSelected = selectedHskLevel === lvl.id;
             return (
@@ -153,27 +239,29 @@ export default function LibraryPage() {
         </div>
 
         {/* Category Pills & Search */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="flex gap-1.5 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0 scrollbar-none">
+        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3">
+          <div className="flex gap-1.5 overflow-x-auto w-full lg:w-auto pb-1 lg:pb-0 scrollbar-none">
             {categories.map((cat) => {
               const isSelected = selectedCategory === cat.id;
+              const Icon = cat.icon;
               return (
                 <button
                   key={cat.id}
                   onClick={() => setSelectedCategory(cat.id)}
-                  className={`px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
                     isSelected
                       ? 'bg-gray-900 text-white shadow-xs'
                       : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
                   }`}
                 >
-                  {cat.label}
+                  <Icon className="w-3.5 h-3.5" />
+                  <span>{cat.label}</span>
                 </button>
               );
             })}
           </div>
 
-          <div className="relative w-full sm:w-64">
+          <div className="relative w-full lg:w-72">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
               <Search className="h-4 w-4" />
             </div>
@@ -181,58 +269,99 @@ export default function LibraryPage() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Tìm kiếm tài liệu HSK..."
-              className="w-full pl-9 pr-3 py-2 text-xs rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
+              placeholder="Tìm kiếm bài hát, flashcard, truyện..."
+              className="w-full pl-9 pr-3 py-2 text-xs rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white shadow-xs"
             />
           </div>
         </div>
       </div>
 
+      {/* Result Count Status */}
+      <div className="flex items-center justify-between text-xs text-gray-500 px-1">
+        <span>
+          Hiển thị <strong className="text-gray-900 font-bold">{filteredResources.length}</strong> học liệu phù hợp
+        </span>
+      </div>
+
       {/* Resource Cards Grid */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {filteredResources.map((res) => {
-          const driveInfo = sanitizeDriveUrl(res.driveUrl);
-
           return (
-            <Card key={res.id} className="flex flex-col justify-between hover:border-emerald-200">
+            <Card
+              key={res.id}
+              className="flex flex-col justify-between hover:border-emerald-300 hover:shadow-md transition-all group"
+            >
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
-                    <div className="p-2 rounded-xl bg-gray-50 border border-gray-100">
+                    <div className="p-1.5 rounded-xl bg-gray-50 border border-gray-100">
                       {getCategoryIcon(res.category)}
                     </div>
-                    <Badge variant="outline" size="sm">
+                    <Badge variant="outline" size="sm" className="font-semibold">
                       {res.hskLevel}
                     </Badge>
                   </div>
                   {res.fileSize && (
                     <span className="text-[11px] font-semibold text-gray-400">{res.fileSize}</span>
                   )}
+                  {res.channelOrAuthor && (
+                    <span className="text-[11px] font-medium text-emerald-700 bg-emerald-50/60 px-2 py-0.5 rounded truncate max-w-[120px]">
+                      {res.channelOrAuthor}
+                    </span>
+                  )}
                 </div>
 
-                <CardTitle className="text-base text-gray-900 leading-snug">
+                <CardTitle className="text-sm sm:text-base text-gray-900 leading-snug line-clamp-2 group-hover:text-emerald-700 transition-colors">
                   {res.title}
                 </CardTitle>
-                <CardDescription className="text-xs line-clamp-2 mt-1">
+
+                <CardDescription className="text-xs line-clamp-2 mt-1 leading-relaxed">
                   {res.description}
                 </CardDescription>
+
+                {res.tags && res.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-1 pt-2">
+                    {res.tags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-gray-100 text-gray-600"
+                      >
+                        #{tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </CardHeader>
 
               <CardContent className="pt-0">
                 <div className="pt-3 border-t border-gray-100 flex items-center justify-between">
-                  <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">
-                    Tháng {res.monthIndex}
+                  <span className="text-[11px] text-gray-400">
+                    {res.monthIndex ? `Tháng ${res.monthIndex}` : 'Kho mở rộng'}
                   </span>
 
-                  <a
-                    href={driveInfo.viewUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 px-3 py-1.5 rounded-xl transition-colors"
-                  >
-                    <span>Mở Drive</span>
-                    <ExternalLink className="w-3.5 h-3.5" />
-                  </a>
+                  <div className="flex items-center gap-2">
+                    {res.isEmbeddable ? (
+                      <Button
+                        size="sm"
+                        variant="primary"
+                        onClick={() => setActiveMediaModal(res)}
+                        leftIcon={<Play className="w-3.5 h-3.5 fill-current" />}
+                        className="text-xs py-1 px-3 font-semibold"
+                      >
+                        Xem ngay
+                      </Button>
+                    ) : (
+                      <a
+                        href={res.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 px-3 py-1.5 rounded-xl transition-colors"
+                      >
+                        <span>{res.category === 'pdf' ? 'Mở Drive' : 'Xem liên kết'}</span>
+                        <ExternalLink className="w-3.5 h-3.5" />
+                      </a>
+                    )}
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -243,9 +372,48 @@ export default function LibraryPage() {
       {filteredResources.length === 0 && (
         <div className="p-12 text-center bg-white rounded-3xl border border-gray-100">
           <p className="text-sm font-semibold text-gray-500">
-            Không tìm thấy tài nguyên nào phù hợp với bộ lọc hiện tại.
+            Không tìm thấy tài nguyên nào phù hợp với bộ lọc &quot;{searchQuery}&quot;.
           </p>
         </div>
+      )}
+
+      {/* Embedded Video/Content Modal Dialog */}
+      {activeMediaModal && (
+        <Dialog
+          isOpen={!!activeMediaModal}
+          onClose={() => setActiveMediaModal(null)}
+          title={activeMediaModal.title}
+          description={activeMediaModal.description}
+          className="max-w-3xl"
+        >
+          <div className="py-2 space-y-4">
+            <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-black shadow-inner">
+              <iframe
+                src={activeMediaModal.embedUrl}
+                title={activeMediaModal.title}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="absolute inset-0 w-full h-full"
+              />
+            </div>
+
+            <div className="flex items-center justify-between text-xs text-gray-500 pt-2">
+              <div className="flex items-center gap-2">
+                <span className="font-semibold text-gray-700">Tác giả / Kênh:</span>
+                <span>{activeMediaModal.channelOrAuthor || 'Kênh chuẩn'}</span>
+              </div>
+              <a
+                href={activeMediaModal.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 font-semibold text-emerald-700 hover:text-emerald-800"
+              >
+                <span>Mở trong tab mới</span>
+                <ExternalLink className="w-3.5 h-3.5" />
+              </a>
+            </div>
+          </div>
+        </Dialog>
       )}
     </div>
   );
