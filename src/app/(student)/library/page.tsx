@@ -63,15 +63,15 @@ export default function LibraryPage() {
   const [activeMediaModal, setActiveMediaModal] = useState<UnifiedResourceItem | null>(null);
 
   const categories = [
-    { id: 'all', label: 'Tất cả tài nguyên', icon: FolderGit2 },
-    { id: 'flashcard', label: 'Flashcard chủ đề', icon: Sparkles },
-    { id: 'song', label: 'Bài hát & Nhi ca', icon: Music },
-    { id: 'pinyin', label: 'Ngữ âm Pinyin', icon: Mic },
-    { id: 'story', label: 'Kể chuyện & Cổ tích', icon: BookOpen },
-    { id: 'reading', label: 'Luyện đọc sách', icon: Compass },
-    { id: 'cartoon', label: 'Phim hoạt hình', icon: Film },
-    { id: 'pdf', label: 'Giáo trình & Sách PDF', icon: FileText },
-    { id: 'audio', label: 'Audio & Shadowing', icon: Headphones },
+    { id: 'all', label: 'Tất cả tài nguyên', icon: FolderGit2, emoji: '✨' },
+    { id: 'flashcard', label: 'Flashcard chủ đề', icon: Sparkles, emoji: '🎴' },
+    { id: 'song', label: 'Bài hát & Nhi ca', icon: Music, emoji: '🎵' },
+    { id: 'pinyin', label: 'Ngữ âm Pinyin', icon: Mic, emoji: '🎙️' },
+    { id: 'story', label: 'Kể chuyện cổ tích', icon: BookOpen, emoji: '📖' },
+    { id: 'reading', label: 'Luyện đọc sách', icon: Compass, emoji: '📚' },
+    { id: 'cartoon', label: 'Phim hoạt hình', icon: Film, emoji: '🎬' },
+    { id: 'pdf', label: 'Giáo trình & Sách PDF', icon: FileText, emoji: '📄' },
+    { id: 'audio', label: 'Audio & Shadowing', icon: Headphones, emoji: '🎧' },
   ];
 
   const hskLevels = [
@@ -248,13 +248,13 @@ export default function LibraryPage() {
                 <button
                   key={cat.id}
                   onClick={() => setSelectedCategory(cat.id)}
-                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
+                  className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-2xl text-xs font-bold whitespace-nowrap transition-all ${
                     isSelected
-                      ? 'bg-gray-900 text-white shadow-xs'
-                      : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+                      ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-700/20 scale-[1.02]'
+                      : 'bg-white text-gray-700 border border-gray-200 hover:border-emerald-200 hover:bg-emerald-50/40'
                   }`}
                 >
-                  <Icon className="w-3.5 h-3.5" />
+                  <span>{cat.emoji}</span>
                   <span>{cat.label}</span>
                 </button>
               );

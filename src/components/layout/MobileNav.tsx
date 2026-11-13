@@ -38,11 +38,12 @@ export function MobileNav() {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 block md:hidden border-t border-gray-200/80 bg-white/95 backdrop-blur-lg px-2 pb-safe">
+    <nav className="fixed bottom-0 left-0 right-0 z-40 block md:hidden border-t border-gray-200/70 bg-white/95 backdrop-blur-lg px-2 pb-safe">
       <div className="flex h-16 items-center justify-around">
         {navItems.map((item) => {
           const Icon = item.icon;
-          const isActive = pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href));
+          const isActive =
+            pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href));
 
           return (
             <Link
@@ -51,17 +52,17 @@ export function MobileNav() {
               className={cn(
                 'flex flex-col items-center justify-center flex-1 h-full py-1 text-center transition-all',
                 isActive
-                  ? 'text-emerald-700 font-semibold'
-                  : 'text-gray-500 hover:text-gray-900 font-medium'
+                  ? 'text-emerald-700 font-bold scale-105'
+                  : 'text-gray-500 hover:text-gray-900 font-semibold'
               )}
             >
               <div
                 className={cn(
                   'flex items-center justify-center w-10 h-7 rounded-full transition-all',
-                  isActive ? 'bg-emerald-100 text-emerald-700' : 'text-gray-500'
+                  isActive ? 'bg-emerald-100 text-emerald-800 shadow-xs' : 'text-gray-400'
                 )}
               >
-                <Icon className="w-5 h-5" />
+                <Icon className="w-4 h-4" />
               </div>
               <span className="text-[10px] mt-0.5 leading-tight">{item.label}</span>
             </Link>

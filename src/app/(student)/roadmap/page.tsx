@@ -34,6 +34,32 @@ import { HSK4_LESSONS, HSK5_LESSONS, HSK6_LESSONS, HSK7_TO_9_FRAMEWORK, HSK4_TO_
 
 export type HSKViewLevel = 'ALL' | 'HSK1' | 'HSK2' | 'HSK3' | 'HSK4' | 'HSK5' | 'HSK6' | 'HSK7-9';
 
+const MONTH_ICONS: Record<number, string> = {
+  1: '🤝',
+  2: '👨‍👩‍👦',
+  3: '🍜',
+  4: '🛍️',
+  5: '🏫',
+  6: '☀️',
+  7: '📚',
+  8: '🏮',
+  9: '📱',
+  10: '📰',
+  11: '💼',
+  12: '🎓',
+};
+
+const LEVEL_TABS: { id: HSKViewLevel; label: string; icon: string; tier: string }[] = [
+  { id: 'ALL', label: 'Lịch 12 Tháng', icon: '📅', tier: 'Tổng thể' },
+  { id: 'HSK1', label: 'HSK 1', icon: '🌱', tier: 'Sơ cấp' },
+  { id: 'HSK2', label: 'HSK 2', icon: '🌿', tier: 'Sơ cấp' },
+  { id: 'HSK3', label: 'HSK 3', icon: '🌾', tier: 'Trung cấp' },
+  { id: 'HSK4', label: 'HSK 4', icon: '🌳', tier: 'Trung cấp' },
+  { id: 'HSK5', label: 'HSK 5', icon: '🌲', tier: 'Cao cấp' },
+  { id: 'HSK6', label: 'HSK 6', icon: '🏔️', tier: 'Thành thạo' },
+  { id: 'HSK7-9', label: 'HSK 7-9', icon: '👑', tier: 'Hàn lâm' },
+];
+
 export default function RoadmapPage() {
   const [activeLevel, setActiveLevel] = useState<HSKViewLevel>('ALL');
   const [selectedMonth, setSelectedMonth] = useState<number>(1);
@@ -224,37 +250,30 @@ export default function RoadmapPage() {
       )}
 
       {/* HSK Level Navigation Filter Tabs */}
-      <div className="flex gap-1.5 p-1.5 rounded-2xl bg-gray-100/90 border border-gray-200 overflow-x-auto scrollbar-none">
-        <button
-          onClick={() => setActiveLevel('ALL')}
-          className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
-            activeLevel === 'ALL'
-              ? 'bg-white text-emerald-800 shadow-xs border border-gray-200/60'
-              : 'text-gray-600 hover:text-gray-900'
-          }`}
-        >
-          Lịch 12 Tháng
-        </button>
-
-        {(['HSK1', 'HSK2', 'HSK3', 'HSK4', 'HSK5', 'HSK6', 'HSK7-9'] as HSKViewLevel[]).map((lvl) => {
-          const isActive = activeLevel === lvl;
+      <div className="flex gap-2 p-1.5 rounded-2xl bg-gray-100/90 border border-gray-200 overflow-x-auto scrollbar-none">
+        {LEVEL_TABS.map((tab) => {
+          const isActive = activeLevel === tab.id;
           return (
             <button
-              key={lvl}
-              onClick={() => setActiveLevel(lvl)}
-              className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+              key={tab.id}
+              onClick={() => setActiveLevel(tab.id)}
+              className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-black whitespace-nowrap transition-all ${
                 isActive
-                  ? 'bg-emerald-600 text-white shadow-xs'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-white/60'
+                  ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-700/25 scale-[1.02]'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-white/70'
               }`}
             >
-              {lvl === 'HSK1' && 'HSK 1 (Sơ cấp)'}
-              {lvl === 'HSK2' && 'HSK 2'}
-              {lvl === 'HSK3' && 'HSK 3'}
-              {lvl === 'HSK4' && 'HSK 4 (Trung cấp)'}
-              {lvl === 'HSK5' && 'HSK 5'}
-              {lvl === 'HSK6' && 'HSK 6'}
-              {lvl === 'HSK7-9' && 'HSK 7-9 (Cao cấp)'}
+              <span>{tab.icon}</span>
+              <span>{tab.label}</span>
+              {tab.id !== 'ALL' && (
+                <span
+                  className={`text-[9px] px-1 py-0.2 rounded font-extrabold ${
+                    isActive ? 'bg-emerald-700 text-emerald-100' : 'bg-gray-200/80 text-gray-500'
+                  }`}
+                >
+                  {tab.tier}
+                </span>
+              )}
             </button>
           );
         })}
@@ -264,30 +283,34 @@ export default function RoadmapPage() {
       {activeLevel === 'ALL' && (
         <div className="space-y-6">
           {/* Month Selector Carousel / Tabs */}
-          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none">
+          <div className="flex gap-2.5 overflow-x-auto pb-2 scrollbar-none">
             {DEMO_MONTHS_OVERVIEW.map((month) => {
               const isSelected = month.monthIndex === selectedMonth;
+              const icon = MONTH_ICONS[month.monthIndex] || '📖';
               return (
                 <button
                   key={month.monthIndex}
                   onClick={() => setSelectedMonth(month.monthIndex)}
-                  className={`flex flex-col items-start min-w-[130px] p-3 rounded-2xl border text-left transition-all ${
+                  className={`flex flex-col items-start min-w-[136px] p-3 rounded-2xl border text-left transition-all ${
                     isSelected
-                      ? 'border-emerald-600 bg-emerald-600 text-white shadow-sm shadow-emerald-700/20'
-                      : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'
+                      ? 'border-emerald-600 bg-emerald-600 text-white shadow-md shadow-emerald-700/20 scale-[1.02]'
+                      : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:shadow-xs'
                   }`}
                 >
+                  <div className="w-full flex items-center justify-between mb-1.5">
+                    <span
+                      className={`text-[10px] font-black px-1.5 py-0.5 rounded uppercase tracking-wider ${
+                        isSelected ? 'bg-emerald-700 text-emerald-100' : 'bg-emerald-50 text-emerald-800'
+                      }`}
+                    >
+                      {month.hskLevel}
+                    </span>
+                    <span className="text-sm">{icon}</span>
+                  </div>
+                  <span className="text-xs font-black leading-tight">Tháng {month.monthIndex}</span>
                   <span
-                    className={`text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider mb-1 ${
-                      isSelected ? 'bg-emerald-700 text-emerald-100' : 'bg-gray-100 text-gray-600'
-                    }`}
-                  >
-                    {month.hskLevel}
-                  </span>
-                  <span className="text-xs font-bold leading-tight">Tháng {month.monthIndex}</span>
-                  <span
-                    className={`text-[11px] truncate max-w-[110px] mt-0.5 ${
-                      isSelected ? 'text-emerald-100' : 'text-gray-400'
+                    className={`text-[11px] truncate max-w-[115px] mt-0.5 font-medium ${
+                      isSelected ? 'text-emerald-100' : 'text-gray-500'
                     }`}
                   >
                     {month.theme}
@@ -387,41 +410,69 @@ export default function RoadmapPage() {
                                   D{day.dayIndex}
                                 </div>
                                 <div>
-                                  <div className="flex flex-wrap items-center gap-2 mb-1">
-                                    <h4 className="text-sm sm:text-base font-bold text-gray-900">
+                                  <div className="flex flex-wrap items-center gap-2 mb-1.5">
+                                    <h4 className="text-sm sm:text-base font-extrabold text-gray-900">
                                       {day.title}
                                     </h4>
                                     {day.status && getStatusBadge(day.status)}
+                                    {day.dayType === 'theory' && (
+                                      <span className="text-[10px] font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-md">
+                                        📖 Lý thuyết & Thực hành
+                                      </span>
+                                    )}
+                                    {day.dayType === 'review' && (
+                                      <span className="text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md">
+                                        ⚡ Ôn tập & Phản xạ
+                                      </span>
+                                    )}
+                                    {day.dayType === 'assessment' && (
+                                      <span className="text-[10px] font-bold text-purple-700 bg-purple-50 px-2 py-0.5 rounded-md">
+                                        📝 Đánh giá tuần
+                                      </span>
+                                    )}
                                   </div>
-                                  <div className="flex items-center gap-3 text-xs text-gray-500">
-                                    <span className="flex items-center gap-1">
-                                      <Clock className="w-3.5 h-3.5" />
+                                  <div className="flex flex-wrap items-center gap-3 text-xs text-gray-500 font-medium">
+                                    <span className="flex items-center gap-1 text-emerald-700 font-semibold bg-emerald-50 px-2 py-0.5 rounded">
+                                      <Clock className="w-3 h-3 text-emerald-600" />
                                       {day.estimatedMinutes} phút
                                     </span>
                                     <span>•</span>
                                     <span>{day.objectives?.length || 0} mục tiêu học</span>
+                                    <span>•</span>
+                                    <span className="text-gray-400">Audio Loa Craven + Flashcard</span>
                                   </div>
                                 </div>
                               </div>
 
                               <div className="flex items-center gap-2 self-end sm:self-center">
                                 {isLocked ? (
-                                  <div className="flex items-center gap-1 text-xs text-gray-400 font-medium px-3 py-1.5 rounded-xl bg-gray-100">
+                                  <div className="flex items-center gap-1.5 text-xs text-gray-400 font-semibold px-3 py-1.5 rounded-xl bg-gray-100 border border-gray-200/50">
                                     <Lock className="w-3.5 h-3.5" />
                                     <span>Mở sau {day.unlockOffsetDays} ngày</span>
                                   </div>
                                 ) : isRest ? (
-                                  <span className="text-xs text-gray-500 font-medium italic">
-                                    Nghỉ ngơi & củng cố
+                                  <span className="text-xs text-gray-500 font-bold bg-gray-100 px-3 py-1.5 rounded-xl">
+                                    ☕ Nghỉ ngơi & củng cố
                                   </span>
+                                ) : day.status === 'completed' ? (
+                                  <Link href={`/learn/${day.id}`}>
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      className="text-xs font-bold text-emerald-700 border-emerald-200 hover:bg-emerald-50"
+                                    >
+                                      ✓ Ôn lại bài
+                                    </Button>
+                                  </Link>
                                 ) : (
                                   <Link href={`/learn/${day.id}`}>
                                     <Button
                                       variant={day.status === 'today' ? 'primary' : 'outline'}
                                       size="sm"
                                       rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
+                                      className="text-xs font-bold shadow-xs"
                                     >
-                                      {day.status === 'today' ? 'Học ngay' : 'Vào bài'}
+                                      {day.status === 'today' ? '🚀 Học ngay' : 'Vào bài'}
                                     </Button>
                                   </Link>
                                 )}
@@ -526,11 +577,12 @@ export default function RoadmapPage() {
                 </div>
 
                 <div className="mt-6 pt-4 border-t border-gray-100 flex items-center justify-between">
-                  <span className="text-xs font-semibold text-emerald-600">
-                    Sẵn sàng luyện tập
+                  <span className="text-xs font-bold text-emerald-700 flex items-center gap-1">
+                    <span>✨</span>
+                    <span>Chuẩn New HSK 3.0</span>
                   </span>
-                  <Link href={`/learn/demo-day-1`}>
-                    <Button variant="primary" size="sm" rightIcon={<ArrowRight className="w-3.5 h-3.5" />}>
+                  <Link href={`/lesson/${lesson.id}`}>
+                    <Button variant="primary" size="sm" rightIcon={<ArrowRight className="w-3.5 h-3.5" />} className="font-bold">
                       Học bài này
                     </Button>
                   </Link>

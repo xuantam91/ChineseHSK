@@ -497,6 +497,78 @@ export const HSK1_PINYIN_FUNDAMENTALS: PinyinFundamentals = {
         { originalPinyin: 'bù hǎo', sandhiPinyin: 'bù hǎo', hanzi: '不好', meaningVi: 'Không tốt (trước thanh 3 - giữ nguyên bù)' },
       ],
     },
+    {
+      id: 'sandhi-half-tone3',
+      name: 'Quy tắc Nửa thanh 3 (半三声 - Half 3rd Tone)',
+      ruleVi:
+        'Trong khẩu ngữ thực tế, hơn 80% từ mang thanh 3 KHÔNG đọc trọn vẹn (214). Khi thanh 3 đứng trước âm tiết mang Thanh 1, Thanh 2, Thanh 4 hoặc Thanh nhẹ, người nói chỉ đọc nửa đầu giáng xuống (từ độ cao 2 rơi xuống 1) rồi chuyển sang âm tiếp theo, tuyệt đối KHÔNG uốn lượn lên 4. Nhờ quy tắc này câu nói mới nhẹ nhàng, thanh thoát và tự nhiên.',
+      formula: 'Thanh 3 + (Thanh 1 / 2 / 4 / Khinh thanh) => Nửa thanh 3 giáng (21)',
+      examples: [
+        { originalPinyin: 'lǎoshī', sandhiPinyin: 'lǎo(21) shī', hanzi: '老师', meaningVi: 'Thầy cô giáo (trước thanh 1)' },
+        { originalPinyin: 'Běijīng', sandhiPinyin: 'Běi(21) jīng', hanzi: '北京', meaningVi: 'Bắc Kinh (trước thanh 1)' },
+        { originalPinyin: 'yǔyán', sandhiPinyin: 'yǔ(21) yán', hanzi: '语言', meaningVi: 'Ngôn ngữ (trước thanh 2)' },
+        { originalPinyin: 'hěnduō', sandhiPinyin: 'hěn(21) duō', hanzi: '很多', meaningVi: 'Rất nhiều (trước thanh 1)' },
+        { originalPinyin: 'xǐhuan', sandhiPinyin: 'xǐ(21) huan', hanzi: '喜欢', meaningVi: 'Thích (trước khinh thanh)' },
+        { originalPinyin: 'zhǔnbèi', sandhiPinyin: 'zhǔn(21) bèi', hanzi: '准备', meaningVi: 'Chuẩn bị (trước thanh 4)' },
+      ],
+    },
+    {
+      id: 'sandhi-yi-bu-neutral',
+      name: 'Biến âm của "一" & "不" thành Thanh nhẹ (Khinh thanh)',
+      ruleVi:
+        'Khi chữ "一" đứng giữa động từ trùng điệp để biểu thị hành động ngắn, nó được phát âm nhẹ và lướt như khinh thanh. Tương tự, khi chữ "不" đứng trong kết cấu bổ ngữ khả năng phủ định, nó cũng đọc lướt thành thanh nhẹ.',
+      formula: 'Động từ + 一 / 不 + Động từ/Tính từ => Đọc nhẹ lướt (Khinh thanh)',
+      examples: [
+        { originalPinyin: 'kàn yī kàn', sandhiPinyin: 'kàn yi kàn', hanzi: '看一看', meaningVi: 'Xem thử một chút (đọc nhẹ yi)' },
+        { originalPinyin: 'tīng yī tīng', sandhiPinyin: 'tīng yi tīng', hanzi: '听一听', meaningVi: 'Nghe thử một chút (đọc nhẹ yi)' },
+        { originalPinyin: 'tīng bù dǒng', sandhiPinyin: 'tīng bu dǒng', hanzi: '听不懂', meaningVi: 'Nghe không hiểu (bổ ngữ khả năng đọc nhẹ bu)' },
+        { originalPinyin: 'kàn bù jiàn', sandhiPinyin: 'kàn bu jiàn', hanzi: '看不见', meaningVi: 'Nhìn không thấy (đọc nhẹ bu)' },
+        { originalPinyin: 'duì bù qǐ', sandhiPinyin: 'duì bu qǐ', hanzi: '对不起', meaningVi: 'Xin lỗi (bu đọc lướt nhẹ)' },
+      ],
+    },
+    {
+      id: 'erhua-phonetics',
+      name: 'Chuyên đề Hiện tượng Uốn lưỡi Nhi hóa (儿化音 - Erhua)',
+      ruleVi:
+        'Trong khẩu ngữ tiếng Trung chuẩn và khẩu ngữ Bắc Kinh, khi thêm chữ "儿" (ér) vào đuôi từ, âm tiết trước nó sẽ hòa quyện và uốn cong đầu lưỡi lên (ký hiệu pinyin thêm chữ "r"). Nhi hóa giúp tạo sắc thái nhỏ nhắn, đáng yêu, thân mật hoặc phân biệt nghĩa của từ.',
+      formula: 'Âm tiết + 儿 (r) => Uốn cong đầu lưỡi chạm ngạc cứng',
+      examples: [
+        { originalPinyin: 'zhèlǐ / zhèr', sandhiPinyin: 'zhèr', hanzi: '这儿', meaningVi: 'Ở đây, chỗ này (thay cho 这里)' },
+        { originalPinyin: 'nàlǐ / nàr', sandhiPinyin: 'nàr', hanzi: '那儿', meaningVi: 'Ở kia, chỗ đó (thay cho 那里)' },
+        { originalPinyin: 'nǎlǐ / nǎr', sandhiPinyin: 'nǎr', hanzi: '哪儿', meaningVi: 'Ở đâu? (thay cho 哪里)' },
+        { originalPinyin: 'yīdiǎn', sandhiPinyin: 'yìdiǎnr', hanzi: '一点儿', meaningVi: 'Một chút, một ít' },
+        { originalPinyin: 'wán', sandhiPinyin: 'wánr', hanzi: '玩儿', meaningVi: 'Chơi đùa, đi chơi' },
+      ],
+    },
+    {
+      id: 'neutral-tone-rules',
+      name: 'Hệ thống Phân loại 6 Nhóm Thanh Nhẹ (Khinh thanh - 轻声)',
+      ruleVi:
+        'Thanh nhẹ là âm tiết đọc ngắn, yếu và không mang dấu. Có 6 nhóm bắt buộc đọc thanh nhẹ: (1) Trợ từ kết cấu 的, 得, 地; (2) Trợ từ ngữ khí/thời thể 吗, 呢, 吧, 了, 着, 过; (3) Hậu tố danh từ 们, 子, 头; (4) Danh từ xưng hô thân mật trùng điệp; (5) Động từ trùng điệp; (6) Phương vị từ sau danh từ.',
+      formula: '6 nhóm từ cấu trúc => Bỏ dấu, phát âm nhanh nhẹ',
+      examples: [
+        { originalPinyin: 'wǒ de', sandhiPinyin: 'wǒ de', hanzi: '我的', meaningVi: 'Của tôi (trợ từ kết cấu 的)' },
+        { originalPinyin: 'wǒmen', sandhiPinyin: 'wǒmen', hanzi: '我们', meaningVi: 'Chúng tôi (hậu tố 们)' },
+        { originalPinyin: 'zhuōzi', sandhiPinyin: 'zhuōzi', hanzi: '桌子', meaningVi: 'Cái bàn (hậu tố 子)' },
+        { originalPinyin: 'māma', sandhiPinyin: 'māma', hanzi: '妈妈', meaningVi: 'Mẹ (từ xưng hô trùng điệp)' },
+        { originalPinyin: 'kànkan', sandhiPinyin: 'kànkan', hanzi: '看看', meaningVi: 'Xem thử (động từ trùng điệp)' },
+        { originalPinyin: 'zhuōzi shang', sandhiPinyin: 'zhuōzi shang', hanzi: '桌子上', meaningVi: 'Trên bàn (phương vị từ)' },
+      ],
+    },
+    {
+      id: 'pinyin-spelling-rules',
+      name: 'Quy tắc Chính tả & Dấu phân cách Pinyin (Orthography)',
+      ruleVi:
+        '(1) Quy tắc bỏ dấu chấm của ü: Khi "ü" kết hợp với j, q, x, y thì bỏ hai dấu chấm (viết ju, qu, xu, yu nhưng phát âm vẫn là ü). Khi đi với n, l vẫn giữ nguyên nǚ, lǜ để tránh nhầm với nu, lu. (2) Thứ tự đánh dấu thanh: Ưu tiên theo thứ tự a > o > e > i/u/ü; nếu i và u đi liền thì đánh trên nguyên âm đứng sau (iu -> iū, ui -> uī). (3) Dấu phẩy cách âm: Dùng dấu \' để tách các âm tiết bắt đầu bằng a, o, e nhằm tránh đọc nhầm.',
+      formula: 'j/q/x/y + ü => u; a > o > e > i / u / ü; Dấu \' phân cách âm tiết',
+      examples: [
+        { originalPinyin: 'j + ü', sandhiPinyin: 'jū', hanzi: '居', meaningVi: 'Cư trú (bỏ 2 dấu chấm nhưng đọc là [y])' },
+        { originalPinyin: 'q + ü', sandhiPinyin: 'qù', hanzi: '去', meaningVi: 'Đi (bỏ 2 dấu chấm nhưng đọc là [y])' },
+        { originalPinyin: 'n + ü', sandhiPinyin: 'nǚ', hanzi: '女', meaningVi: 'Phụ nữ (bắt buộc giữ nguyên dấu chấm)' },
+        { originalPinyin: 'g + u + i', sandhiPinyin: 'guì', hanzi: '贵', meaningVi: 'Quý, đắt (dấu thanh đánh trên i)' },
+        { originalPinyin: 'Xi an', sandhiPinyin: 'Xī\'ān', hanzi: '西安', meaningVi: 'Thành phố Tây An (dấu \' tránh đọc thành xiān - tiên)' },
+      ],
+    },
   ],
 };
 

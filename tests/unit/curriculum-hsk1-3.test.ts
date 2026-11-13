@@ -61,7 +61,7 @@ describe('HSK 1 - 3 Curriculum Dataset', () => {
       expect(tones).toHaveLength(5);
 
       const toneRules = HSK1_PINYIN_FUNDAMENTALS.toneRules;
-      expect(toneRules).toHaveLength(3);
+      expect(toneRules.length).toBeGreaterThanOrEqual(3);
 
       const ruleIds = toneRules.map((r) => r.id);
       expect(ruleIds).toContain('sandhi-tone3');
