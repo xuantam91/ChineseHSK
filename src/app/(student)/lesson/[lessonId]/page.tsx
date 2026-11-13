@@ -210,25 +210,25 @@ function adaptHskLessonToLesson(hsk: HSKLesson): Lesson {
 function getBlockFriendlyLabel(type: string, seq: number) {
   switch (type) {
     case 'rich_text':
-      return { title: `📖 PHẦN ${seq}: HƯỚNG DẪN & BỐI CẢNH`, color: 'text-blue-700 bg-blue-50' };
+      return { title: `PHẦN ${seq}: HƯỚNG DẪN & BỐI CẢNH`, color: 'text-slate-800 bg-slate-100 border border-slate-200' };
     case 'vocabulary':
-      return { title: `🔤 PHẦN ${seq}: TỪ VỰNG CỐT LÕI`, color: 'text-amber-800 bg-amber-50' };
+      return { title: `PHẦN ${seq}: TỪ VỰNG CỐT LÕI`, color: 'text-emerald-900 bg-emerald-50 border border-emerald-200' };
     case 'roleplay_dialogue':
-      return { title: `💬 PHẦN ${seq}: HỘI THOẠI ĐỜI SỐNG`, color: 'text-purple-700 bg-purple-50' };
+      return { title: `PHẦN ${seq}: HỘI THOẠI ĐỜI SỐNG`, color: 'text-slate-800 bg-slate-100 border border-slate-200' };
     case 'speech_practice':
-      return { title: `🎙️ PHẦN ${seq}: LUYỆN NÓI CHẤM MIC`, color: 'text-rose-700 bg-rose-50' };
+      return { title: `PHẦN ${seq}: LUYỆN NÓI CHẤM MIC`, color: 'text-emerald-900 bg-emerald-50 border border-emerald-200' };
     case 'shadowing':
-      return { title: `🎧 PHẦN ${seq}: NHẠI ÂM SHADOWING`, color: 'text-teal-700 bg-teal-50' };
+      return { title: `PHẦN ${seq}: NHẠI ÂM SHADOWING`, color: 'text-slate-800 bg-slate-100 border border-slate-200' };
     case 'quiz':
-      return { title: `⚡ PHẦN ${seq}: THỬ TÀI TRẮC NGHIỆM`, color: 'text-indigo-700 bg-indigo-50' };
+      return { title: `PHẦN ${seq}: BÀI TẬP TRẮC NGHIỆM`, color: 'text-slate-800 bg-slate-100 border border-slate-200' };
     case 'flashcard_set':
-      return { title: `🎴 PHẦN ${seq}: FLASHCARD LẬT THẺ`, color: 'text-emerald-700 bg-emerald-50' };
+      return { title: `PHẦN ${seq}: THẺ FLASHCARD LẬT`, color: 'text-emerald-900 bg-emerald-50 border border-emerald-200' };
     case 'video':
-      return { title: `🎬 PHẦN ${seq}: VIDEO BỐI CẢNH`, color: 'text-red-700 bg-red-50' };
+      return { title: `PHẦN ${seq}: VIDEO BỐI CẢNH`, color: 'text-slate-800 bg-slate-100 border border-slate-200' };
     case 'audio':
-      return { title: `🔊 PHẦN ${seq}: AUDIO NGHE LẶP`, color: 'text-sky-700 bg-sky-50' };
+      return { title: `PHẦN ${seq}: AUDIO LUYỆN NGHE`, color: 'text-slate-800 bg-slate-100 border border-slate-200' };
     default:
-      return { title: `📌 PHẦN ${seq}: NỘI DUNG BÀI HỌC`, color: 'text-gray-700 bg-gray-50' };
+      return { title: `PHẦN ${seq}: NỘI DUNG BÀI HỌC`, color: 'text-slate-800 bg-slate-100 border border-slate-200' };
   }
 }
 
@@ -311,15 +311,15 @@ export default function LessonReaderPage({
     return (
       <div
         key={block.id}
-        className="rounded-3xl border border-gray-100 bg-white p-5 sm:p-7 shadow-xs space-y-4 hover:border-emerald-100 transition-colors"
+        className="rounded-xl border border-slate-200 bg-white p-5 sm:p-6 shadow-2xs space-y-4"
       >
-        <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+        <div className="flex items-center justify-between border-b border-slate-100 pb-3">
           <div className="flex items-center gap-2">
-            <span className={`text-[11px] font-black uppercase tracking-wider px-2.5 py-1 rounded-lg ${friendly.color}`}>
+            <span className={`text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${friendly.color}`}>
               {friendly.title}
             </span>
             {block.isRequired && (
-              <span className="text-[10px] font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded-md">
+              <span className="text-[10px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
                 Bắt buộc
               </span>
             )}
@@ -328,14 +328,14 @@ export default function LessonReaderPage({
           {block.isRequired && (
             <button
               onClick={() => handleToggleBlock(block.id)}
-              className={`flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-xl transition-all ${
+              className={`flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-md transition-colors ${
                 isBlockDone
-                  ? 'bg-emerald-600 text-white shadow-xs'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  ? 'bg-emerald-700 text-white shadow-2xs'
+                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
               }`}
             >
               <CheckCircle2 className="w-3.5 h-3.5" />
-              <span>{isBlockDone ? '✓ Đã hoàn thành' : 'Đánh dấu xong'}</span>
+              <span>{isBlockDone ? 'Đã hoàn thành' : 'Đánh dấu xong'}</span>
             </button>
           )}
         </div>
@@ -433,20 +433,20 @@ export default function LessonReaderPage({
   };
 
   return (
-    <div className="min-h-screen bg-[#fdfbf7]">
+    <div className="min-h-screen bg-slate-50">
       {/* Sticky Top Bar for Focused Reader */}
-      <div className="sticky top-0 z-30 w-full border-b border-gray-200/80 bg-white/95 backdrop-blur-md">
-        <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-3 sm:px-6">
+      <div className="sticky top-0 z-30 w-full border-b border-slate-200 bg-white/95 backdrop-blur-sm">
+        <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4 sm:px-6">
           <Link
             href={`/roadmap`}
-            className="flex items-center gap-1.5 text-xs font-bold text-gray-600 hover:text-gray-900 transition-colors"
+            className="flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             <span className="hidden sm:inline">Quay lại Lộ trình</span>
             <span className="sm:hidden">Thoát</span>
           </Link>
 
-          {/* Segmented Progress Bar & XP indicator */}
+          {/* Progress Bar & XP indicator */}
           <div className="flex items-center gap-3">
             <div className="w-32 sm:w-48 hidden sm:block">
               <Progress
@@ -455,15 +455,15 @@ export default function LessonReaderPage({
                 size="sm"
               />
             </div>
-            <div className="flex items-center gap-1 text-[11px] font-black text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-md">
-              <Gem className="w-3 h-3 text-indigo-600" />
+            <div className="flex items-center gap-1 text-xs font-semibold text-slate-700 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+              <Award className="w-3.5 h-3.5 text-slate-500" />
               <span>+20 XP</span>
             </div>
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-xs text-gray-500 font-bold hidden sm:inline">
-              {completedRequiredCount}/{requiredBlocks.length} xong
+            <span className="text-xs text-slate-500 font-medium hidden sm:inline">
+              {completedRequiredCount}/{requiredBlocks.length} hoàn thành
             </span>
 
             {isReadyToComplete ? (
@@ -472,7 +472,7 @@ export default function LessonReaderPage({
                 size="sm"
                 onClick={handleFinishLesson}
                 leftIcon={<CheckCircle2 className="w-3.5 h-3.5" />}
-                className="font-black text-xs shadow-md shadow-emerald-700/20"
+                className="font-bold text-xs bg-emerald-700 hover:bg-emerald-800 text-white shadow-2xs"
               >
                 Hoàn thành bài
               </Button>
@@ -553,44 +553,44 @@ export default function LessonReaderPage({
         </div>
       </main>
 
-      {/* Gamified Congratulations Dialog */}
+      {/* Congratulations Dialog */}
       <Dialog
         isOpen={isCompletedModalOpen}
         onClose={() => setIsCompletedModalOpen(false)}
-        title="Xuất sắc hoàn thành bài học! 🎉"
-        description="Bạn vừa tích lũy thêm điểm kinh nghiệm và củng cố vững chắc chuỗi học tập."
+        title="Hoàn thành bài học thành công"
+        description="Bạn đã hoàn thành các khối học và được ghi nhận tiến độ."
       >
         <div className="py-4 text-center space-y-3">
-          <div className="inline-flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-tr from-amber-400 to-amber-500 text-white shadow-lg shadow-amber-500/30 animate-bounce">
-            <Award className="w-10 h-10" />
+          <div className="inline-flex h-16 w-16 items-center justify-center rounded-xl bg-slate-900 text-white shadow-2xs">
+            <Award className="w-8 h-8 text-emerald-400 stroke-[1.75]" />
           </div>
 
-          <h3 className="text-xl font-black text-gray-900">
-            Xin chúc mừng! ✨
+          <h3 className="text-lg font-bold text-slate-900">
+            Ghi nhận tiến độ học tập
           </h3>
 
-          <div className="flex justify-center items-center gap-3 pt-1">
-            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 border border-indigo-200 rounded-xl text-indigo-700 text-xs font-black">
-              <Gem className="w-4 h-4" />
+          <div className="flex justify-center items-center gap-2 pt-1">
+            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 border border-slate-200 rounded-lg text-slate-800 text-xs font-bold">
+              <Award className="w-3.5 h-3.5 text-slate-600" />
               <span>+50 XP</span>
             </div>
-            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 border border-amber-200 rounded-xl text-amber-800 text-xs font-black">
-              <Flame className="w-4 h-4 fill-amber-500" />
-              <span>Streak +1 Ngày</span>
+            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 border border-amber-200 rounded-lg text-amber-900 text-xs font-bold">
+              <Flame className="w-3.5 h-3.5 fill-amber-500 text-amber-600" />
+              <span>Duy trì chuỗi học</span>
             </div>
           </div>
 
-          <p className="text-xs text-gray-500 max-w-xs mx-auto pt-1 font-medium">
-            Tiến độ đã được lưu tự động trên hệ thống. Hãy tiếp tục giữ vững nhịp độ này!
+          <p className="text-xs text-slate-500 max-w-xs mx-auto pt-1 font-medium">
+            Tiến độ đã được lưu tự động trên hệ thống. Tiếp tục duy trì nhịp học mỗi ngày!
           </p>
         </div>
 
-        <div className="flex flex-col sm:flex-row justify-center gap-3 pt-4 border-t border-gray-100">
+        <div className="flex flex-col sm:flex-row justify-center gap-2 pt-4 border-t border-slate-100">
           <Button
             variant="outline"
             size="sm"
             onClick={() => router.push(`/roadmap`)}
-            className="font-bold text-xs"
+            className="font-semibold text-xs border-slate-300 text-slate-700"
           >
             Về Lộ trình
           </Button>
@@ -601,16 +601,16 @@ export default function LessonReaderPage({
               size="sm"
               onClick={() => router.push(`/lesson/${nextLesson.id}`)}
               rightIcon={<ChevronRight className="w-4 h-4" />}
-              className="font-black text-xs shadow-md shadow-emerald-700/20"
+              className="font-bold text-xs bg-emerald-700 hover:bg-emerald-800 text-white"
             >
-              Học bài tiếp theo ➔
+              Học bài tiếp theo
             </Button>
           ) : (
             <Button
               variant="primary"
               size="sm"
               onClick={() => router.push('/dashboard')}
-              className="font-black text-xs"
+              className="font-bold text-xs bg-emerald-700 hover:bg-emerald-800 text-white"
             >
               Về Trang chủ
             </Button>

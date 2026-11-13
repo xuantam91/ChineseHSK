@@ -11,7 +11,7 @@ export interface StudentLayoutProps {
 
 export function StudentLayout({ children }: StudentLayoutProps) {
   return (
-    <div className="min-h-screen bg-[#fdfbf7] flex flex-col">
+    <div className="min-h-screen bg-slate-50 flex flex-col">
       <Sidebar />
       <div className="flex-1 lg:pl-64 flex flex-col min-h-screen">
         <Header />

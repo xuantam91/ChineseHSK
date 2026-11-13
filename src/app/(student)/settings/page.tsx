@@ -10,13 +10,9 @@ import {
   Save,
   CheckCircle2,
   GraduationCap,
-  Layers,
-  Sparkles,
   BookOpen,
-  Award,
-  Flame,
-  Zap,
   Target,
+  Zap,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/Card';
@@ -29,7 +25,6 @@ const HSK_LEVEL_OPTIONS: {
   level: HSKLevel;
   title: string;
   badge: string;
-  icon: string;
   description: string;
   vocabTarget: string;
   recommendedAudience: string;
@@ -37,7 +32,6 @@ const HSK_LEVEL_OPTIONS: {
   {
     level: 'HSK1',
     title: 'Khởi đầu • HSK 1',
-    icon: '🌱',
     badge: '150 - 500 từ',
     description: 'Chưa từng học tiếng Trung. Học ngữ âm Pinyin, 4 thanh điệu, chào hỏi và số đếm cơ bản.',
     vocabTarget: '500 từ vựng',
@@ -46,7 +40,6 @@ const HSK_LEVEL_OPTIONS: {
   {
     level: 'HSK2',
     title: 'Sơ cấp • HSK 2',
-    icon: '🌿',
     badge: '1.272 từ',
     description: 'Đã vững Pinyin. Giao tiếp đời sống: gọi món, mua sắm, hỏi đường, thời tiết và sức khỏe.',
     vocabTarget: '1.272 từ vựng',
@@ -55,7 +48,6 @@ const HSK_LEVEL_OPTIONS: {
   {
     level: 'HSK3',
     title: 'Trung cấp sơ kỳ • HSK 3',
-    icon: '🌾',
     badge: '2.245 từ',
     description: 'Tự tin đàm thoại du lịch, khách sạn và làm chủ câu chữ 把, câu so sánh chữ 比.',
     vocabTarget: '2.245 từ vựng',
@@ -64,7 +56,6 @@ const HSK_LEVEL_OPTIONS: {
   {
     level: 'HSK4',
     title: 'Trung cấp • HSK 4',
-    icon: '🌳',
     badge: '3.245 từ',
     description: 'Đàm thoại công sở, phỏng vấn xin việc, họp dự án và dịch vụ logistics hiện đại.',
     vocabTarget: '3.245 từ vựng',
@@ -73,7 +64,6 @@ const HSK_LEVEL_OPTIONS: {
   {
     level: 'HSK5',
     title: 'Cao cấp • HSK 5',
-    icon: '🌲',
     badge: '4.316 từ',
     description: 'Đọc hiểu báo chí thời sự, tin tức kinh tế tài chính, văn hóa trà đạo và thuyết trình.',
     vocabTarget: '4.316 từ vựng',
@@ -82,7 +72,6 @@ const HSK_LEVEL_OPTIONS: {
   {
     level: 'HSK6',
     title: 'Thành thạo • HSK 6',
-    icon: '🏔️',
     badge: '5.456 từ',
     description: 'Làm chủ thành ngữ kinh điển (成语), triết lý văn hóa và tư duy phản biện ngôn ngữ sâu.',
     vocabTarget: '5.456 từ vựng',
@@ -91,7 +80,6 @@ const HSK_LEVEL_OPTIONS: {
   {
     level: 'HSK7-9',
     title: 'Hàn lâm • HSK 7 - 9',
-    icon: '👑',
     badge: '11.092 từ',
     description: 'Nghiên cứu học thuật chuyên sâu, bảo vệ luận án, dịch thuật cabin và ngoại giao.',
     vocabTarget: '11.092 từ vựng',
@@ -139,7 +127,7 @@ export default function SettingsPage() {
       setIsSaving(false);
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
-    }, 400);
+    }, 300);
   };
 
   return (
@@ -147,71 +135,70 @@ export default function SettingsPage() {
       {/* Toast feedback */}
       {showToast && (
         <Toast
-          message="Đã lưu cài đặt và cập nhật trình độ học tập thành công! ✨"
+          message="Đã lưu cài đặt và cập nhật trình độ học tập thành công."
           type="success"
           onClose={() => setShowToast(false)}
         />
       )}
 
       {/* Header */}
-      <div>
-        <div className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 uppercase tracking-wider mb-1">
-          <Settings className="w-4 h-4 text-emerald-600" />
-          <span>Tùy chỉnh tài khoản & Lộ trình</span>
+      <div className="flex items-center justify-between border-b border-slate-200 pb-4">
+        <div>
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+            Cài đặt tài khoản & Trình độ học
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+            Tùy chỉnh thông tin cá nhân, cấp độ HSK và lịch học hàng ngày.
+          </p>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight">
-          Cài Đặt Hồ Sơ & Trình Độ HSK
-        </h1>
-        <p className="text-xs sm:text-sm text-gray-500 mt-1">
-          Thiết lập cấp độ hiện tại để hệ thống đề xuất bài học chính xác theo năng lực của bạn.
-        </p>
       </div>
 
       <form onSubmit={handleSave} className="space-y-6">
-        {/* Profile Details Card */}
-        <Card className="rounded-3xl border-gray-100">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base font-extrabold flex items-center gap-2">
-              <User className="w-4 h-4 text-emerald-600" />
+        {/* Profile Info */}
+        <Card className="rounded-xl border-slate-200 bg-white shadow-2xs">
+          <CardHeader className="pb-3 border-b border-slate-100">
+            <CardTitle className="text-base font-bold text-slate-900 flex items-center gap-2">
+              <User className="w-4 h-4 text-emerald-700" />
               <span>Thông tin cá nhân</span>
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 pt-4">
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
-                <label className="block text-xs font-bold text-gray-700 mb-1.5">
+                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                   Tên hiển thị
                 </label>
                 <input
                   type="text"
-                  required
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
-                  className="w-full px-3.5 py-2.5 text-sm rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 focus:outline-hidden focus:ring-1 focus:ring-emerald-700 focus:border-emerald-700 bg-white"
+                  placeholder="Nhập tên của bạn"
+                  required
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-gray-700 mb-1.5">
-                  Email đăng ký (Cố định)
+                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                  Email tài khoản
                 </label>
                 <input
                   type="email"
                   disabled
                   value={profile.email}
-                  className="w-full px-3.5 py-2.5 text-sm rounded-2xl border border-gray-200 bg-gray-50 text-gray-500 cursor-not-allowed"
+                  className="w-full px-3 py-2 text-sm rounded-lg border border-slate-200 bg-slate-50 text-slate-500 cursor-not-allowed"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-gray-700 mb-1.5">
+              <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                 Nhóm tuổi
               </label>
               <select
                 value={ageGroup}
                 onChange={(e) => setAgeGroup(e.target.value as AgeGroup)}
-                className="w-full sm:w-64 px-3.5 py-2.5 text-sm rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
+                className="w-full sm:w-64 px-3 py-2 text-sm rounded-lg border border-slate-300 focus:outline-hidden focus:ring-1 focus:ring-emerald-700 bg-white"
               >
                 <option value="kids_6_11">Trẻ em (6 - 11 tuổi)</option>
                 <option value="teens_12_17">Thanh thiếu niên (12 - 17 tuổi)</option>
@@ -222,22 +209,22 @@ export default function SettingsPage() {
         </Card>
 
         {/* HSK Level Selection Card */}
-        <Card className="rounded-3xl border-emerald-100 shadow-xs">
-          <CardHeader>
+        <Card className="rounded-xl border-slate-200 bg-white shadow-2xs">
+          <CardHeader className="pb-3 border-b border-slate-100">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-base font-black flex items-center gap-2 text-gray-900">
-                <GraduationCap className="w-5 h-5 text-emerald-600" />
-                <span>Cấp độ & Trình độ HSK Hiện Tại</span>
+              <CardTitle className="text-base font-bold text-slate-900 flex items-center gap-2">
+                <GraduationCap className="w-4 h-4 text-emerald-700" />
+                <span>Cấp độ & Trình độ HSK hiện tại</span>
               </CardTitle>
-              <Badge variant="default" className="bg-emerald-600 text-white font-black text-xs">
+              <span className="text-xs font-bold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded border border-emerald-200">
                 Đang chọn: {currentHskLevel}
-              </Badge>
+              </span>
             </div>
-            <CardDescription className="text-xs">
-              Chọn trình độ để hệ thống tự động tối ưu hóa bài giảng, không bắt bạn học lại kiến thức đã vững.
+            <CardDescription className="text-xs text-slate-500 mt-1">
+              Chọn trình độ để hệ thống sắp xếp bài giảng tương ứng, không bắt bạn học lại kiến thức đã vững.
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="space-y-3 pt-4">
             <div className="grid gap-3 sm:grid-cols-2">
               {HSK_LEVEL_OPTIONS.map((opt) => {
                 const isSelected = currentHskLevel === opt.level;
@@ -245,35 +232,30 @@ export default function SettingsPage() {
                   <div
                     key={opt.level}
                     onClick={() => setCurrentHskLevel(opt.level)}
-                    className={`cursor-pointer rounded-2xl p-4 border transition-all text-left flex flex-col justify-between ${
+                    className={`cursor-pointer rounded-xl p-4 border transition-colors text-left flex flex-col justify-between ${
                       isSelected
-                        ? 'border-emerald-600 bg-emerald-50/80 shadow-xs ring-2 ring-emerald-500/25 scale-[1.01]'
-                        : 'border-gray-200 bg-white hover:border-emerald-200 hover:bg-emerald-50/20'
+                        ? 'border-emerald-600 bg-emerald-50/40 shadow-2xs ring-1 ring-emerald-600'
+                        : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50'
                     }`}
                   >
                     <div>
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="font-black text-sm text-gray-900 flex items-center gap-2">
-                          <span className="text-lg">{opt.icon}</span>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className="font-bold text-sm text-slate-900 flex items-center gap-1.5">
                           <span>{opt.title}</span>
-                          {isSelected && <CheckCircle2 className="w-4 h-4 text-emerald-600 fill-emerald-100" />}
+                          {isSelected && <CheckCircle2 className="w-4 h-4 text-emerald-700" />}
                         </span>
-                        <Badge
-                          variant={isSelected ? 'default' : 'outline'}
-                          size="sm"
-                          className={isSelected ? 'bg-emerald-700 text-white font-black text-[10px]' : 'text-gray-500 text-[10px]'}
-                        >
+                        <span className="text-[11px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
                           {opt.badge}
-                        </Badge>
+                        </span>
                       </div>
-                      <p className="text-xs text-gray-600 leading-relaxed font-medium">
+                      <p className="text-xs text-slate-600 leading-relaxed">
                         {opt.description}
                       </p>
                     </div>
 
-                    <div className="mt-3 pt-2.5 border-t border-gray-100 flex items-center justify-between text-[11px] text-gray-500 font-semibold">
-                      <span>Đối tượng: <strong className="text-gray-800">{opt.recommendedAudience}</strong></span>
-                      <span className="font-black text-emerald-700">{opt.vocabTarget}</span>
+                    <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
+                      <span>Đối tượng: <strong className="text-slate-800">{opt.recommendedAudience}</strong></span>
+                      <span className="font-semibold text-emerald-800">{opt.vocabTarget}</span>
                     </div>
                   </div>
                 );
@@ -283,25 +265,25 @@ export default function SettingsPage() {
         </Card>
 
         {/* Timezone & Daily Goal */}
-        <Card className="rounded-3xl border-gray-100">
-          <CardHeader>
-            <CardTitle className="text-base font-extrabold flex items-center gap-2">
-              <Globe className="w-4 h-4 text-emerald-600" />
+        <Card className="rounded-xl border-slate-200 bg-white shadow-2xs">
+          <CardHeader className="pb-3 border-b border-slate-100">
+            <CardTitle className="text-base font-bold text-slate-900 flex items-center gap-2">
+              <Globe className="w-4 h-4 text-emerald-700" />
               <span>Múi giờ & Mục tiêu thời gian</span>
             </CardTitle>
-            <CardDescription className="text-xs">
+            <CardDescription className="text-xs text-slate-500">
               Múi giờ Asia/Ho_Chi_Minh đảm bảo bài học mới tự động mở khóa chính xác lúc 00:00 mỗi ngày.
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 pt-4">
             <div>
-              <label className="block text-xs font-bold text-gray-700 mb-1.5">
+              <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                 Múi giờ địa phương
               </label>
               <select
                 value={timezone}
                 onChange={(e) => setTimezone(e.target.value)}
-                className="w-full sm:w-72 px-3.5 py-2.5 text-sm rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
+                className="w-full sm:w-72 px-3 py-2 text-sm rounded-lg border border-slate-300 focus:outline-hidden focus:ring-1 focus:ring-emerald-700 bg-white"
               >
                 <option value="Asia/Ho_Chi_Minh">Asia/Ho_Chi_Minh (GMT+7, Việt Nam)</option>
                 <option value="Asia/Shanghai">Asia/Shanghai (GMT+8, Trung Quốc)</option>
@@ -311,44 +293,34 @@ export default function SettingsPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-gray-700 mb-1.5">
+              <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                 Mục tiêu thời gian mỗi ngày
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                 {[
-                  { mins: 15, label: 'Nhẹ nhàng', icon: Zap, sub: 'Giữ thói quen' },
-                  { mins: 30, label: 'Chuẩn lộ trình', icon: Target, sub: 'Khuyên dùng ✨' },
-                  { mins: 45, label: 'Tốc độ cao', icon: Flame, sub: 'Bứt phá nhanh' },
+                  { mins: 15, label: '15 phút / ngày', sub: 'Nhẹ nhàng duy trì thói quen' },
+                  { mins: 30, label: '30 phút / ngày', sub: 'Chuẩn theo lộ trình 12 tháng' },
+                  { mins: 45, label: '45 phút / ngày', sub: 'Tốc độ cao bứt phá nhanh' },
                 ].map((item) => {
-                  const Icon = item.icon;
                   const isSelected = dailyGoalMinutes === item.mins;
                   return (
                     <button
                       key={item.mins}
                       type="button"
                       onClick={() => setDailyGoalMinutes(item.mins)}
-                      className={`p-3 rounded-2xl border text-left transition-all flex items-center justify-between ${
+                      className={`p-3 rounded-xl border text-left transition-colors flex items-center justify-between ${
                         isSelected
-                          ? 'border-emerald-600 bg-emerald-50/80 shadow-xs ring-2 ring-emerald-500/25'
-                          : 'border-gray-200 bg-white hover:bg-gray-50'
+                          ? 'border-emerald-600 bg-emerald-50/40 shadow-2xs ring-1 ring-emerald-600'
+                          : 'border-slate-200 bg-white hover:bg-slate-50'
                       }`}
                     >
-                      <div className="flex items-center gap-2.5">
-                        <div
-                          className={`p-2 rounded-xl ${
-                            isSelected ? 'bg-emerald-600 text-white' : 'bg-gray-100 text-gray-600'
-                          }`}
-                        >
-                          <Icon className="w-4 h-4" />
-                        </div>
-                        <div>
-                          <span className="text-xs font-black text-gray-900 block">
-                            {item.mins} phút / ngày
-                          </span>
-                          <span className="text-[10px] text-gray-500 font-semibold">{item.sub}</span>
-                        </div>
+                      <div>
+                        <span className="text-xs font-bold text-slate-900 block">
+                          {item.label}
+                        </span>
+                        <span className="text-[11px] text-slate-500 mt-0.5 block">{item.sub}</span>
                       </div>
-                      {isSelected && <CheckCircle2 className="w-4 h-4 text-emerald-600" />}
+                      {isSelected && <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0" />}
                     </button>
                   );
                 })}
@@ -357,10 +329,10 @@ export default function SettingsPage() {
           </CardContent>
         </Card>
 
-        {/* Compact Security Badge */}
-        <div className="flex items-center gap-2.5 p-3.5 bg-emerald-50/80 rounded-2xl text-xs text-emerald-900 font-bold border border-emerald-200/80 shadow-xs">
-          <ShieldCheck className="w-5 h-5 text-emerald-700 shrink-0" />
-          <span>Bảo mật an toàn: Dữ liệu học tập & kết quả bài thi được xác thực bảo vệ trực tiếp trên hệ thống máy chủ.</span>
+        {/* Security Badge */}
+        <div className="flex items-center gap-2.5 p-3.5 bg-slate-100 rounded-xl text-xs text-slate-700 border border-slate-200">
+          <ShieldCheck className="w-4 h-4 text-emerald-700 shrink-0" />
+          <span>Bảo mật dữ liệu: Toàn bộ thông tin học viên và tiến trình học tập được lưu trữ an toàn theo tiêu chuẩn.</span>
         </div>
 
         {/* Save button */}
@@ -371,7 +343,7 @@ export default function SettingsPage() {
             size="md"
             isLoading={isSaving}
             leftIcon={<Save className="w-4 h-4" />}
-            className="w-full sm:w-auto font-black shadow-md shadow-emerald-700/20 px-8"
+            className="w-full sm:w-auto font-bold bg-emerald-700 hover:bg-emerald-800 text-white shadow-2xs px-6"
           >
             Lưu thay đổi cài đặt
           </Button>

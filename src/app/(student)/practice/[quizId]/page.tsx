@@ -5,18 +5,11 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
   ArrowLeft,
-  Award,
   CheckCircle2,
   XCircle,
   RotateCcw,
-  Clock,
-  HelpCircle,
-  Sparkles,
-  Heart,
-  Gem,
   Volume2,
-  Trophy,
-  Star,
+  Award,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Progress } from '@/components/ui/Progress';
@@ -90,7 +83,6 @@ export default function PracticeQuizPage({
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<string, number>>({});
   const [isResultModalOpen, setIsResultModalOpen] = useState(false);
-  const [lives, setLives] = useState(3);
   const [resultScore, setResultScore] = useState<{
     correctCount: number;
     total: number;
@@ -145,52 +137,35 @@ export default function PracticeQuizPage({
     setCurrentQuestionIndex(0);
     setIsResultModalOpen(false);
     setResultScore(null);
-    setLives(3);
   };
 
   const answeredCount = Object.keys(selectedAnswers).length;
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-6 sm:py-8 space-y-6">
-      {/* Top Gamified Bar */}
+      {/* Top Bar */}
       <div className="flex items-center justify-between">
         <Link
           href="/dashboard"
-          className="inline-flex items-center gap-1.5 text-xs font-bold text-gray-500 hover:text-gray-900 transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Về Trang chủ</span>
         </Link>
 
-        {/* Gamification Counters */}
         <div className="flex items-center gap-2">
-          {/* Hearts / Lives */}
-          <div className="flex items-center gap-1 bg-rose-50 border border-rose-200 px-2.5 py-1 rounded-full text-rose-600 text-xs font-black">
-            <Heart className="w-3.5 h-3.5 fill-rose-500 text-rose-500" />
-            <span>{lives}</span>
-          </div>
-
-          {/* XP potential */}
-          <div className="flex items-center gap-1 bg-indigo-50 border border-indigo-200 px-2.5 py-1 rounded-full text-indigo-700 text-xs font-black">
-            <Gem className="w-3.5 h-3.5 text-indigo-600" />
-            <span>+50 XP</span>
-          </div>
-
-          <span className="text-xs font-black px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800">
-            HSK 1
+          <span className="text-xs font-semibold px-2.5 py-1 rounded bg-slate-100 text-slate-700 border border-slate-200">
+            HSK 1 • Đánh giá
           </span>
         </div>
       </div>
 
-      {/* Progress Card */}
-      <div className="rounded-2xl border border-gray-100 bg-white p-4 shadow-xs">
-        <div className="flex justify-between items-center text-xs font-bold text-gray-700 mb-2">
-          <span className="flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-            <span>Câu {currentQuestionIndex + 1} / {demoQuestions.length}</span>
-          </span>
-          <span className="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md text-[11px]">
-            Đã làm: {answeredCount}/{demoQuestions.length}
+      {/* Progress Indicator */}
+      <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-2xs">
+        <div className="flex justify-between items-center text-xs font-semibold text-slate-700 mb-2">
+          <span>Câu {currentQuestionIndex + 1} / {demoQuestions.length}</span>
+          <span className="text-slate-500 font-medium">
+            Đã trả lời: {answeredCount}/{demoQuestions.length}
           </span>
         </div>
         <Progress
@@ -201,24 +176,24 @@ export default function PracticeQuizPage({
       </div>
 
       {/* Question Card */}
-      <div className="rounded-3xl border border-gray-200/80 bg-white p-6 sm:p-8 shadow-sm space-y-6">
+      <div className="rounded-xl border border-slate-200 bg-white p-6 sm:p-7 shadow-2xs space-y-6">
         <div>
-          <span className="text-[10px] font-black text-emerald-800 bg-emerald-100 px-2.5 py-1 rounded-md uppercase tracking-wider inline-block">
-            Câu hỏi trắc nghiệm #{currentQuestionIndex + 1}
+          <span className="text-[11px] font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded border border-slate-200 uppercase tracking-wider inline-block">
+            Câu hỏi {currentQuestionIndex + 1}
           </span>
-          <h2 className="text-lg sm:text-2xl font-extrabold text-gray-900 mt-3 leading-snug">
+          <h2 className="text-lg sm:text-xl font-bold text-slate-900 mt-2.5 leading-snug">
             {currentQ.question}
           </h2>
           {currentQ.pinyin && (
-            <div className="mt-2 inline-flex items-center gap-2 bg-emerald-50/70 border border-emerald-100 px-3 py-1 rounded-xl text-xs font-bold text-emerald-800">
-              <Volume2 className="w-3.5 h-3.5 text-emerald-600" />
+            <div className="mt-2 inline-flex items-center gap-1.5 bg-slate-50 border border-slate-200 px-2.5 py-1 rounded-md text-xs font-medium text-slate-700">
+              <Volume2 className="w-3.5 h-3.5 text-emerald-700" />
               <span>Phiên âm: {currentQ.pinyin}</span>
             </div>
           )}
         </div>
 
         {/* Options */}
-        <div className="space-y-3">
+        <div className="space-y-2.5">
           {currentQ.options.map((option, idx) => {
             const isSelected = selectedAnswers[currentQ.id] === idx;
 
@@ -227,36 +202,36 @@ export default function PracticeQuizPage({
                 key={idx}
                 type="button"
                 onClick={() => handleSelectAnswer(idx)}
-                className={`w-full flex items-center justify-between p-4 rounded-2xl border text-left text-sm transition-all ${
+                className={`w-full flex items-center justify-between p-3.5 rounded-lg border text-left text-sm transition-colors ${
                   isSelected
-                    ? 'border-emerald-600 bg-emerald-50/90 text-emerald-950 font-black shadow-sm ring-2 ring-emerald-500/25 scale-[1.01]'
-                    : 'border-gray-200 bg-white text-gray-800 hover:border-gray-300 hover:bg-gray-50/60'
+                    ? 'border-emerald-600 bg-emerald-50/50 text-slate-900 font-bold ring-1 ring-emerald-600'
+                    : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50'
                 }`}
               >
                 <div className="flex items-center gap-3">
                   <span
-                    className={`flex h-8 w-8 items-center justify-center rounded-xl text-xs font-black ${
-                      isSelected ? 'bg-emerald-600 text-white' : 'bg-gray-100 text-gray-600'
+                    className={`flex h-7 w-7 items-center justify-center rounded-md text-xs font-bold ${
+                      isSelected ? 'bg-emerald-700 text-white' : 'bg-slate-100 text-slate-600 border border-slate-200'
                     }`}
                   >
                     {String.fromCharCode(65 + idx)}
                   </span>
-                  <span className="text-sm font-semibold">{option}</span>
+                  <span className="text-xs sm:text-sm font-medium">{option}</span>
                 </div>
-                {isSelected && <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />}
+                {isSelected && <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0" />}
               </button>
             );
           })}
         </div>
 
         {/* Navigation Buttons */}
-        <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+        <div className="flex items-center justify-between pt-4 border-t border-slate-100">
           <Button
             variant="outline"
             size="sm"
             onClick={handlePrev}
             disabled={currentQuestionIndex === 0}
-            className="text-xs font-bold"
+            className="text-xs font-semibold border-slate-300 text-slate-700"
           >
             Câu trước
           </Button>
@@ -267,9 +242,9 @@ export default function PracticeQuizPage({
               size="sm"
               onClick={handleNext}
               disabled={selectedAnswers[currentQ.id] === undefined}
-              className="text-xs font-black shadow-xs"
+              className="text-xs font-bold bg-emerald-700 hover:bg-emerald-800 text-white shadow-2xs"
             >
-              Câu kế tiếp ➔
+              Câu kế tiếp
             </Button>
           ) : (
             <Button
@@ -277,91 +252,58 @@ export default function PracticeQuizPage({
               size="md"
               onClick={handleSubmitQuiz}
               disabled={answeredCount < demoQuestions.length}
-              className="font-black shadow-md shadow-emerald-700/20"
+              className="font-bold text-xs bg-emerald-700 hover:bg-emerald-800 text-white shadow-2xs px-6"
             >
-              Nộp bài kiểm tra ✨
+              Nộp bài kiểm tra
             </Button>
           )}
         </div>
       </div>
 
-      {/* Gamified 3-Star Result Dialog */}
+      {/* Result Dialog */}
       <Dialog
         isOpen={isResultModalOpen}
         onClose={() => setIsResultModalOpen(false)}
-        title={resultScore?.isPassed ? 'Hoàn thành xuất sắc! 🎉' : 'Cố gắng lên nhé! 💪'}
+        title={resultScore?.isPassed ? 'Đạt chuẩn bài kiểm tra' : 'Chưa đạt chuẩn yêu cầu'}
         description={`Tiêu chí đạt: ${passingScore}% trở lên.`}
       >
         {resultScore && (
           <div className="space-y-4 py-2 text-center">
-            {/* Stars row */}
-            <div className="flex justify-center items-center gap-2">
-              <Star
-                className={`w-8 h-8 ${
-                  resultScore.percentage >= 60 ? 'text-amber-400 fill-amber-400' : 'text-gray-200'
-                }`}
-              />
-              <Star
-                className={`w-10 h-10 ${
-                  resultScore.percentage >= 80
-                    ? 'text-amber-400 fill-amber-400 animate-bounce'
-                    : 'text-gray-200'
-                }`}
-              />
-              <Star
-                className={`w-8 h-8 ${
-                  resultScore.percentage === 100 ? 'text-amber-400 fill-amber-400' : 'text-gray-200'
-                }`}
-              />
+            <div className="inline-flex h-14 w-14 items-center justify-center rounded-xl bg-slate-900 text-white shadow-2xs">
+              <Award className="w-7 h-7 text-emerald-400" />
             </div>
 
-            <div className="p-4 rounded-3xl bg-gray-50 border border-gray-100">
-              <div className="text-3xl font-black text-gray-900">
+            <div>
+              <div className="text-2xl font-bold text-slate-900">
                 {resultScore.percentage}%
               </div>
-              <p className="text-xs text-gray-500 font-bold mt-1">
-                Đúng {resultScore.correctCount} / {resultScore.total} câu • Thưởng{' '}
-                <span className="text-indigo-600 font-black">+{resultScore.isPassed ? 50 : 20} XP</span>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Đúng {resultScore.correctCount} trên tổng số {resultScore.total} câu
               </p>
             </div>
 
-            {/* Quick breakdown */}
-            <div className="max-h-56 overflow-y-auto space-y-2 pr-1 text-left text-xs">
-              {demoQuestions.map((q, idx) => {
-                const picked = selectedAnswers[q.id];
-                const isCorrect = picked === correctAnswersIndex[q.id];
-
-                return (
-                  <div key={q.id} className="p-3 rounded-2xl border border-gray-100 bg-white">
-                    <div className="flex items-center gap-2 font-bold text-gray-900 mb-1">
-                      {isCorrect ? (
-                        <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                      ) : (
-                        <XCircle className="w-4 h-4 text-rose-600 shrink-0" />
-                      )}
-                      <span>Câu {idx + 1}: {q.question}</span>
-                    </div>
-                    <p className="text-gray-500 pl-6 leading-relaxed">{q.explanation}</p>
-                  </div>
-                );
-              })}
+            <div className="rounded-lg bg-slate-50 p-3 text-xs text-slate-600 border border-slate-200 max-w-sm mx-auto">
+              {resultScore.isPassed
+                ? 'Bạn đã hoàn thành tốt bài kiểm tra và củng cố vững chắc kiến thức.'
+                : 'Hãy ôn lại các từ vựng và quy tắc phát âm trước khi thử lại.'}
             </div>
 
-            <div className="flex items-center justify-center gap-3 pt-3 border-t border-gray-100">
+            <div className="flex justify-center gap-2 pt-2">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={handleRetry}
                 leftIcon={<RotateCcw className="w-3.5 h-3.5" />}
-                className="text-xs font-bold"
+                className="text-xs font-semibold border-slate-300 text-slate-700"
               >
-                Làm lại
+                Làm lại bài
               </Button>
+
               <Button
                 variant="primary"
                 size="sm"
                 onClick={() => router.push('/dashboard')}
-                className="text-xs font-black shadow-md shadow-emerald-700/20"
+                className="text-xs font-bold bg-emerald-700 hover:bg-emerald-800 text-white"
               >
                 Về Trang chủ
               </Button>
