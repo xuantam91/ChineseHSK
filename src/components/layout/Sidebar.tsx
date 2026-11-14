@@ -42,10 +42,10 @@ export function Sidebar() {
           <span className="font-chinese">汉</span>
         </div>
         <div>
-          <span className="text-sm font-bold text-slate-900 tracking-tight block">
+          <span className="text-base font-bold text-slate-900 tracking-tight block">
             Chinese Journey
           </span>
-          <span className="text-[11px] font-medium text-slate-500 tracking-wide block">
+          <span className="text-xs font-medium text-slate-500 tracking-wide block">
             Lộ trình HSK 3.0
           </span>
         </div>
@@ -54,20 +54,20 @@ export function Sidebar() {
       {/* Mini Profile Card */}
       <div className="mx-1 mb-5 p-3 rounded-xl bg-slate-50 border border-slate-200 shadow-2xs flex items-center justify-between">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-full bg-emerald-700 text-white flex items-center justify-center text-xs font-bold shadow-2xs">
+          <div className="w-8 h-8 rounded-full bg-emerald-700 text-white flex items-center justify-center text-xs sm:text-sm font-bold shadow-2xs">
             {profile.displayName?.charAt(0) || 'M'}
           </div>
           <div className="leading-tight">
-            <span className="text-xs font-bold text-slate-900 block truncate max-w-[95px]">
+            <span className="text-sm font-bold text-slate-900 block truncate max-w-[95px]">
               {profile.displayName || 'Minh Thư'}
             </span>
-            <span className="text-[10px] font-semibold text-slate-600 bg-slate-200/70 px-1.5 py-0.2 rounded mt-0.5 inline-block">
+            <span className="text-xs font-semibold text-slate-600 bg-slate-200/70 px-1.5 py-0.5 rounded mt-0.5 inline-block">
               {profile.currentHskLevel || 'HSK 1'}
             </span>
           </div>
         </div>
 
-        <div className="flex items-center gap-1 bg-amber-50 px-2 py-1 rounded-md text-amber-900 text-[11px] font-bold border border-amber-200">
+        <div className="flex items-center gap-1 bg-amber-50 px-2.5 py-1 rounded-md text-amber-900 text-xs font-bold border border-amber-200">
           <Flame className="w-3.5 h-3.5 fill-amber-500 text-amber-600 stroke-[1.75]" />
           <span>{profile.streakCount || 5}</span>
         </div>
@@ -85,7 +85,7 @@ export function Sidebar() {
               key={link.href}
               href={link.href}
               className={cn(
-                'flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold transition-colors',
+                'flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-semibold transition-colors',
                 isActive
                   ? 'bg-slate-100 text-slate-900 font-bold border border-slate-200/80'
                   : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'

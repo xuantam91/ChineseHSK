@@ -178,7 +178,7 @@ export default function PracticeQuizPage({
       {/* Question Card */}
       <div className="rounded-xl border border-slate-200 bg-white p-6 sm:p-7 shadow-2xs space-y-6">
         <div>
-          <span className="text-[11px] font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded border border-slate-200 uppercase tracking-wider inline-block">
+          <span className="text-xs font-bold text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded border border-slate-200 uppercase tracking-wider inline-block">
             Câu hỏi {currentQuestionIndex + 1}
           </span>
           <h2 className="text-lg sm:text-xl font-bold text-slate-900 mt-2.5 leading-snug">

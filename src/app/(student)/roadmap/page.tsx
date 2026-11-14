@@ -70,37 +70,37 @@ export default function RoadmapPage() {
     switch (status) {
       case 'completed':
         return (
-          <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-            <CheckCircle2 className="w-3 h-3 text-emerald-700" />
+          <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded border border-emerald-200">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-700" />
             <span>Hoàn thành</span>
           </span>
         );
       case 'today':
         return (
-          <span className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-900 bg-amber-50 px-2 py-0.5 rounded border border-amber-300">
-            <PlayCircle className="w-3 h-3 text-amber-700" />
+          <span className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-900 bg-amber-50 px-2.5 py-0.5 rounded border border-amber-300">
+            <PlayCircle className="w-3.5 h-3.5 text-amber-700" />
             <span>Hôm nay</span>
           </span>
         );
       case 'overdue':
         return (
-          <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-rose-800 bg-rose-50 px-2 py-0.5 rounded border border-rose-200">
-            <AlertCircle className="w-3 h-3 text-rose-700" />
+          <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-rose-800 bg-rose-50 px-2.5 py-0.5 rounded border border-rose-200">
+            <AlertCircle className="w-3.5 h-3.5 text-rose-700" />
             <span>Tồn đọng</span>
           </span>
         );
       case 'rest_day':
         return (
-          <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
-            <Coffee className="w-3 h-3 text-slate-500" />
+          <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded border border-slate-200">
+            <Coffee className="w-3.5 h-3.5 text-slate-500" />
             <span>Nghỉ ngơi</span>
           </span>
         );
       case 'locked':
       default:
         return (
-          <span className="inline-flex items-center gap-1 text-[11px] font-medium text-slate-500 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
-            <Lock className="w-3 h-3 text-slate-400" />
+          <span className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-500 bg-slate-100 px-2.5 py-0.5 rounded border border-slate-200">
+            <Lock className="w-3.5 h-3.5 text-slate-400" />
             <span>Chưa mở</span>
           </span>
         );
@@ -138,7 +138,7 @@ export default function RoadmapPage() {
 
         <div className="relative z-10">
           <div className="flex items-center gap-2 mb-1.5">
-            <span className="text-[11px] font-extrabold text-amber-300 uppercase tracking-wider bg-white/10 px-2.5 py-0.5 rounded border border-white/15">
+            <span className="text-xs font-extrabold text-amber-300 uppercase tracking-wider bg-white/10 px-2.5 py-0.5 rounded border border-white/15">
               Khung năng lực HSK 3.0
             </span>
           </div>
@@ -195,7 +195,7 @@ export default function RoadmapPage() {
             >
               <span>{tab.label}</span>
               <span
-                className={`text-[10px] px-1.5 py-0.2 rounded font-medium ${
+                className={`text-xs px-1.5 py-0.5 rounded font-medium ${
                   isActive ? 'bg-slate-100 text-slate-700' : 'text-slate-400'
                 }`}
               >
@@ -224,13 +224,13 @@ export default function RoadmapPage() {
                   }`}
                 >
                   <div className="w-full flex items-center justify-between mb-1">
-                    <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-slate-100 text-slate-700 border border-slate-200">
+                    <span className="text-xs font-bold px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200">
                       {month.hskLevel}
                     </span>
-                    <span className="text-[11px] text-slate-400 font-medium">{month.totalDays}d</span>
+                    <span className="text-xs text-slate-400 font-medium">{month.totalDays}d</span>
                   </div>
                   <span className="text-xs font-bold text-slate-900">Tháng {month.monthIndex}</span>
-                  <span className="text-[11px] text-slate-500 truncate max-w-[110px] mt-0.5">
+                  <span className="text-xs text-slate-500 truncate max-w-[110px] mt-0.5">
                     {month.theme}
                   </span>
                 </button>
@@ -337,17 +337,17 @@ export default function RoadmapPage() {
                                     </h4>
                                     {day.status && getStatusBadge(day.status)}
                                     {day.dayType === 'theory' && (
-                                      <span className="text-[11px] font-medium text-slate-600 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+                                      <span className="text-xs font-medium text-slate-600 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
                                         Lý thuyết & Thực hành
                                       </span>
                                     )}
                                     {day.dayType === 'review' && (
-                                      <span className="text-[11px] font-medium text-slate-600 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+                                      <span className="text-xs font-medium text-slate-600 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
                                         Ôn tập & Phản xạ
                                       </span>
                                     )}
                                     {day.dayType === 'assessment' && (
-                                      <span className="text-[11px] font-medium text-slate-600 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+                                      <span className="text-xs font-medium text-slate-600 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
                                         Đánh giá tuần
                                       </span>
                                     )}
@@ -420,7 +420,7 @@ export default function RoadmapPage() {
           <div className="rounded-xl border border-slate-200 bg-white p-6 sm:p-7 shadow-2xs">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <span className="inline-block text-[11px] font-bold text-slate-700 bg-slate-100 px-2.5 py-0.5 rounded border border-slate-200 uppercase tracking-wider mb-2">
+                <span className="inline-block text-xs font-bold text-slate-700 bg-slate-100 px-2.5 py-0.5 rounded border border-slate-200 uppercase tracking-wider mb-2">
                   Chuẩn HSK 3.0
                 </span>
                 <h2 className="text-xl sm:text-2xl font-bold text-slate-900">
@@ -463,7 +463,7 @@ export default function RoadmapPage() {
               >
                 <div>
                   <div className="flex items-center justify-between gap-2 mb-2">
-                    <span className="text-[11px] font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+                    <span className="text-xs font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
                       Bài {lesson.lessonNumber} • {lesson.level}
                     </span>
                     <span className="flex items-center gap-1 text-xs text-slate-400">
@@ -479,7 +479,7 @@ export default function RoadmapPage() {
                     {lesson.subtitleVi}
                   </p>
 
-                  <div className="mt-4 pt-3 border-t border-slate-100 flex flex-wrap gap-2 text-[11px] font-medium text-slate-600">
+                  <div className="mt-4 pt-3 border-t border-slate-100 flex flex-wrap gap-2 text-xs font-medium text-slate-600">
                     <span className="inline-flex items-center gap-1 bg-slate-50 px-2 py-0.5 rounded border border-slate-100">
                       <Headphones className="w-3 h-3 text-slate-500" />
                       {lesson.dialogue.length} câu thoại
@@ -520,7 +520,7 @@ export default function RoadmapPage() {
       {activeLevel === 'HSK7-9' && (
         <div className="space-y-6">
           <div className="rounded-xl border border-slate-200 bg-white p-6 sm:p-7 shadow-2xs">
-            <span className="inline-block text-[11px] font-bold text-slate-700 bg-slate-100 px-2.5 py-0.5 rounded border border-slate-200 uppercase tracking-wider mb-2">
+            <span className="inline-block text-xs font-bold text-slate-700 bg-slate-100 px-2.5 py-0.5 rounded border border-slate-200 uppercase tracking-wider mb-2">
               Khung HSK Cao Cấp (7 — 9)
             </span>
             <h2 className="text-xl sm:text-2xl font-bold text-slate-900">
@@ -548,7 +548,7 @@ export default function RoadmapPage() {
                   </p>
 
                   <div className="mt-4 pt-3 border-t border-slate-100 space-y-1">
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+                    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">
                       Chuyên đề chính:
                     </span>
                     {module.keyTopics.map((topic, i) => (

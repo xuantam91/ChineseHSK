@@ -93,7 +93,7 @@ export default function StudentDashboardPage() {
               <div className="text-base font-bold text-white leading-none">
                 {profile.streakCount} ngày
               </div>
-              <div className="text-[11px] text-emerald-100 font-medium mt-1">
+              <div className="text-xs text-emerald-100 font-medium mt-1">
                 Chuỗi học
               </div>
             </div>
@@ -106,7 +106,7 @@ export default function StudentDashboardPage() {
               <div className="text-base font-bold text-white leading-none">
                 1.250 XP
               </div>
-              <div className="text-[11px] text-emerald-100 font-medium mt-1">
+              <div className="text-xs text-emerald-100 font-medium mt-1">
                 Điểm tích lũy
               </div>
             </div>
@@ -172,7 +172,7 @@ export default function StudentDashboardPage() {
                     <Mic className="w-4 h-4 text-emerald-700" />
                     <span className="text-xs font-bold text-slate-900">Luyện nói</span>
                   </div>
-                  <span className="text-[11px] text-slate-500">Chấm mic AI</span>
+                  <span className="text-xs text-slate-500">Chấm mic AI</span>
                 </div>
 
                 <div className="p-3 rounded-lg bg-slate-50 border border-slate-200">
@@ -180,7 +180,7 @@ export default function StudentDashboardPage() {
                     <Headphones className="w-4 h-4 text-emerald-700" />
                     <span className="text-xs font-bold text-slate-900">Shadowing</span>
                   </div>
-                  <span className="text-[11px] text-slate-500">Nhại âm bản xứ</span>
+                  <span className="text-xs text-slate-500">Nhại âm bản xứ</span>
                 </div>
 
                 <div className="p-3 rounded-lg bg-slate-50 border border-slate-200">
@@ -188,7 +188,7 @@ export default function StudentDashboardPage() {
                     <BookOpen className="w-4 h-4 text-emerald-700" />
                     <span className="text-xs font-bold text-slate-900">Từ vựng</span>
                   </div>
-                  <span className="text-[11px] text-slate-500">Thẻ Flashcard</span>
+                  <span className="text-xs text-slate-500">Thẻ Flashcard</span>
                 </div>
 
                 <div className="p-3 rounded-lg bg-slate-50 border border-slate-200">
@@ -196,7 +196,7 @@ export default function StudentDashboardPage() {
                     <Award className="w-4 h-4 text-emerald-700" />
                     <span className="text-xs font-bold text-slate-900">+50 XP</span>
                   </div>
-                  <span className="text-[11px] text-slate-500">Thưởng bài học</span>
+                  <span className="text-xs text-slate-500">Thưởng bài học</span>
                 </div>
               </div>
 
@@ -271,7 +271,7 @@ export default function StudentDashboardPage() {
                     >
                       <span className="text-xs font-semibold">{lbl}</span>
                       <div
-                        className={`w-5 h-5 rounded-full flex items-center justify-center mt-1.5 text-[10px] font-bold ${
+                        className={`w-5 h-5 rounded-full flex items-center justify-center mt-1.5 text-xs font-bold ${
                           done ? 'bg-emerald-700 text-white' : 'bg-slate-200 text-slate-400'
                         }`}
                       >
@@ -306,20 +306,20 @@ export default function StudentDashboardPage() {
 
               <div className="grid grid-cols-2 gap-2.5 pt-1">
                 <div className="p-3 rounded-lg bg-slate-50 border border-slate-200">
-                  <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider block">Bài học xong</span>
+                  <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">Bài học xong</span>
                   <span className="text-lg font-bold text-slate-900">{totalLessonsDone}</span>
-                  <span className="text-[10px] text-slate-400 block">/ 280 bài</span>
+                  <span className="text-xs text-slate-400 block">/ 280 bài</span>
                 </div>
                 <div className="p-3 rounded-lg bg-slate-50 border border-slate-200">
-                  <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider block">Từ vựng</span>
+                  <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">Từ vựng</span>
                   <span className="text-lg font-bold text-emerald-800">{totalVocabLearned}</span>
-                  <span className="text-[10px] text-slate-400 block">/ 1.200 từ</span>
+                  <span className="text-xs text-slate-400 block">/ 1.200 từ</span>
                 </div>
               </div>
 
               <div className="p-3 rounded-lg bg-slate-50 border border-slate-200 text-xs text-slate-700">
                 <span className="font-bold text-slate-900 block mb-0.5">Mục tiêu kế tiếp:</span>
-                <span className="text-[11px] text-slate-600">Hoàn thành 150 từ vựng cốt lõi HSK 1 và bài đánh giá tuần 2.</span>
+                <span className="text-xs text-slate-600 leading-relaxed">Hoàn thành 150 từ vựng cốt lõi HSK 1 và bài đánh giá tuần 2.</span>
               </div>
 
               <Link href="/roadmap" className="block pt-1">
@@ -342,7 +342,7 @@ export default function StudentDashboardPage() {
               >
                 <Compass className="w-4 h-4 text-emerald-700" />
                 <span className="text-xs font-bold text-slate-900 mt-1">Lộ trình 12T</span>
-                <span className="text-[10px] text-slate-500">Chuẩn HSK 3.0</span>
+                <span className="text-xs text-slate-500">Chuẩn HSK 3.0</span>
               </Link>
 
               <Link
@@ -351,7 +351,7 @@ export default function StudentDashboardPage() {
               >
                 <FolderGit2 className="w-4 h-4 text-emerald-700" />
                 <span className="text-xs font-bold text-slate-900 mt-1">Thư viện</span>
-                <span className="text-[10px] text-slate-500">Tài liệu & Video</span>
+                <span className="text-xs text-slate-500">Tài liệu & Video</span>
               </Link>
 
               <Link
@@ -360,7 +360,7 @@ export default function StudentDashboardPage() {
               >
                 <BarChart3 className="w-4 h-4 text-emerald-700" />
                 <span className="text-xs font-bold text-slate-900 mt-1">Tiến độ</span>
-                <span className="text-[10px] text-slate-500">Báo cáo học tập</span>
+                <span className="text-xs text-slate-500">Báo cáo học tập</span>
               </Link>
 
               <button
@@ -369,7 +369,7 @@ export default function StudentDashboardPage() {
               >
                 <Mic className="w-4 h-4 text-emerald-700" />
                 <span className="text-xs font-bold text-slate-900 mt-1">Bảng Pinyin</span>
-                <span className="text-[10px] text-slate-500">Bảng âm tương tác</span>
+                <span className="text-xs text-slate-500">Bảng âm tương tác</span>
               </button>
             </CardContent>
           </Card>

@@ -315,11 +315,11 @@ export default function LessonReaderPage({
       >
         <div className="flex items-center justify-between border-b border-slate-100 pb-3">
           <div className="flex items-center gap-2">
-            <span className={`text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${friendly.color}`}>
+            <span className={`text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded ${friendly.color}`}>
               {friendly.title}
             </span>
             {block.isRequired && (
-              <span className="text-[10px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+              <span className="text-xs font-semibold text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded border border-slate-200">
                 Bắt buộc
               </span>
             )}

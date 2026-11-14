@@ -119,7 +119,7 @@ export default function ProgressPage() {
           </div>
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-[11px] font-extrabold text-amber-300 uppercase tracking-wider bg-white/10 px-2 py-0.5 rounded border border-white/15">
+              <span className="text-xs font-extrabold text-amber-300 uppercase tracking-wider bg-white/10 px-2.5 py-0.5 rounded border border-white/15">
                 Cấp độ: {profile.currentHskLevel || 'HSK 1'}
               </span>
               <span className="text-xs text-white/50">•</span>
@@ -138,7 +138,7 @@ export default function ProgressPage() {
           <Award className="w-5 h-5 text-amber-300 stroke-[1.75]" />
           <div>
             <span className="text-base font-bold text-white block leading-none">1.250 XP</span>
-            <span className="text-[10px] text-emerald-100 font-semibold uppercase">Điểm tích lũy</span>
+            <span className="text-xs text-emerald-100 font-semibold uppercase">Điểm tích lũy</span>
           </div>
         </div>
       </div>
@@ -155,7 +155,7 @@ export default function ProgressPage() {
           <div className="text-2xl font-bold text-slate-900 mt-2">
             {profile.streakCount} ngày
           </div>
-          <span className="text-[11px] text-emerald-700 font-medium mt-1 inline-block">
+          <span className="text-xs text-emerald-700 font-medium mt-1 inline-block">
             Đang giữ chuỗi ổn định
           </span>
         </Card>
@@ -170,7 +170,7 @@ export default function ProgressPage() {
           <div className="text-2xl font-bold text-slate-900 mt-2">
             18.5 giờ
           </div>
-          <span className="text-[11px] text-slate-500 font-medium mt-1 inline-block">
+          <span className="text-xs text-slate-500 font-medium mt-1 inline-block">
             Trung bình 32 phút/ngày
           </span>
         </Card>
@@ -185,7 +185,7 @@ export default function ProgressPage() {
           <div className="text-2xl font-bold text-slate-900 mt-2">
             48 / 150
           </div>
-          <span className="text-[11px] text-slate-600 font-medium mt-1 inline-block">
+          <span className="text-xs text-slate-600 font-medium mt-1 inline-block">
             32% từ vựng cốt lõi HSK 1
           </span>
         </Card>
@@ -200,7 +200,7 @@ export default function ProgressPage() {
           <div className="text-2xl font-bold text-slate-900 mt-2">
             91.7%
           </div>
-          <span className="text-[11px] text-slate-600 font-medium mt-1 inline-block">
+          <span className="text-xs text-slate-600 font-medium mt-1 inline-block">
             100% đạt chuẩn trên 80%
           </span>
         </Card>
@@ -261,14 +261,14 @@ export default function ProgressPage() {
                   <Icon className="w-4 h-4 text-emerald-700" />
                 </div>
                 <h4 className="text-xs font-bold text-slate-900 leading-snug">{ach.title}</h4>
-                <p className="text-[11px] text-slate-500 mt-1 line-clamp-2">{ach.desc}</p>
+                <p className="text-xs text-slate-500 mt-1 line-clamp-2">{ach.desc}</p>
                 <div className="mt-2.5 pt-2 border-t border-slate-100 w-full">
                   {ach.unlocked ? (
-                    <span className="text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100">
+                    <span className="text-xs font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100">
                       Đã đạt
                     </span>
                   ) : (
-                    <span className="text-[10px] font-medium text-slate-500 flex items-center justify-center gap-1">
+                    <span className="text-xs font-medium text-slate-500 flex items-center justify-center gap-1">
                       <Lock className="w-2.5 h-2.5" />
                       <span>{ach.progress}</span>
                     </span>
@@ -312,7 +312,7 @@ export default function ProgressPage() {
                 <div
                   key={item.day}
                   title={`Ngày ${item.day}: ${item.count} phút học`}
-                  className={`h-9 rounded-md border flex items-center justify-center text-[10px] font-bold ${bg}`}
+                  className={`h-9 rounded-md border flex items-center justify-center text-xs font-bold ${bg}`}
                 >
                   {item.day}
                 </div>

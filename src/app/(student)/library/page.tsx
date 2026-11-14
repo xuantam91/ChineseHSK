@@ -307,10 +307,10 @@ export default function LibraryPage() {
                     </Badge>
                   </div>
                   {res.fileSize && (
-                    <span className="text-[11px] font-semibold text-gray-400">{res.fileSize}</span>
+                    <span className="text-xs font-semibold text-gray-400">{res.fileSize}</span>
                   )}
                   {res.channelOrAuthor && (
-                    <span className="text-[11px] font-medium text-emerald-700 bg-emerald-50/60 px-2 py-0.5 rounded truncate max-w-[120px]">
+                    <span className="text-xs font-medium text-emerald-700 bg-emerald-50/60 px-2 py-0.5 rounded truncate max-w-[120px]">
                       {res.channelOrAuthor}
                     </span>
                   )}
@@ -320,7 +320,7 @@ export default function LibraryPage() {
                   {res.title}
                 </CardTitle>
 
-                <CardDescription className="text-xs line-clamp-2 mt-1 leading-relaxed">
+                <CardDescription className="text-xs sm:text-sm line-clamp-2 mt-1 leading-relaxed">
                   {res.description}
                 </CardDescription>
 
@@ -329,7 +329,7 @@ export default function LibraryPage() {
                     {res.tags.map((tag) => (
                       <span
                         key={tag}
-                        className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-gray-100 text-gray-600"
+                        className="px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600"
                       >
                         #{tag}
                       </span>
@@ -340,7 +340,7 @@ export default function LibraryPage() {
 
               <CardContent className="pt-0">
                 <div className="pt-3 border-t border-gray-100 flex items-center justify-between">
-                  <span className="text-[11px] text-gray-400">
+                  <span className="text-xs text-gray-400">
                     {res.monthIndex ? `Tháng ${res.monthIndex}` : 'Kho mở rộng'}
                   </span>
 

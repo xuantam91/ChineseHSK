@@ -129,15 +129,15 @@ export default function DayOverviewPage({
                         {lesson.title}
                       </h3>
                       {lesson.isRequired && (
-                        <span className="text-[10px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+                        <span className="text-xs font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
                           Bắt buộc
                         </span>
                       )}
                     </div>
-                    <p className="text-xs text-slate-500 leading-relaxed">
+                    <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
                       {lesson.description}
                     </p>
-                    <div className="flex items-center gap-3 text-[11px] text-slate-400 mt-2 font-medium">
+                    <div className="flex items-center gap-3 text-xs text-slate-400 mt-2 font-medium">
                       <span>{lesson.estimatedMinutes} phút</span>
                       <span>•</span>
                       <span>{lesson.blocks?.length || 0} phần học</span>
