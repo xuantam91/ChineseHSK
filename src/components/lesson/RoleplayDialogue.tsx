@@ -19,6 +19,8 @@ import {
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { evaluateSpeech, EvaluationResult } from '@/lib/speech/evaluator';
+import { speakChinese, stopChineseSpeech } from '@/lib/tts';
+import { TTSVoiceSelector } from '@/components/common/TTSVoiceSelector';
 
 export interface DialogueCharacter {
   name: string;
@@ -136,26 +138,16 @@ export function RoleplayDialogue({
   };
 
   const speakTTS = (text: string, onEnd?: () => void) => {
-    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'zh-CN';
-      utterance.rate = 0.88;
-      utterance.onend = () => {
+    speakChinese(text, {
+      onEnd: () => {
         setIsAiSpeaking(false);
         onEnd?.();
-      };
-      utterance.onerror = () => {
+      },
+      onError: () => {
         setIsAiSpeaking(false);
         onEnd?.();
-      };
-      window.speechSynthesis.speak(utterance);
-    } else {
-      setTimeout(() => {
-        setIsAiSpeaking(false);
-        onEnd?.();
-      }, 1500);
-    }
+      },
+    });
   };
 
   const handleAiLineFinished = (lineId: string) => {
@@ -307,33 +299,36 @@ export function RoleplayDialogue({
           <p className="text-xs sm:text-sm text-gray-500 mt-0.5">{description}</p>
         </div>
 
-        {/* Role Selector Tabs */}
-        <div className="flex items-center p-1 rounded-2xl bg-gray-100 border border-gray-200 shadow-inner">
-          <button
-            type="button"
-            onClick={() => handleRestart('A')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
-              studentRole === 'A'
-                ? 'bg-emerald-600 text-white shadow-xs'
-                : 'text-gray-600 hover:text-gray-900'
-            }`}
-          >
-            <User className="w-3.5 h-3.5" />
-            <span>Vai A: {characterA.name}</span>
-          </button>
+        {/* Role Selector Tabs & TTS Voice */}
+        <div className="flex flex-wrap items-center gap-2">
+          <TTSVoiceSelector variant="dropdown" />
+          <div className="flex items-center p-1 rounded-2xl bg-gray-100 border border-gray-200 shadow-inner">
+            <button
+              type="button"
+              onClick={() => handleRestart('A')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                studentRole === 'A'
+                  ? 'bg-emerald-600 text-white shadow-xs'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              <User className="w-3.5 h-3.5" />
+              <span>Vai A: {characterA.name}</span>
+            </button>
 
-          <button
-            type="button"
-            onClick={() => handleRestart('B')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
-              studentRole === 'B'
-                ? 'bg-emerald-600 text-white shadow-xs'
-                : 'text-gray-600 hover:text-gray-900'
-            }`}
-          >
-            <User className="w-3.5 h-3.5" />
-            <span>Vai B: {characterB.name}</span>
-          </button>
+            <button
+              type="button"
+              onClick={() => handleRestart('B')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                studentRole === 'B'
+                  ? 'bg-emerald-600 text-white shadow-xs'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              <User className="w-3.5 h-3.5" />
+              <span>Vai B: {characterB.name}</span>
+            </button>
+          </div>
         </div>
       </div>
 

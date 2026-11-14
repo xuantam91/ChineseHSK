@@ -19,6 +19,7 @@ import { Button } from '@/components/ui/Button';
 import { Dialog } from '@/components/ui/Dialog';
 import { CuratedMediaItem } from '@/lib/curriculum/media-resources';
 import { ThematicFlashcardSet, ThematicFlashcardWord } from '@/lib/curriculum/topic-flashcards';
+import { speakChinese } from '@/lib/tts';
 
 export interface SupplementaryMediaBlockProps {
   lessonId: string;
@@ -39,16 +40,11 @@ export function SupplementaryMediaBlock({
   if (!hasContent) return null;
 
   const playPronunciation = (text: string) => {
-    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'zh-CN';
-      utterance.rate = 0.85;
-      utterance.onstart = () => setIsPlayingWordAudio(true);
-      utterance.onend = () => setIsPlayingWordAudio(false);
-      utterance.onerror = () => setIsPlayingWordAudio(false);
-      window.speechSynthesis.speak(utterance);
-    }
+    setIsPlayingWordAudio(true);
+    speakChinese(text, {
+      onEnd: () => setIsPlayingWordAudio(false),
+      onError: () => setIsPlayingWordAudio(false),
+    });
   };
 
   const currentFlashcardWord: ThematicFlashcardWord | undefined =

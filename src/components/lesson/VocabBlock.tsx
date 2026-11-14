@@ -5,6 +5,8 @@ import { VocabBlockData, VocabItem } from '@/types';
 import { Volume2, Check, Copy } from 'lucide-react';
 import { Badge } from '@/components/ui/Badge';
 import { VocabVisualIcon } from '@/components/ui/VocabVisualIcon';
+import { speakChinese } from '@/lib/tts';
+import { TTSVoiceSelector } from '@/components/common/TTSVoiceSelector';
 
 export interface VocabBlockProps {
   data: VocabBlockData;
@@ -33,17 +35,10 @@ export function VocabBlock({ data }: VocabBlockProps) {
   };
 
   const fallbackSpeechSynthesis = (text: string) => {
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'zh-CN';
-      utterance.rate = 0.85; // slightly slower for learners
-      utterance.onend = () => setPlayingId(null);
-      utterance.onerror = () => setPlayingId(null);
-      window.speechSynthesis.speak(utterance);
-    } else {
-      setTimeout(() => setPlayingId(null), 1000);
-    }
+    speakChinese(text, {
+      onEnd: () => setPlayingId(null),
+      onError: () => setPlayingId(null),
+    });
   };
 
   const copyToClipboard = (item: VocabItem) => {
@@ -56,14 +51,21 @@ export function VocabBlock({ data }: VocabBlockProps) {
 
   return (
     <div className="space-y-4">
-      {data.title && (
-        <div className="mb-2">
-          <h3 className="text-lg md:text-xl font-bold text-gray-900">{data.title}</h3>
-          {data.description && (
-            <p className="text-sm text-gray-500 mt-0.5">{data.description}</p>
-          )}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
+        {data.title ? (
+          <div>
+            <h3 className="text-lg md:text-xl font-bold text-gray-900">{data.title}</h3>
+            {data.description && (
+              <p className="text-sm text-gray-500 mt-0.5">{data.description}</p>
+            )}
+          </div>
+        ) : (
+          <div />
+        )}
+        <div className="self-end sm:self-auto">
+          <TTSVoiceSelector variant="dropdown" />
         </div>
-      )}
+      </div>
 
       <div className="grid gap-3.5 sm:grid-cols-2">
         {data.items.map((item) => {

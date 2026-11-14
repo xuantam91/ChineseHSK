@@ -23,9 +23,11 @@ import {
   TrendingUp,
   ShieldCheck,
   Play,
+  Square,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { DEMO_MONTHS_OVERVIEW } from '@/lib/mock-data';
+import { speakChinese, TTSVoicePersona, TTS_PERSONAS } from '@/lib/tts';
 
 const INTERACTIVE_WORDS = [
   {
@@ -65,20 +67,17 @@ const INTERACTIVE_WORDS = [
 export default function LandingPage() {
   const [activeWordIndex, setActiveWordIndex] = useState(0);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
+  const [selectedPersona, setSelectedPersona] = useState<TTSVoicePersona>('female');
 
   const activeWord = INTERACTIVE_WORDS[activeWordIndex];
 
   const handlePlayAudio = (text: string) => {
-    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'zh-CN';
-      utterance.rate = 0.85;
-      utterance.onstart = () => setIsPlayingAudio(true);
-      utterance.onend = () => setIsPlayingAudio(false);
-      utterance.onerror = () => setIsPlayingAudio(false);
-      window.speechSynthesis.speak(utterance);
-    }
+    setIsPlayingAudio(true);
+    speakChinese(text, {
+      persona: selectedPersona,
+      onEnd: () => setIsPlayingAudio(false),
+      onError: () => setIsPlayingAudio(false),
+    });
   };
 
   const featurePillars = [
@@ -324,11 +323,40 @@ export default function LandingPage() {
                   ))}
                 </div>
 
+                {/* 4 Voice Persona Selector */}
+                <div>
+                  <div className="flex items-center justify-between text-xs text-slate-500 mb-1.5 font-semibold">
+                    <span>Chọn giọng đọc bản ngữ:</span>
+                    <span className="text-emerald-700 font-bold">{TTS_PERSONAS[selectedPersona].nameVi}</span>
+                  </div>
+                  <div className="grid grid-cols-4 gap-1 p-1 rounded-xl bg-slate-100 border border-slate-200">
+                    {[
+                      { key: 'female', label: '👩 Nữ' },
+                      { key: 'male', label: '👨 Nam' },
+                      { key: 'adult', label: '🧑‍🏫 Người lớn' },
+                      { key: 'child', label: '🧒 Trẻ em' },
+                    ].map((item) => (
+                      <button
+                        key={item.key}
+                        type="button"
+                        onClick={() => setSelectedPersona(item.key as TTSVoicePersona)}
+                        className={`py-1.5 text-xs font-bold rounded-lg transition-all ${
+                          selectedPersona === item.key
+                            ? 'bg-white text-emerald-800 shadow-2xs border border-slate-200'
+                            : 'text-slate-600 hover:text-slate-900'
+                        }`}
+                      >
+                        {item.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
                 {/* Active Interactive Card */}
                 <div className="rounded-2xl border border-emerald-100 bg-white p-6 text-center shadow-xs space-y-3">
                   <div className="flex items-center justify-between text-xs text-slate-400">
                     <span>Mẫu từ vựng #{activeWordIndex + 1}</span>
-                    <span className="text-emerald-700 font-semibold">Giọng đọc Bắc Kinh</span>
+                    <span className="text-emerald-700 font-semibold">{TTS_PERSONAS[selectedPersona].subtitleVi}</span>
                   </div>
 
                   {/* Hanzi Large Typography */}
@@ -355,14 +383,24 @@ export default function LandingPage() {
                     <p className="leading-relaxed">{activeWord.tip}</p>
                   </div>
 
-                  {/* Pronunciation audio trigger */}
-                  <button
-                    onClick={() => handlePlayAudio(activeWord.hanzi)}
-                    className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-sm font-bold shadow-xs active:scale-98 transition-all"
-                  >
-                    <Volume2 className={`w-4 h-4 ${isPlayingAudio ? 'animate-bounce' : ''}`} />
-                    <span>{isPlayingAudio ? 'Đang phát âm...' : 'Bấm để nghe phát âm chuẩn'}</span>
-                  </button>
+                  {/* Pronunciation audio trigger buttons */}
+                  <div className="space-y-2 pt-1">
+                    <button
+                      onClick={() => handlePlayAudio(activeWord.hanzi)}
+                      className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-sm font-bold shadow-xs active:scale-98 transition-all"
+                    >
+                      <Volume2 className={`w-4 h-4 ${isPlayingAudio ? 'animate-bounce' : ''}`} />
+                      <span>{isPlayingAudio ? 'Đang phát âm...' : `Nghe phát âm (${TTS_PERSONAS[selectedPersona].nameVi.split(' ')[1] || 'chuẩn'})`}</span>
+                    </button>
+
+                    <button
+                      onClick={() => handlePlayAudio(activeWord.example)}
+                      className="w-full flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors"
+                      title={activeWord.exampleVi}
+                    >
+                      <span>Nghe câu ví dụ: &quot;{activeWord.example}&quot;</span>
+                    </button>
+                  </div>
                 </div>
 
                 {/* AI Speech Score Simulation */}

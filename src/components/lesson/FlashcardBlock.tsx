@@ -5,6 +5,8 @@ import { FlashcardBlockData, FlashcardItem } from '@/types';
 import { RotateCw, ChevronLeft, ChevronRight, CheckCircle2, Shuffle, Volume2 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { VocabVisualIcon } from '@/components/ui/VocabVisualIcon';
+import { speakChinese } from '@/lib/tts';
+import { TTSVoiceSelector } from '@/components/common/TTSVoiceSelector';
 
 export interface FlashcardBlockProps {
   data: FlashcardBlockData;
@@ -50,20 +52,14 @@ export function FlashcardBlock({ data }: FlashcardBlockProps) {
 
   const playPronunciation = (e: React.MouseEvent, text: string) => {
     e.stopPropagation();
-    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'zh-CN';
-      utterance.rate = 0.85;
-      window.speechSynthesis.speak(utterance);
-    }
+    speakChinese(text);
   };
 
   const masteredCount = Object.values(masteredIds).filter(Boolean).length;
 
   return (
     <div className="rounded-2xl border border-gray-100 bg-white p-5 md:p-6 shadow-xs">
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
         <div>
           <h3 className="text-base md:text-lg font-bold text-gray-900">
             {data.title || 'Flashcard Ôn tập Từ vựng'}
@@ -73,14 +69,17 @@ export function FlashcardBlock({ data }: FlashcardBlockProps) {
           </p>
         </div>
 
-        <button
-          onClick={shuffleCards}
-          title="Xáo trộn thẻ"
-          className="flex items-center gap-1.5 text-xs font-semibold text-gray-600 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 px-3 py-1.5 rounded-xl transition-colors"
-        >
-          <Shuffle className="w-3.5 h-3.5" />
-          <span className="hidden sm:inline">Xáo trộn</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <TTSVoiceSelector variant="dropdown" />
+          <button
+            onClick={shuffleCards}
+            title="Xáo trộn thẻ"
+            className="flex items-center gap-1.5 text-xs font-semibold text-gray-600 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 px-3 py-1.5 rounded-xl transition-colors"
+          >
+            <Shuffle className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Xáo trộn</span>
+          </button>
+        </div>
       </div>
 
       {/* Flip Card Container */}

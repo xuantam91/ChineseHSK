@@ -13,6 +13,8 @@ import {
 } from 'lucide-react';
 import { Badge } from '@/components/ui/Badge';
 import { MouthDiagram, ArticulationZone } from './MouthDiagram';
+import { speakChinese } from '@/lib/tts';
+import { TTSVoiceSelector } from '@/components/common/TTSVoiceSelector';
 
 function getArticulationZone(id: string): ArticulationZone {
   if (['b', 'p', 'm'].includes(id)) return 'bilabial';
@@ -728,17 +730,10 @@ export function PinyinChart({ defaultTab = 'initials', className = '' }: PinyinC
     if (typeof window === 'undefined') return;
     setPlayingId(id);
 
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'zh-CN';
-      utterance.rate = 0.82;
-      utterance.onend = () => setPlayingId(null);
-      utterance.onerror = () => setPlayingId(null);
-      window.speechSynthesis.speak(utterance);
-    } else {
-      setTimeout(() => setPlayingId(null), 800);
-    }
+    speakChinese(text, {
+      onEnd: () => setPlayingId(null),
+      onError: () => setPlayingId(null),
+    });
   };
 
   // Group initials for organized visual sections
@@ -805,6 +800,18 @@ export function PinyinChart({ defaultTab = 'initials', className = '' }: PinyinC
             4 Thanh điệu
           </button>
         </div>
+      </div>
+
+      {/* Voice Persona & Speed Toolbar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+            <Volume2 className="w-3.5 h-3.5 text-emerald-700" />
+            <span>Giọng đọc mẫu:</span>
+          </span>
+          <span className="text-xs text-slate-500">Bắc Kinh (Phổ thông)</span>
+        </div>
+        <TTSVoiceSelector variant="compact" showSpeedControl={true} />
       </div>
 
       {/* TAB 1: 21 Thanh Mẫu (Initials) */}

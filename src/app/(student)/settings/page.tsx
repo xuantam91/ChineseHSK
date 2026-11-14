@@ -13,11 +13,13 @@ import {
   BookOpen,
   Target,
   Zap,
+  Volume2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Toast } from '@/components/ui/Toast';
+import { TTSVoiceSelector } from '@/components/common/TTSVoiceSelector';
 import { AgeGroup, HSKLevel } from '@/types';
 import { getStoredUserProfile, saveUserProfile } from '@/lib/student-store';
 
@@ -261,6 +263,27 @@ export default function SettingsPage() {
                 );
               })}
             </div>
+          </CardContent>
+        </Card>
+
+        {/* TTS Voice Persona & Speed Customization */}
+        <Card className="rounded-xl border-slate-200 bg-white shadow-2xs">
+          <CardHeader className="pb-3 border-b border-slate-100">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-base font-bold text-slate-900 flex items-center gap-2">
+                <Volume2 className="w-4 h-4 text-emerald-700" />
+                <span>Giọng đọc & Phát âm AI (TTS Engine)</span>
+              </CardTitle>
+              <span className="text-xs font-semibold text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded border border-emerald-200">
+                Tiếng Trung Phổ Thông (普通话)
+              </span>
+            </div>
+            <CardDescription className="text-xs text-slate-500 mt-1">
+              Chọn chất giọng phù hợp với sở thích của bạn: Giọng Nữ thanh lịch, Giọng Nam trầm ấm, Giọng Người Lớn sư phạm hoặc Giọng Trẻ Em trong trẻo.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="pt-4">
+            <TTSVoiceSelector variant="full" showSpeedControl={true} />
           </CardContent>
         </Card>
 

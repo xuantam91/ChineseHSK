@@ -19,6 +19,8 @@ import {
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { evaluateSpeech, EvaluationResult } from '@/lib/speech/evaluator';
+import { speakChinese } from '@/lib/tts';
+import { TTSVoiceSelector } from '@/components/common/TTSVoiceSelector';
 
 export interface ShadowingSentence {
   id: string;
@@ -137,19 +139,13 @@ export function ShadowingPlayer({
     }
   };
 
-  // Fallback to Web Speech Synthesis
+  // Web Speech Synthesis with native Chinese voice personas
   const speakWithTTS = (text: string) => {
-    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'zh-CN';
-      utterance.rate = playbackSpeed * 0.9;
-      utterance.onend = handleAudioFinished;
-      utterance.onerror = () => setIsPlaying(false);
-      window.speechSynthesis.speak(utterance);
-    } else {
-      setTimeout(handleAudioFinished, 1800);
-    }
+    speakChinese(text, {
+      speedRate: playbackSpeed,
+      onEnd: handleAudioFinished,
+      onError: () => setIsPlaying(false),
+    });
   };
 
   // When current sentence audio finishes playing
@@ -318,8 +314,9 @@ export function ShadowingPlayer({
           <p className="text-xs sm:text-sm text-gray-500 mt-0.5">{description}</p>
         </div>
 
-        {/* View toggles */}
-        <div className="flex items-center gap-2">
+        {/* View toggles & Voice Selector */}
+        <div className="flex flex-wrap items-center gap-2">
+          <TTSVoiceSelector variant="dropdown" />
           <Button
             type="button"
             variant="outline"

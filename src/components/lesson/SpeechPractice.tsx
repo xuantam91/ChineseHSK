@@ -16,6 +16,8 @@ import {
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { evaluateSpeech, EvaluationResult } from '@/lib/speech/evaluator';
+import { speakChinese } from '@/lib/tts';
+import { TTSVoiceSelector } from '@/components/common/TTSVoiceSelector';
 
 export interface SpeechPracticeProps {
   hanzi: string;
@@ -112,17 +114,10 @@ export function SpeechPractice({
   };
 
   const fallbackSpeechSynthesis = () => {
-    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(hanzi);
-      utterance.lang = 'zh-CN';
-      utterance.rate = 0.82; // slightly slower for language learners
-      utterance.onend = () => setIsPlayingReference(false);
-      utterance.onerror = () => setIsPlayingReference(false);
-      window.speechSynthesis.speak(utterance);
-    } else {
-      setTimeout(() => setIsPlayingReference(false), 1000);
-    }
+    speakChinese(hanzi, {
+      onEnd: () => setIsPlayingReference(false),
+      onError: () => setIsPlayingReference(false),
+    });
   };
 
   // Start Speech Recognition and Audio Recording
@@ -321,8 +316,8 @@ export function SpeechPractice({
     <div
       className={`rounded-3xl border border-gray-100 bg-white p-6 sm:p-8 shadow-sm transition-all ${className}`}
     >
-      {/* Top Header & HSK Badge */}
-      <div className="flex items-center justify-between mb-4">
+      {/* Top Header & HSK Badge & Voice Controls */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
         <div className="flex items-center gap-2">
           <span className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full">
             <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
@@ -335,17 +330,20 @@ export function SpeechPractice({
           )}
         </div>
 
-        {/* Reference Audio Button */}
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={playReferenceAudio}
-          leftIcon={<Volume2 className={`w-4 h-4 ${isPlayingReference ? 'animate-bounce text-emerald-600' : ''}`} />}
-          className="text-xs font-semibold"
-        >
-          {isPlayingReference ? 'Đang phát...' : 'Nghe phát âm chuẩn'}
-        </Button>
+        {/* Voice Selector & Reference Audio Button */}
+        <div className="flex items-center gap-2 self-end sm:self-auto">
+          <TTSVoiceSelector variant="dropdown" />
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={playReferenceAudio}
+            leftIcon={<Volume2 className={`w-4 h-4 ${isPlayingReference ? 'animate-bounce text-emerald-600' : ''}`} />}
+            className="text-xs font-semibold"
+          >
+            {isPlayingReference ? 'Đang phát...' : 'Nghe mẫu'}
+          </Button>
+        </div>
       </div>
 
       {/* Main Pronunciation Display (Hanzi & Pinyin) */}
