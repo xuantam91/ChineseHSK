@@ -202,7 +202,7 @@ export const AGE_TIER_ROADMAPS: AgeTierGuide[] = [
     dailyRoutine: 'Bật loa 20 - 30 phút/lần khi trẻ chơi đùa, tắm rửa, ăn nhẹ.',
     recommendedTextbooks: ['Sing your way to Chinese (Tập 1)', 'Flashcard chủ đề đồ vật'],
     recommendedChannels: [
-      { name: 'Super JoJo Trung Văn', url: 'https://www.youtube.com/@SuperJoJoTC' },
+      { name: 'Super JoJo Trung Văn', url: 'https://www.youtube.com/@SuperJoJoCN' },
       { name: 'CoComelon Trung Văn', url: 'https://www.youtube.com/@CoComelonMandarin' },
       { name: 'Pinkfong 碰碰狐', url: 'https://www.youtube.com/watch?v=nAemaOYwynM&list=PLoH5Hm_9zTv2vPjCVQb_CfbwqVLipkF-L' },
     ],

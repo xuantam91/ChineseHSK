@@ -86,7 +86,7 @@ export function MediaBlock({ data }: MediaBlockProps) {
           rel="noopener noreferrer"
           className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 hover:text-emerald-800 bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-100 transition-colors w-fit"
         >
-          <span>Mở trong Google Drive</span>
+          <span>{driveInfo.isFolder ? 'Mở thư mục Google Drive' : 'Mở trong Google Drive'}</span>
           <ExternalLink className="w-3.5 h-3.5" />
         </a>
       </div>
@@ -119,64 +119,91 @@ export function MediaBlock({ data }: MediaBlockProps) {
         </div>
       ) : (
         /* Custom Audio Player */
-        <div className="rounded-xl bg-gray-50 border border-gray-200/80 p-4">
-          <audio
-            ref={audioRef}
-            src={driveInfo.downloadUrl || undefined}
-            onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)}
-            onLoadedMetadata={(e) => setDuration(e.currentTarget.duration || duration)}
-            onEnded={() => setIsPlaying(false)}
-          />
+        <div className="space-y-3">
+          <div className="rounded-xl bg-gray-50 border border-gray-200/80 p-4">
+            <audio
+              ref={audioRef}
+              src={driveInfo.downloadUrl || undefined}
+              onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)}
+              onLoadedMetadata={(e) => setDuration(e.currentTarget.duration || duration)}
+              onEnded={() => setIsPlaying(false)}
+            />
 
-          <div className="flex items-center gap-4">
-            <button
-              onClick={togglePlay}
-              className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-600 text-white shadow-sm shadow-emerald-700/20 hover:bg-emerald-700 active:scale-95 transition-all"
-              aria-label={isPlaying ? 'Tạm dừng' : 'Phát audio'}
-            >
-              {isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5 ml-0.5" />}
-            </button>
+            <div className="flex items-center gap-4">
+              <button
+                onClick={togglePlay}
+                className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-600 text-white shadow-sm shadow-emerald-700/20 hover:bg-emerald-700 active:scale-95 transition-all"
+                aria-label={isPlaying ? 'Tạm dừng' : 'Phát audio'}
+              >
+                {isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5 ml-0.5" />}
+              </button>
 
-            <div className="flex-1">
-              <div className="flex justify-between text-xs font-semibold text-gray-500 mb-1.5">
-                <span>{formatTime(currentTime)}</span>
-                <span>{formatTime(duration)}</span>
+              <div className="flex-1">
+                <div className="flex justify-between text-xs font-semibold text-gray-500 mb-1.5">
+                  <span>{formatTime(currentTime)}</span>
+                  <span>{formatTime(duration)}</span>
+                </div>
+                <input
+                  type="range"
+                  min={0}
+                  max={duration}
+                  value={currentTime}
+                  onChange={(e) => {
+                    const val = Number(e.target.value);
+                    setCurrentTime(val);
+                    if (audioRef.current) {
+                      audioRef.current.currentTime = val;
+                    }
+                  }}
+                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-emerald-600"
+                />
               </div>
-              <input
-                type="range"
-                min={0}
-                max={duration}
-                value={currentTime}
-                onChange={(e) => {
-                  const val = Number(e.target.value);
-                  setCurrentTime(val);
-                  if (audioRef.current) {
-                    audioRef.current.currentTime = val;
-                  }
-                }}
-                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-emerald-600"
-              />
-            </div>
 
-            <div className="flex items-center gap-1.5">
-              <button
-                onClick={restart}
-                title="Nghe lại từ đầu"
-                className="p-2 rounded-xl text-gray-500 hover:text-gray-900 hover:bg-gray-200/60 transition-colors"
-                aria-label="Nghe lại"
-              >
-                <RotateCcw className="w-4 h-4" />
-              </button>
+              <div className="flex items-center gap-1.5">
+                <button
+                  onClick={restart}
+                  title="Nghe lại từ đầu"
+                  className="p-2 rounded-xl text-gray-500 hover:text-gray-900 hover:bg-gray-200/60 transition-colors"
+                  aria-label="Nghe lại"
+                >
+                  <RotateCcw className="w-4 h-4" />
+                </button>
 
-              <button
-                onClick={changeRate}
-                title="Tốc độ phát"
-                className="px-2.5 py-1 rounded-xl text-xs font-bold text-gray-700 bg-white border border-gray-200 hover:bg-gray-100 transition-colors"
-              >
-                {playbackRate}x
-              </button>
+                <button
+                  onClick={changeRate}
+                  title="Tốc độ phát"
+                  className="px-2.5 py-1 rounded-xl text-xs font-bold text-gray-700 bg-white border border-gray-200 hover:bg-gray-100 transition-colors"
+                >
+                  {playbackRate}x
+                </button>
+              </div>
             </div>
           </div>
+
+          {driveInfo.isFolder && driveInfo.embedUrl && (
+            <div className="rounded-xl overflow-hidden border border-gray-200 bg-white">
+              <div className="px-3 py-2 bg-gray-100/70 border-b border-gray-200 text-xs font-semibold text-gray-700 flex items-center justify-between">
+                <span>Danh sách file âm thanh trong thư mục Drive:</span>
+                <a
+                  href={driveInfo.viewUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-emerald-700 hover:underline flex items-center gap-1"
+                >
+                  <span>Mở toàn bộ</span>
+                  <ExternalLink className="w-3 h-3" />
+                </a>
+              </div>
+              <div className="relative w-full h-[280px]">
+                <iframe
+                  src={driveInfo.embedUrl}
+                  className="w-full h-full border-0"
+                  title="Thư mục âm thanh Google Drive"
+                  sandbox="allow-scripts allow-same-origin allow-popups"
+                />
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

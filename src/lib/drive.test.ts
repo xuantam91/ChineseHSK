@@ -36,4 +36,27 @@ describe('Google Drive URL Sanitizer & Extractor', () => {
     expect(result.isValidDrive).toBe(false);
     expect(result.viewUrl).toBe('#');
   });
+
+  it('correctly parses and generates embed views for Google Drive Folders', () => {
+    const folderUrl = 'https://drive.google.com/drive/folders/133NFHUSD1o1zUzg4mf_vHSu7Py5_dz3I?usp=sharing';
+    const result = sanitizeDriveUrl(folderUrl);
+    expect(result.isValidDrive).toBe(true);
+    expect(result.isFolder).toBe(true);
+    expect(result.fileId).toBe('133NFHUSD1o1zUzg4mf_vHSu7Py5_dz3I');
+    expect(result.embedUrl).toBe('https://drive.google.com/embeddedfolderview?id=133NFHUSD1o1zUzg4mf_vHSu7Py5_dz3I#grid');
+    expect(result.viewUrl).toBe('https://drive.google.com/drive/folders/133NFHUSD1o1zUzg4mf_vHSu7Py5_dz3I?usp=sharing');
+    expect(result.downloadUrl).toBeNull();
+  });
+
+  it('safely redirects placeholder/demo IDs to verified drive collections without breaking', () => {
+    const demoVideo = sanitizeDriveUrl('https://drive.google.com/file/d/1DemoDriveFileIdVideo4Tones/view');
+    expect(demoVideo.isValidDrive).toBe(true);
+    expect(demoVideo.isFolder).toBe(true);
+    expect(demoVideo.viewUrl).toContain('drive.google.com/drive/folders/');
+
+    const demoAudio = sanitizeDriveUrl('https://drive.google.com/file/d/demo-hsk1-audio/view');
+    expect(demoAudio.isValidDrive).toBe(true);
+    expect(demoAudio.isFolder).toBe(true);
+    expect(demoAudio.viewUrl).toContain('drive.google.com/drive/folders/');
+  });
 });

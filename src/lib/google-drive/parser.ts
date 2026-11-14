@@ -149,8 +149,14 @@ export function parseGoogleDriveUrl(rawUrl?: string | null): ParseDriveResult {
   }
 
   const resourceKeyQuery = resourceKey ? `?resourcekey=${encodeURIComponent(resourceKey)}` : '';
-  const previewUrl = `https://drive.google.com/file/d/${fileId}/preview${resourceKeyQuery}`;
-  const webViewUrl = `https://drive.google.com/file/d/${fileId}/view${resourceKeyQuery}`;
+  const previewUrl =
+    kind === 'folder'
+      ? `https://drive.google.com/embeddedfolderview?id=${fileId}#grid`
+      : `https://drive.google.com/file/d/${fileId}/preview${resourceKeyQuery}`;
+  const webViewUrl =
+    kind === 'folder'
+      ? `https://drive.google.com/drive/folders/${fileId}?usp=sharing`
+      : `https://drive.google.com/file/d/${fileId}/view${resourceKeyQuery}`;
 
   return {
     valid: true,

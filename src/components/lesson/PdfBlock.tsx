@@ -47,7 +47,7 @@ export function PdfBlock({ data }: PdfBlockProps) {
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 hover:text-emerald-800 bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-100 transition-colors"
           >
-            <span>Mở trong Google Drive</span>
+            <span>{driveInfo.isFolder ? 'Mở thư mục Google Drive' : 'Mở trong Google Drive'}</span>
             <ExternalLink className="w-3.5 h-3.5" />
           </a>
         </div>
