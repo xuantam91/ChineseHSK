@@ -130,29 +130,33 @@ export default function RoadmapPage() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
-      {/* Top Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 rounded-xl bg-slate-900 text-white border border-slate-800 shadow-sm">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-xs font-semibold text-emerald-400 uppercase tracking-wider">
+      {/* Top Fresh Banner */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-teal-700 via-emerald-700 to-emerald-800 text-white p-6 sm:p-7 shadow-md shadow-emerald-900/10 border border-emerald-600/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        {/* Subtle decorative glow */}
+        <div className="absolute -right-10 -bottom-10 w-56 h-56 rounded-full bg-white/10 blur-2xl pointer-events-none" />
+        <div className="absolute -left-10 -top-10 w-44 h-44 rounded-full bg-teal-400/10 blur-xl pointer-events-none" />
+
+        <div className="relative z-10">
+          <div className="flex items-center gap-2 mb-1.5">
+            <span className="text-[11px] font-extrabold text-amber-300 uppercase tracking-wider bg-white/10 px-2.5 py-0.5 rounded border border-white/15">
               Khung năng lực HSK 3.0
             </span>
           </div>
-          <h1 className="text-xl sm:text-2xl font-bold tracking-tight">
+          <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-white drop-shadow-2xs">
             Lộ trình học tập chi tiết 12 tháng
           </h1>
-          <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-xl">
-            Tự động mở bài mỗi ngày theo giờ Việt Nam. Học từ ngữ âm căn bản đến tự tin giao tiếp và thi đỗ HSK.
+          <p className="text-xs sm:text-sm text-emerald-100 mt-1 max-w-xl leading-relaxed">
+            Tự động mở bài mỗi ngày theo múi giờ Việt Nam. Chinh phục toàn diện từ ngữ âm Pinyin đến thi đỗ các cấp chứng chỉ HSK.
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5 self-start sm:self-auto shrink-0">
+        <div className="flex items-center gap-2.5 self-start sm:self-auto shrink-0 relative z-10">
           <Button
             variant="outline"
             size="sm"
             onClick={() => setIsPinyinModalOpen(true)}
-            leftIcon={<Mic className="w-3.5 h-3.5 text-slate-300" />}
-            className="text-xs font-semibold border-slate-700 text-slate-200 hover:bg-slate-800"
+            leftIcon={<Mic className="w-3.5 h-3.5 text-white" />}
+            className="text-xs font-semibold bg-white/15 hover:bg-white/25 text-white border-white/25 backdrop-blur-xs shadow-2xs"
           >
             Bảng ngữ âm Pinyin
           </Button>
@@ -161,8 +165,8 @@ export default function RoadmapPage() {
             variant="outline"
             size="sm"
             onClick={() => setShowMethodology(!showMethodology)}
-            leftIcon={<BookOpen className="w-3.5 h-3.5 text-slate-300" />}
-            className="text-xs font-semibold border-slate-700 text-slate-200 hover:bg-slate-800"
+            leftIcon={<BookOpen className="w-3.5 h-3.5 text-white" />}
+            className="text-xs font-semibold bg-white/15 hover:bg-white/25 text-white border-white/25 backdrop-blur-xs shadow-2xs"
           >
             {showMethodology ? 'Đóng cẩm nang' : 'Cẩm nang sư phạm'}
           </Button>

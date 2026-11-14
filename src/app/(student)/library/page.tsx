@@ -203,25 +203,28 @@ export default function LibraryPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
-      {/* Header */}
-      <div>
-        <div className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 uppercase tracking-wider mb-1">
-          <FolderGit2 className="w-4 h-4 text-emerald-600" />
-          <span>Kho tài nguyên & học liệu chuẩn HSK</span>
+      {/* Top Fresh Banner */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-600 via-teal-600 to-emerald-800 text-white p-6 sm:p-7 shadow-md shadow-emerald-900/10 border border-emerald-500/30">
+        <div className="absolute -right-12 -top-12 w-64 h-64 rounded-full bg-white/10 blur-2xl pointer-events-none" />
+        <div className="relative z-10 space-y-1.5">
+          <div className="inline-flex items-center gap-1.5 text-xs font-extrabold text-amber-300 uppercase tracking-wider bg-white/10 px-2.5 py-0.5 rounded border border-white/15">
+            <FolderGit2 className="w-3.5 h-3.5 text-amber-300" />
+            <span>Kho tài nguyên & học liệu chuẩn HSK</span>
+          </div>
+          <h1 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight drop-shadow-2xs">
+            Thư Viện Đa Phương Tiện Tiếng Trung Chuẩn Quốc Tế
+          </h1>
+          <p className="text-xs sm:text-sm text-emerald-100 max-w-3xl leading-relaxed">
+            Tổng hợp video Flashcard, ca khúc thiếu nhi, truyện ngụ ngôn, phim hoạt hình và trọn bộ giáo trình chuẩn HSK, Easy Steps, Kuaile Hanyu an toàn.
+          </p>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">
-          Thư Viện Đa Phương Tiện Tiếng Trung Chuẩn Quốc Tế
-        </h1>
-        <p className="text-xs sm:text-sm text-gray-500 mt-1 max-w-3xl">
-          Tổng hợp kênh video học Flashcard, ca khúc thiếu nhi, truyện ngụ ngôn, phim hoạt hình và trọn bộ giáo trình chuẩn HSK, Easy Steps, Kuaile Hanyu an toàn.
-        </p>
       </div>
 
       {/* Filter and Search Bar */}
       <div className="space-y-3">
         {/* HSK Level Filter Pills */}
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
-          <span className="text-xs font-semibold text-gray-400 mr-1 whitespace-nowrap">Trình độ:</span>
+          <span className="text-xs font-semibold text-slate-500 mr-1 whitespace-nowrap">Trình độ:</span>
           {hskLevels.map((lvl) => {
             const isSelected = selectedHskLevel === lvl.id;
             return (
@@ -230,7 +233,7 @@ export default function LibraryPage() {
                 onClick={() => setSelectedHskLevel(lvl.id)}
                 className={`px-2.5 py-1 rounded-md text-xs font-semibold whitespace-nowrap transition-colors ${
                   isSelected
-                    ? 'bg-slate-900 text-white shadow-2xs'
+                    ? 'bg-emerald-700 text-white shadow-xs'
                     : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
                 }`}
               >
@@ -252,7 +255,7 @@ export default function LibraryPage() {
                   onClick={() => setSelectedCategory(cat.id)}
                   className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors ${
                     isSelected
-                      ? 'bg-slate-900 text-white shadow-2xs'
+                      ? 'bg-emerald-700 text-white shadow-xs'
                       : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'
                   }`}
                 >

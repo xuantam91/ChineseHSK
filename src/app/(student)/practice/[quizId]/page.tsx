@@ -269,8 +269,8 @@ export default function PracticeQuizPage({
       >
         {resultScore && (
           <div className="space-y-4 py-2 text-center">
-            <div className="inline-flex h-14 w-14 items-center justify-center rounded-xl bg-slate-900 text-white shadow-2xs">
-              <Award className="w-7 h-7 text-emerald-400" />
+            <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-700 text-white shadow-md shadow-emerald-700/20">
+              <Award className="w-7 h-7 text-amber-300" />
             </div>
 
             <div>

@@ -59,50 +59,54 @@ export default function StudentDashboardPage() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
-      {/* Top Professional Banner */}
-      <div className="bg-slate-900 text-white p-6 sm:p-8 rounded-2xl border border-slate-800 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-        <div className="space-y-2">
+      {/* Top Professional Fresh Banner */}
+      <div className="relative overflow-hidden bg-gradient-to-br from-emerald-600 via-teal-600 to-emerald-800 text-white p-6 sm:p-8 rounded-2xl shadow-md shadow-emerald-900/10 border border-emerald-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+        {/* Subtle decorative glow */}
+        <div className="absolute -right-12 -top-12 w-64 h-64 rounded-full bg-white/10 blur-2xl pointer-events-none" />
+        <div className="absolute right-48 -bottom-16 w-48 h-48 rounded-full bg-teal-400/10 blur-xl pointer-events-none" />
+
+        <div className="space-y-2 relative z-10">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 rounded-md bg-slate-800 px-2.5 py-1 text-slate-300 text-xs font-medium border border-slate-700">
-              <Calendar className="w-3.5 h-3.5 text-slate-400" />
+            <span className="inline-flex items-center gap-1.5 rounded-md bg-white/15 backdrop-blur-xs px-2.5 py-1 text-white text-xs font-semibold border border-white/20">
+              <Calendar className="w-3.5 h-3.5 text-emerald-100" />
               <span>{todayText || 'Hôm nay'}</span>
             </span>
-            <span className="inline-flex items-center gap-1 rounded-md bg-emerald-950 text-emerald-300 px-2.5 py-1 text-xs font-semibold border border-emerald-800">
+            <span className="inline-flex items-center gap-1 rounded-md bg-amber-400 text-emerald-950 px-2.5 py-1 text-xs font-extrabold shadow-2xs">
               Cấp độ: {profile.currentHskLevel || 'HSK 1'}
             </span>
           </div>
 
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white drop-shadow-2xs">
             Chào mừng trở lại, {profile.displayName}
           </h1>
-          <p className="text-xs sm:text-sm text-slate-400 max-w-lg">
-            Mục tiêu hôm nay: <strong className="text-white">{profile.dailyGoalMinutes} phút</strong> luyện Nghe & Nói theo lộ trình HSK 3.0.
+          <p className="text-xs sm:text-sm text-emerald-100 max-w-lg leading-relaxed">
+            Mục tiêu hôm nay: <strong className="text-white underline decoration-amber-400 decoration-2 underline-offset-2">{profile.dailyGoalMinutes} phút</strong> luyện Nghe & Nói theo lộ trình HSK 3.0.
           </p>
         </div>
 
         {/* Clean Metrics Cluster */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 relative z-10">
           {/* Streak Box */}
-          <div className="flex items-center gap-3 bg-slate-800/90 px-4 py-3 rounded-xl border border-slate-700">
-            <Flame className="w-5 h-5 text-amber-500 fill-amber-500 stroke-[1.75]" />
+          <div className="flex items-center gap-3 bg-white/15 backdrop-blur-md px-4 py-3 rounded-xl border border-white/25 shadow-xs">
+            <Flame className="w-5 h-5 text-amber-300 fill-amber-300 stroke-[1.75]" />
             <div>
               <div className="text-base font-bold text-white leading-none">
                 {profile.streakCount} ngày
               </div>
-              <div className="text-[11px] text-slate-400 mt-1">
+              <div className="text-[11px] text-emerald-100 font-medium mt-1">
                 Chuỗi học
               </div>
             </div>
           </div>
 
           {/* XP Box */}
-          <div className="flex items-center gap-3 bg-slate-800/90 px-4 py-3 rounded-xl border border-slate-700">
-            <Award className="w-5 h-5 text-slate-300 stroke-[1.75]" />
+          <div className="flex items-center gap-3 bg-white/15 backdrop-blur-md px-4 py-3 rounded-xl border border-white/25 shadow-xs">
+            <Award className="w-5 h-5 text-amber-300 stroke-[1.75]" />
             <div>
               <div className="text-base font-bold text-white leading-none">
                 1.250 XP
               </div>
-              <div className="text-[11px] text-slate-400 mt-1">
+              <div className="text-[11px] text-emerald-100 font-medium mt-1">
                 Điểm tích lũy
               </div>
             </div>

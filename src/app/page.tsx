@@ -274,7 +274,7 @@ export default function LandingPage() {
                 <Link href="/lesson/hsk1-01" className="block mt-5">
                   <Button
                     size="sm"
-                    className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs py-2.5 rounded-lg shadow-2xs"
+                    className="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-xs py-2.5 rounded-lg shadow-2xs"
                   >
                     Xem bài học mẫu
                   </Button>
@@ -447,31 +447,38 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Bottom CTA */}
-      <section className="py-16 sm:py-20 bg-slate-900 text-white text-center">
-        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-          <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight">
+      {/* Bottom CTA Fresh Banner */}
+      <section className="relative overflow-hidden py-16 sm:py-24 bg-gradient-to-br from-emerald-700 via-teal-700 to-emerald-900 text-white text-center">
+        {/* Subtle decorative glow */}
+        <div className="absolute -left-20 -top-20 w-80 h-80 rounded-full bg-white/10 blur-3xl pointer-events-none" />
+        <div className="absolute -right-20 -bottom-20 w-80 h-80 rounded-full bg-teal-400/10 blur-3xl pointer-events-none" />
+
+        <div className="relative z-10 mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 backdrop-blur-xs border border-white/20 text-amber-300 text-xs font-bold uppercase tracking-wider mb-4">
+            <span>Sẵn sàng chinh phục tiếng Trung</span>
+          </div>
+          <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight drop-shadow-2xs">
             Bắt đầu hành trình làm chủ Hán ngữ ngay hôm nay
           </h2>
-          <p className="mt-3 text-slate-400 text-sm sm:text-base max-w-xl mx-auto leading-relaxed">
-            25 phút mỗi ngày với lộ trình khoa học, hướng dẫn phát âm chi tiết và cơ chế mở bài ổn định.
+          <p className="mt-3 text-emerald-100 text-sm sm:text-base max-w-xl mx-auto leading-relaxed">
+            25 phút mỗi ngày với lộ trình khoa học, hướng dẫn khẩu hình Pinyin chi tiết và phản xạ giao tiếp tự nhiên.
           </p>
           <div className="mt-8 flex flex-col sm:flex-row justify-center items-center gap-3">
             <Link href="/dashboard" className="w-full sm:w-auto">
               <Button
                 size="lg"
-                className="w-full sm:w-auto bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-sm px-6"
+                className="w-full sm:w-auto bg-amber-400 hover:bg-amber-300 text-emerald-950 font-extrabold text-sm px-8 py-3 rounded-xl shadow-md transition-all hover:scale-[1.02]"
               >
-                Vào học ngay
+                Vào học ngay miễn phí
               </Button>
             </Link>
             <Link href="/roadmap" className="w-full sm:w-auto">
               <Button
                 variant="outline"
                 size="lg"
-                className="w-full sm:w-auto border-slate-700 text-slate-200 hover:bg-slate-800 text-sm font-semibold"
+                className="w-full sm:w-auto bg-white/15 hover:bg-white/25 border-white/25 text-white backdrop-blur-xs text-sm font-semibold px-6 py-3 rounded-xl transition-all"
               >
-                Xem chi tiết lộ trình
+                Xem chi tiết lộ trình 12 tháng
               </Button>
             </Link>
           </div>

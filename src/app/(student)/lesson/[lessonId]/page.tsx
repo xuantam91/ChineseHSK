@@ -561,8 +561,8 @@ export default function LessonReaderPage({
         description="Bạn đã hoàn thành các khối học và được ghi nhận tiến độ."
       >
         <div className="py-4 text-center space-y-3">
-          <div className="inline-flex h-16 w-16 items-center justify-center rounded-xl bg-slate-900 text-white shadow-2xs">
-            <Award className="w-8 h-8 text-emerald-400 stroke-[1.75]" />
+          <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-700 text-white shadow-md shadow-emerald-700/20">
+            <Award className="w-8 h-8 text-amber-300 stroke-[1.75]" />
           </div>
 
           <h3 className="text-lg font-bold text-slate-900">
