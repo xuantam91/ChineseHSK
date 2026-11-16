@@ -226,45 +226,77 @@ export default function RoadmapPage() {
             <Progress value={progressPct} max={100} size="sm" />
           </div>
 
-          {/* Step-by-Step Numbered Lesson Cards */}
+          {/* Vivid Lesson Cover Cards (20 Lessons per HSK Level) */}
           <div className="space-y-4">
             {levelLessons.map((lesson) => {
               const isDone = completedLessons.includes(lesson.id);
               const isNext = nextLessonInLevel?.id === lesson.id;
+              const coverImg =
+                lesson.imageUrl || '/images/lessons/hsk1_lesson01_greeting.jpg';
+              const coverHanzi =
+                lesson.coverCalligraphy ||
+                lesson.vocabulary?.[0]?.hanzi ||
+                lesson.title.match(/[\u4e00-\u9fff]{2,4}/)?.[0] ||
+                '汉语';
 
               return (
                 <div
                   key={lesson.id}
-                  className={`rounded-2xl border bg-white p-5 sm:p-6 transition-all flex flex-col md:flex-row md:items-center justify-between gap-5 ${
+                  className={`rounded-2xl border bg-white overflow-hidden transition-all flex flex-col md:flex-row md:items-stretch justify-between ${
                     isNext
-                      ? 'border-2 border-emerald-600 shadow-sm'
+                      ? 'border-2 border-emerald-600 shadow-md'
                       : 'border-slate-200 hover:border-emerald-300 shadow-2xs'
                   }`}
                 >
-                  <div className="flex items-start gap-4 flex-1">
-                    {/* Step Number Circle */}
+                  {/* Left Visual Lesson Cover Thumbnail */}
+                  <Link
+                    href={`/lesson/${lesson.id}`}
+                    className="relative md:w-56 lg:w-64 min-h-[140px] bg-slate-900 text-white p-4 flex flex-col justify-between overflow-hidden shrink-0 group"
+                  >
+                    <img
+                      src={coverImg}
+                      alt={lesson.title}
+                      className="absolute inset-0 w-full h-full object-cover opacity-45 group-hover:scale-105 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-br from-emerald-950/90 via-emerald-900/75 to-teal-900/60" />
                     <div
-                      className={`w-12 h-12 rounded-2xl flex flex-col items-center justify-center font-extrabold shrink-0 ${
-                        isDone
-                          ? 'bg-emerald-700 text-white'
-                          : isNext
-                          ? 'bg-amber-400 text-emerald-950 ring-4 ring-amber-100'
-                          : 'bg-slate-100 text-slate-700 border border-slate-200'
-                      }`}
+                      aria-hidden="true"
+                      className="pointer-events-none select-none absolute -right-2 -bottom-3 text-5xl font-black text-white/15 tracking-widest"
                     >
-                      {isDone ? (
-                        <CheckCircle2 className="w-6 h-6" />
-                      ) : (
-                        <>
-                          <span className="text-[10px] uppercase tracking-wider opacity-75 leading-none">
-                            Bài
-                          </span>
-                          <span className="text-base leading-tight">{lesson.lessonNumber}</span>
-                        </>
-                      )}
+                      {coverHanzi}
                     </div>
 
-                    <div className="space-y-2 flex-1">
+                    <div className="relative z-10 flex items-center justify-between gap-2">
+                      <span
+                        className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-extrabold uppercase tracking-wider ${
+                          isDone
+                            ? 'bg-emerald-500 text-white'
+                            : isNext
+                            ? 'bg-amber-400 text-slate-950'
+                            : 'bg-white/20 text-white backdrop-blur-xs'
+                        }`}
+                      >
+                        {isDone && <CheckCircle2 className="w-3 h-3" />}
+                        BÀI {lesson.lessonNumber}/{levelLessons.length}
+                      </span>
+                      <span className="text-[11px] font-bold text-amber-300">
+                        {lesson.level}
+                      </span>
+                    </div>
+
+                    <div className="relative z-10 mt-3">
+                      <div className="text-xl font-black text-white tracking-wide">
+                        {coverHanzi}
+                      </div>
+                      <div className="text-[11px] text-emerald-100 font-medium line-clamp-1">
+                        Trang bìa Bài {lesson.lessonNumber} • {lesson.estimatedMinutes} phút
+                      </div>
+                    </div>
+                  </Link>
+
+                  {/* Center Content Summary, Vocab & Grammar Preview */}
+                  <div className="p-5 sm:p-6 flex-1 flex flex-col md:flex-row md:items-center justify-between gap-5">
+                    <div className="space-y-2.5 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
                         <Link
                           href={`/lesson/${lesson.id}`}
@@ -292,9 +324,26 @@ export default function RoadmapPage() {
                         {lesson.subtitleVi} — {lesson.summaryVi}
                       </p>
 
+                      {/* Grammar Highlights */}
+                      {lesson.grammarNotes && lesson.grammarNotes.length > 0 && (
+                        <div className="flex flex-wrap items-center gap-1.5">
+                          <span className="text-xs font-semibold text-amber-800 mr-1">
+                            Ngữ pháp:
+                          </span>
+                          {lesson.grammarNotes.slice(0, 2).map((g) => (
+                            <span
+                              key={g.id}
+                              className="inline-flex items-center px-2 py-0.5 rounded-md bg-amber-50 border border-amber-200 text-[11px] font-semibold text-amber-900"
+                            >
+                              {g.title}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+
                       {/* Interactive Vocabulary Preview Chips */}
                       {lesson.vocabulary && lesson.vocabulary.length > 0 && (
-                        <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                        <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
                           <span className="text-xs font-semibold text-slate-400 mr-1">
                             Từ vựng:
                           </span>
@@ -304,7 +353,7 @@ export default function RoadmapPage() {
                               type="button"
                               onClick={() => speakChinese(v.hanzi)}
                               title="Bấm để nghe phát âm"
-                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-50 hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300 text-xs transition-colors"
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-50 hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300 text-xs transition-colors cursor-pointer"
                             >
                               <Volume2 className="w-3 h-3 text-emerald-700" />
                               <span className="font-chinese font-bold text-slate-900">
@@ -316,24 +365,24 @@ export default function RoadmapPage() {
                         </div>
                       )}
                     </div>
-                  </div>
 
-                  {/* Direct 1-Click Start Lesson Button */}
-                  <div className="self-end md:self-center shrink-0 w-full md:w-auto">
-                    <Link href={`/lesson/${lesson.id}`} className="block">
-                      <Button
-                        variant={isDone ? 'outline' : 'primary'}
-                        size="md"
-                        rightIcon={<ArrowRight className="w-4 h-4" />}
-                        className={
-                          isDone
-                            ? 'w-full md:w-auto text-xs font-bold border-slate-300 text-slate-700'
-                            : 'w-full md:w-auto text-xs font-bold bg-emerald-700 hover:bg-emerald-800 text-white px-5 shadow-2xs'
-                        }
-                      >
-                        {isDone ? 'Ôn lại bài' : 'Vào học ngay'}
-                      </Button>
-                    </Link>
+                    {/* Direct 1-Click Start Lesson Button */}
+                    <div className="self-end md:self-center shrink-0 w-full md:w-auto">
+                      <Link href={`/lesson/${lesson.id}`} className="block">
+                        <Button
+                          variant={isDone ? 'outline' : 'primary'}
+                          size="md"
+                          rightIcon={<ArrowRight className="w-4 h-4" />}
+                          className={
+                            isDone
+                              ? 'w-full md:w-auto text-xs font-bold border-slate-300 text-slate-700'
+                              : 'w-full md:w-auto text-xs font-bold bg-emerald-700 hover:bg-emerald-800 text-white px-5 shadow-2xs'
+                          }
+                        >
+                          {isDone ? 'Ôn lại bài' : 'Vào học ngay'}
+                        </Button>
+                      </Link>
+                    </div>
                   </div>
                 </div>
               );

@@ -10,6 +10,10 @@
  *   grammar notes, and multimodal quiz questions (listening, ordering, speaking).
  */
 
+import { HSK1_ADDITIONAL_LESSONS } from './hsk1-expanded';
+import { HSK2_ADDITIONAL_LESSONS } from './hsk2-expanded';
+import { HSK3_ADDITIONAL_LESSONS } from './hsk3-expanded';
+
 export type HSKLevel = 'HSK1' | 'HSK2' | 'HSK3';
 
 export interface DialogueLine {
@@ -93,6 +97,9 @@ export interface HSKLesson {
   subtitleVi: string;
   topicIcon: string;
   imageUrl?: string;
+  videoUrl?: string;
+  videoTitleVi?: string;
+  coverCalligraphy?: string;
   estimatedMinutes: number;
   summaryVi: string;
   dialogue: DialogueLine[];
@@ -1837,6 +1844,7 @@ export const HSK1_LESSONS: HSKLesson[] = [
       },
     ],
   },
+  ...HSK1_ADDITIONAL_LESSONS,
 ];
 
 /* ==========================================================================
@@ -2875,6 +2883,7 @@ export const HSK2_LESSONS: HSKLesson[] = [
       },
     ],
   },
+  ...HSK2_ADDITIONAL_LESSONS,
 ];
 
 /* ==========================================================================
@@ -3720,6 +3729,7 @@ export const HSK3_LESSONS: HSKLesson[] = [
       },
     ],
   },
+  ...HSK3_ADDITIONAL_LESSONS,
 ];
 
 /* ==========================================================================

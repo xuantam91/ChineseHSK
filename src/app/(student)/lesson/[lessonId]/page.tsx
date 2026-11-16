@@ -32,6 +32,7 @@ import { RoleplayDialogue } from '@/components/lesson/RoleplayDialogue';
 import { PinyinChart } from '@/components/lesson/PinyinChart';
 import { ImageBlock } from '@/components/lesson/ImageBlock';
 import { SupplementaryMediaBlock } from '@/components/lesson/SupplementaryMediaBlock';
+import { LessonCoverCard } from '@/components/lesson/LessonCoverCard';
 import { TTSVoiceSelector } from '@/components/common/TTSVoiceSelector';
 import { getMediaByLessonId, getThematicFlashcardByLessonId } from '@/lib/curriculum/media-resources';
 import { DEMO_LESSONS } from '@/lib/mock-data';
@@ -866,6 +867,7 @@ export default function LessonReaderPage({
   // 1. Check in DEMO_LESSONS
   let currentLesson: Lesson | undefined;
   let allDayLessons: Lesson[] = [];
+  let matchedHskLesson: HSKLesson | undefined = ALL_HSK_LESSONS.find((l) => l.id === lessonId);
 
   for (const dayId of Object.keys(DEMO_LESSONS)) {
     const list = DEMO_LESSONS[dayId];
@@ -879,15 +881,15 @@ export default function LessonReaderPage({
 
   // 2. If not found in DEMO_LESSONS, check ALL_HSK_LESSONS
   if (!currentLesson) {
-    const hskFound = ALL_HSK_LESSONS.find((l) => l.id === lessonId);
-    if (hskFound) {
-      currentLesson = adaptHskLessonToLesson(hskFound);
+    if (matchedHskLesson) {
+      currentLesson = adaptHskLessonToLesson(matchedHskLesson);
       allDayLessons = ALL_HSK_LESSONS.map((h) => adaptHskLessonToLesson(h));
     }
   }
 
   // Fallback to first HSK1 lesson if still not found
   if (!currentLesson) {
+    matchedHskLesson = HSK1_LESSONS[0];
     currentLesson = adaptHskLessonToLesson(HSK1_LESSONS[0]);
     allDayLessons = ALL_HSK_LESSONS.map((h) => adaptHskLessonToLesson(h));
   }
@@ -1131,30 +1133,15 @@ export default function LessonReaderPage({
 
       {/* Main Container */}
       <main className="mx-auto max-w-4xl px-4 sm:px-6 py-6 sm:py-8 space-y-6">
-        {/* Compact Lesson Title Banner */}
-        <div className="rounded-2xl bg-gradient-to-br from-emerald-600 via-teal-600 to-emerald-800 text-white p-5 sm:p-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2 text-xs font-bold text-amber-300 mb-1">
-              <BookOpen className="w-3.5 h-3.5" />
-              <span>BÀI HỌC {currentLesson.sequenceOrder}</span>
-              <span>•</span>
-              <span className="inline-flex items-center gap-1 text-emerald-100">
-                <Clock className="w-3.5 h-3.5" />
-                {currentLesson.estimatedMinutes} phút
-              </span>
-            </div>
-            <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-white">
-              {currentLesson.title}
-            </h1>
-            <p className="mt-1 text-xs sm:text-sm text-emerald-100 line-clamp-2 max-w-2xl">
-              {currentLesson.description}
-            </p>
-          </div>
-
-          <div className="self-start sm:self-center shrink-0">
-            <TTSVoiceSelector variant="dropdown" />
-          </div>
-        </div>
+        {/* Vivid Magazine-Style Lesson Cover Card */}
+        <LessonCoverCard
+          hskLesson={matchedHskLesson}
+          fallbackTitle={currentLesson.title}
+          fallbackDescription={currentLesson.description}
+          sequenceOrder={currentLesson.sequenceOrder}
+          estimatedMinutes={currentLesson.estimatedMinutes}
+          totalLessonsInLevel={20}
+        />
 
         {/* STEPPER NAVIGATION PILLS (Easy 1-click navigation between lesson parts) */}
         {viewMode === 'step' && totalSteps > 1 && (

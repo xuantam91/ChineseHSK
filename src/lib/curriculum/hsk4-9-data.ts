@@ -19,6 +19,9 @@ import type {
   QuizQuestion,
   HSKLesson,
 } from './hsk1-3-data';
+import { HSK4_ADDITIONAL_LESSONS } from './hsk4-expanded';
+import { HSK5_ADDITIONAL_LESSONS } from './hsk5-expanded';
+import { HSK6_ADDITIONAL_LESSONS } from './hsk6-expanded';
 
 export type HSKAdvancedLevel = 'HSK4' | 'HSK5' | 'HSK6' | 'HSK7-9';
 
@@ -628,6 +631,7 @@ export const HSK4_LESSONS: HSKLesson[] = [
       },
     ],
   },
+  ...HSK4_ADDITIONAL_LESSONS,
 ];
 
 // ============================================================================
@@ -1101,6 +1105,7 @@ export const HSK5_LESSONS: HSKLesson[] = [
       },
     ],
   },
+  ...HSK5_ADDITIONAL_LESSONS,
 ];
 
 // ============================================================================
@@ -1544,6 +1549,7 @@ export const HSK6_LESSONS: HSKLesson[] = [
       },
     ],
   },
+  ...HSK6_ADDITIONAL_LESSONS,
 ];
 
 // ============================================================================

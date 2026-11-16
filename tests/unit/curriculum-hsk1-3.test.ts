@@ -106,11 +106,11 @@ describe('HSK 1 - 3 Curriculum Dataset', () => {
   });
 
   describe('Lessons Pedagogical Structure', () => {
-    it('has 5 lessons for HSK 1, 5 lessons for HSK 2, 4 lessons for HSK 3 (14 total)', () => {
-      expect(HSK1_LESSONS).toHaveLength(5);
-      expect(HSK2_LESSONS).toHaveLength(5);
-      expect(HSK3_LESSONS).toHaveLength(4);
-      expect(ALL_HSK_LESSONS).toHaveLength(14);
+    it('has 20 lessons for HSK 1, 20 lessons for HSK 2, 20 lessons for HSK 3 (60 total)', () => {
+      expect(HSK1_LESSONS).toHaveLength(20);
+      expect(HSK2_LESSONS).toHaveLength(20);
+      expect(HSK3_LESSONS).toHaveLength(20);
+      expect(ALL_HSK_LESSONS).toHaveLength(60);
     });
 
     it('validates required content in every lesson', () => {
@@ -207,9 +207,9 @@ describe('HSK 1 - 3 Curriculum Dataset', () => {
 
   describe('Helper Functions', () => {
     it('getHSKLevelLessons filters correctly by level', () => {
-      expect(getHSKLevelLessons('HSK1')).toHaveLength(5);
-      expect(getHSKLevelLessons('HSK2')).toHaveLength(5);
-      expect(getHSKLevelLessons('HSK3')).toHaveLength(4);
+      expect(getHSKLevelLessons('HSK1')).toHaveLength(20);
+      expect(getHSKLevelLessons('HSK2')).toHaveLength(20);
+      expect(getHSKLevelLessons('HSK3')).toHaveLength(20);
     });
 
     it('getHSKLessonById finds existing and returns undefined for unknown', () => {

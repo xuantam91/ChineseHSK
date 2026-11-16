@@ -34,12 +34,12 @@ import { HSK1_LESSONS, HSK2_LESSONS, HSK3_LESSONS, HSKLesson } from '@/lib/curri
 import { HSK4_LESSONS, HSK5_LESSONS, HSK6_LESSONS } from '@/lib/curriculum/hsk4-9-data';
 
 const HSK_LEVEL_LIST: { id: HSKLevel; label: string; desc: string }[] = [
-  { id: 'HSK1', label: 'HSK 1', desc: 'Nhập môn & Pinyin' },
-  { id: 'HSK2', label: 'HSK 2', desc: 'Giao tiếp cơ bản' },
-  { id: 'HSK3', label: 'HSK 3', desc: 'Đàm thoại đời sống' },
-  { id: 'HSK4', label: 'HSK 4', desc: 'Trung cấp công sở' },
-  { id: 'HSK5', label: 'HSK 5', desc: 'Báo chí & Thương mại' },
-  { id: 'HSK6', label: 'HSK 6', desc: 'Thành thạo cao cấp' },
+  { id: 'HSK1', label: 'HSK 1', desc: '20 bài • Nhập môn' },
+  { id: 'HSK2', label: 'HSK 2', desc: '20 bài • Sơ cấp' },
+  { id: 'HSK3', label: 'HSK 3', desc: '20 bài • Đời sống' },
+  { id: 'HSK4', label: 'HSK 4', desc: '20 bài • Công sở' },
+  { id: 'HSK5', label: 'HSK 5', desc: '20 bài • Báo chí' },
+  { id: 'HSK6', label: 'HSK 6', desc: '20 bài • Cao cấp' },
 ];
 
 function getLessonsByLevel(level: HSKLevel): HSKLesson[] {
@@ -176,30 +176,40 @@ export default function StudentDashboardPage() {
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Left 2 Columns: Next Lesson Hero + Step-by-step Lesson List */}
         <div className="lg:col-span-2 space-y-6">
-          {/* 1-Click Start Current Lesson Card */}
+          {/* 1-Click Start Current Lesson Card with Vivid Cover Banner */}
           {nextLesson && (
             <Card className="border-2 border-emerald-600/80 bg-white rounded-2xl shadow-sm overflow-hidden">
-              <div className="bg-emerald-50/70 border-b border-emerald-100 px-5 py-3 flex items-center justify-between">
-                <span className="text-xs font-extrabold uppercase tracking-wider text-emerald-800 flex items-center gap-1.5">
-                  <Play className="w-3.5 h-3.5 fill-emerald-700 text-emerald-700" />
-                  <span>Bài học tiếp theo • {nextLesson.level}</span>
-                </span>
-                <span className="flex items-center gap-1 text-xs text-slate-600 font-semibold">
-                  <Clock className="w-3.5 h-3.5 text-emerald-700" />
-                  {nextLesson.estimatedMinutes} phút
-                </span>
-              </div>
+              <div className="relative min-h-[150px] bg-slate-900 text-white p-5 sm:p-6 flex flex-col justify-between overflow-hidden">
+                <img
+                  src={nextLesson.imageUrl || '/images/lessons/hsk1_lesson01_greeting.jpg'}
+                  alt={nextLesson.title}
+                  className="absolute inset-0 w-full h-full object-cover opacity-40"
+                />
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-950/95 via-emerald-900/85 to-teal-900/65" />
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none select-none absolute -right-2 -bottom-4 text-7xl font-black text-white/10 tracking-widest"
+                >
+                  {nextLesson.coverCalligraphy || nextLesson.vocabulary?.[0]?.hanzi || '汉语'}
+                </div>
 
-              <CardContent className="p-5 sm:p-6 space-y-5">
-                <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+                <div className="relative z-10 flex items-center justify-between gap-2">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider bg-amber-400 text-slate-950">
+                    <Play className="w-3 h-3 fill-slate-950" />
+                    <span>TRANG BÌA BÀI TIẾP THEO • {nextLesson.level} (BÀI {nextLesson.lessonNumber}/{levelLessons.length})</span>
+                  </span>
+                  <span className="flex items-center gap-1 text-xs text-emerald-100 font-semibold bg-white/15 px-2.5 py-1 rounded-full">
+                    <Clock className="w-3.5 h-3.5 text-amber-300" />
+                    {nextLesson.estimatedMinutes} phút
+                  </span>
+                </div>
+
+                <div className="relative z-10 mt-4 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
                   <div>
-                    <div className="text-xs font-bold text-slate-500 mb-1">
-                      Bài {nextLesson.lessonNumber} / {levelLessons.length}
-                    </div>
-                    <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900">
+                    <h2 className="text-xl sm:text-2xl font-extrabold text-white">
                       {nextLesson.title}
                     </h2>
-                    <p className="text-sm text-slate-600 mt-1 leading-relaxed">
+                    <p className="text-xs sm:text-sm text-emerald-100 mt-1 leading-relaxed max-w-xl">
                       {nextLesson.subtitleVi} — {nextLesson.summaryVi}
                     </p>
                   </div>
@@ -209,13 +219,15 @@ export default function StudentDashboardPage() {
                       variant="primary"
                       size="lg"
                       rightIcon={<ArrowRight className="w-4 h-4" />}
-                      className="w-full sm:w-auto bg-emerald-700 hover:bg-emerald-800 text-white font-bold px-6 shadow-sm"
+                      className="w-full sm:w-auto bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold px-6 shadow-sm"
                     >
                       Vào học ngay
                     </Button>
                   </Link>
                 </div>
+              </div>
 
+              <CardContent className="p-5 sm:p-6 space-y-4">
                 {/* Quick Vocabulary Preview Pills (Click to listen!) */}
                 {nextLesson.vocabulary && nextLesson.vocabulary.length > 0 && (
                   <div className="pt-3 border-t border-slate-100">

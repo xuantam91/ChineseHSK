@@ -20,7 +20,7 @@ describe('HSK 4 - 9 Curriculum Dataset & Overviews', () => {
   });
 
   it('contains structured lessons for HSK4 with workplace & interview dialogues', () => {
-    expect(HSK4_LESSONS.length).toBe(4);
+    expect(HSK4_LESSONS.length).toBe(20);
     HSK4_LESSONS.forEach((lesson, idx) => {
       expect(lesson.lessonNumber).toBe(idx + 1);
       expect(lesson.level).toBe('HSK4');
@@ -33,7 +33,7 @@ describe('HSK 4 - 9 Curriculum Dataset & Overviews', () => {
   });
 
   it('contains structured lessons for HSK5 with news & economic trends', () => {
-    expect(HSK5_LESSONS.length).toBe(4);
+    expect(HSK5_LESSONS.length).toBe(20);
     HSK5_LESSONS.forEach((lesson, idx) => {
       expect(lesson.lessonNumber).toBe(idx + 1);
       expect(lesson.level).toBe('HSK5');
@@ -48,7 +48,7 @@ describe('HSK 4 - 9 Curriculum Dataset & Overviews', () => {
   });
 
   it('contains structured lessons for HSK6 with commercial negotiation & idioms', () => {
-    expect(HSK6_LESSONS.length).toBe(4);
+    expect(HSK6_LESSONS.length).toBe(20);
     HSK6_LESSONS.forEach((lesson, idx) => {
       expect(lesson.lessonNumber).toBe(idx + 1);
       expect(lesson.level).toBe('HSK6');
