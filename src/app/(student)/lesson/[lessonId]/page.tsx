@@ -42,6 +42,9 @@ import {
   getCompletedBlockIds,
   toggleBlockCompleted,
   markLessonCompleted,
+  getStoredUserProfile,
+  isDemoAccount,
+  DEMO_MAX_LESSONS,
 } from '@/lib/student-store';
 import {
   Lesson,
@@ -899,9 +902,11 @@ export default function LessonReaderPage({
   const [viewMode, setViewMode] = useState<'step' | 'all'>('step');
   const [showSupplementary, setShowSupplementary] = useState(false);
   const [isCompletedModalOpen, setIsCompletedModalOpen] = useState(false);
+  const [isDemoUser, setIsDemoUser] = useState<boolean>(false);
 
   useEffect(() => {
     setCompletedBlocks(getCompletedBlockIds());
+    setIsDemoUser(isDemoAccount(getStoredUserProfile()));
     setActiveStepIdx(0);
     setShowSupplementary(false);
   }, [lessonId]);
@@ -955,9 +960,15 @@ export default function LessonReaderPage({
     }
   };
 
-  // Find next lesson
+  // Find next lesson (respecting Demo 3-lesson limit)
   const currentIdx = allDayLessons.findIndex((l) => l.id === currentLesson?.id);
-  const nextLesson = allDayLessons[currentIdx + 1];
+  const rawNextLesson = allDayLessons[currentIdx + 1];
+  const nextLesson =
+    isDemoUser && rawNextLesson && (rawNextLesson.sequenceOrder || 1) > DEMO_MAX_LESSONS
+      ? undefined
+      : rawNextLesson;
+  const isLockedForDemo =
+    isDemoUser && (matchedHskLesson?.lessonNumber || currentLesson.sequenceOrder || 1) > DEMO_MAX_LESSONS;
 
   const supplementaryMedia = getMediaByLessonId(currentLesson.id);
   const thematicFlashcardSet = getThematicFlashcardByLessonId(currentLesson.id);
@@ -1143,7 +1154,38 @@ export default function LessonReaderPage({
           totalLessonsInLevel={20}
         />
 
-        {/* STEPPER NAVIGATION PILLS (Easy 1-click navigation between lesson parts) */}
+        {isLockedForDemo ? (
+          <div className="rounded-2xl border-2 border-amber-300 bg-amber-50/80 p-6 sm:p-8 text-center space-y-4">
+            <div className="inline-flex px-3 py-1 rounded-full bg-amber-400 text-slate-950 text-xs font-extrabold uppercase tracking-wider">
+              🔒 Giới hạn Tài khoản Học thử (Demo: {DEMO_MAX_LESSONS} bài đầu)
+            </div>
+            <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900">
+              Đăng ký tài khoản chính thức để mở khóa Bài {matchedHskLesson?.lessonNumber || currentLesson.sequenceOrder}
+            </h2>
+            <p className="text-sm text-slate-700 max-w-xl mx-auto">
+              Tài khoản Demo chỉ hiển thị và cho phép học thử 3 bài đầu tiên của mỗi cấp độ. Hãy đăng ký hoặc đăng nhập tài khoản chính thức để học trọn bộ 120 bài HSK 1–6.
+            </p>
+            <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+              <Link href="/roadmap">
+                <Button variant="outline" size="md" className="text-xs font-bold">
+                  Quay lại 3 bài học thử
+                </Button>
+              </Link>
+              <Link href="/register">
+                <Button
+                  variant="primary"
+                  size="md"
+                  rightIcon={<ArrowRight className="w-4 h-4" />}
+                  className="bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold text-xs px-6"
+                >
+                  Đăng ký mở khóa toàn bộ
+                </Button>
+              </Link>
+            </div>
+          </div>
+        ) : (
+          <>
+            {/* STEPPER NAVIGATION PILLS (Easy 1-click navigation between lesson parts) */}
         {viewMode === 'step' && totalSteps > 1 && (
           <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
             {blocks.map((b, idx) => {
@@ -1319,6 +1361,8 @@ export default function LessonReaderPage({
               </Button>
             </div>
           </div>
+        )}
+          </>
         )}
       </main>
 

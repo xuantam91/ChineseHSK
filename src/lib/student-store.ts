@@ -10,6 +10,18 @@ const STORAGE_KEY_COMPLETED_LESSONS = 'chinese_journey_completed_lessons';
 const STORAGE_KEY_COMPLETED_BLOCKS = 'chinese_journey_completed_blocks';
 const STORAGE_KEY_QUIZ_ATTEMPTS = 'chinese_journey_quiz_attempts';
 
+export const DEMO_MAX_LESSONS = 3;
+
+export function isDemoAccount(profile?: UserProfile | null): boolean {
+  if (!profile) return true;
+  if (profile.role === 'admin') return false;
+  if (typeof profile.isDemo === 'boolean') return profile.isDemo;
+  return (
+    profile.id === 'usr_demo_student_01' ||
+    profile.email?.toLowerCase() === 'student.demo@chinese-journey.edu.vn'
+  );
+}
+
 export function getStoredUserProfile(): UserProfile {
   if (typeof window === 'undefined') return DEMO_USER_PROFILE;
   try {

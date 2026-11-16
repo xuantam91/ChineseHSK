@@ -27,6 +27,8 @@ import {
   getStoredUserProfile,
   saveUserProfile,
   getCompletedLessonIds,
+  isDemoAccount,
+  DEMO_MAX_LESSONS,
 } from '@/lib/student-store';
 import { getFormattedTodayVi } from '@/lib/timezone';
 import { HSKLevel } from '@/types';
@@ -86,17 +88,21 @@ export default function StudentDashboardPage() {
   };
 
   const levelLessons = getLessonsByLevel(activeLevel);
-  const completedInLevelCount = levelLessons.filter((l) =>
+  const isDemo = isDemoAccount(profile);
+  const visibleLessons = isDemo
+    ? levelLessons.slice(0, DEMO_MAX_LESSONS)
+    : levelLessons;
+  const completedInLevelCount = visibleLessons.filter((l) =>
     completedLessons.includes(l.id)
   ).length;
   const levelProgressPct =
-    levelLessons.length > 0
-      ? Math.round((completedInLevelCount / levelLessons.length) * 100)
+    visibleLessons.length > 0
+      ? Math.round((completedInLevelCount / visibleLessons.length) * 100)
       : 0;
 
   // Next uncompleted lesson in this level (or first lesson if all done)
   const nextLesson =
-    levelLessons.find((l) => !completedLessons.includes(l.id)) || levelLessons[0];
+    visibleLessons.find((l) => !completedLessons.includes(l.id)) || visibleLessons[0];
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
@@ -269,10 +275,12 @@ export default function StudentDashboardPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <CardTitle className="text-base sm:text-lg font-bold text-slate-900">
-                    Lộ trình bài học {activeLevel} ({levelLessons.length} bài)
+                    Lộ trình bài học {activeLevel} ({isDemo ? `${visibleLessons.length}/${levelLessons.length} bài học thử` : `${levelLessons.length} bài`})
                   </CardTitle>
                   <p className="text-xs text-slate-500 mt-0.5">
-                    Học lần lượt từ Bài 1 hoặc chọn bất kỳ bài nào bạn muốn luyện tập.
+                    {isDemo
+                      ? `Tài khoản Demo hiển thị và cho phép học thử ${DEMO_MAX_LESSONS} bài đầu tiên của mỗi cấp độ.`
+                      : 'Học lần lượt từ Bài 1 hoặc chọn bất kỳ bài nào bạn muốn luyện tập.'}
                   </p>
                 </div>
                 <Link
@@ -286,7 +294,7 @@ export default function StudentDashboardPage() {
             </CardHeader>
 
             <CardContent className="divide-y divide-slate-100 p-0">
-              {levelLessons.map((lesson) => {
+              {visibleLessons.map((lesson) => {
                 const isDone = completedLessons.includes(lesson.id);
                 const isCurrent = nextLesson?.id === lesson.id;
 
@@ -347,6 +355,30 @@ export default function StudentDashboardPage() {
                   </div>
                 );
               })}
+
+              {isDemo && levelLessons.length > DEMO_MAX_LESSONS && (
+                <div className="p-5 sm:p-6 bg-amber-50/70 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div className="space-y-1">
+                    <div className="text-xs font-extrabold uppercase tracking-wider text-amber-900">
+                      🔒 Giới hạn Tài khoản Học thử (Demo: {DEMO_MAX_LESSONS}/{levelLessons.length} bài đầu)
+                    </div>
+                    <p className="text-xs sm:text-sm text-slate-700">
+                      Tài khoản Demo chỉ hiển thị và học thử {DEMO_MAX_LESSONS} bài đầu. Đăng ký hoặc đăng nhập tài khoản chính thức để mở khóa toàn bộ{' '}
+                      <strong>{levelLessons.length} bài học</strong> của {activeLevel}.
+                    </p>
+                  </div>
+                  <Link href="/register" className="shrink-0">
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
+                      className="bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-xs px-4"
+                    >
+                      Đăng ký mở khóa
+                    </Button>
+                  </Link>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>

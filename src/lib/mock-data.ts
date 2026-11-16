@@ -11,10 +11,11 @@ import { getTodayLocal, calculateUnlockDate } from './timezone';
 export const DEMO_USER_PROFILE: UserProfile = {
   id: 'usr_demo_student_01',
   email: 'student.demo@chinese-journey.edu.vn',
-  displayName: 'Minh Thư',
+  displayName: 'Minh Thư (Demo)',
   currentHskLevel: 'HSK1',
-  avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+  avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit&crop=q=80',
   role: 'student',
+  isDemo: true,
   ageGroup: 'adults_18_plus',
   startDate: getTodayLocal(), // Student starts today by default
   timezone: 'Asia/Ho_Chi_Minh',

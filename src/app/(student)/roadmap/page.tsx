@@ -20,7 +20,13 @@ import { Dialog } from '@/components/ui/Dialog';
 import { PinyinChart } from '@/components/lesson/PinyinChart';
 import { NotionMethodologySection } from '@/components/roadmap/NotionMethodologySection';
 import { DEMO_MONTHS_OVERVIEW } from '@/lib/mock-data';
-import { getStoredUserProfile, saveUserProfile, getCompletedLessonIds } from '@/lib/student-store';
+import {
+  getStoredUserProfile,
+  saveUserProfile,
+  getCompletedLessonIds,
+  isDemoAccount,
+  DEMO_MAX_LESSONS,
+} from '@/lib/student-store';
 import { HSKLevel } from '@/types';
 import { HSK1_LESSONS, HSK2_LESSONS, HSK3_LESSONS, HSKLesson } from '@/lib/curriculum/hsk1-3-data';
 import {
@@ -90,16 +96,20 @@ export default function RoadmapPage() {
   };
 
   const levelLessons = getLessonsForLevel(activeLevel);
-  const completedInLevel = levelLessons.filter((l) =>
+  const isDemo = isDemoAccount(profile);
+  const visibleLessons = isDemo
+    ? levelLessons.slice(0, DEMO_MAX_LESSONS)
+    : levelLessons;
+  const completedInLevel = visibleLessons.filter((l) =>
     completedLessons.includes(l.id)
   ).length;
   const progressPct =
-    levelLessons.length > 0
-      ? Math.round((completedInLevel / levelLessons.length) * 100)
+    visibleLessons.length > 0
+      ? Math.round((completedInLevel / visibleLessons.length) * 100)
       : 0;
 
   const nextLessonInLevel =
-    levelLessons.find((l) => !completedLessons.includes(l.id)) || levelLessons[0];
+    visibleLessons.find((l) => !completedLessons.includes(l.id)) || visibleLessons[0];
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
@@ -226,9 +236,9 @@ export default function RoadmapPage() {
             <Progress value={progressPct} max={100} size="sm" />
           </div>
 
-          {/* Vivid Lesson Cover Cards (20 Lessons per HSK Level) */}
+          {/* Vivid Lesson Cover Cards (Demo: 3 Trial Lessons | Full Account: 20 Lessons per HSK Level) */}
           <div className="space-y-4">
-            {levelLessons.map((lesson) => {
+            {visibleLessons.map((lesson) => {
               const isDone = completedLessons.includes(lesson.id);
               const isNext = nextLessonInLevel?.id === lesson.id;
               const coverImg =
@@ -388,6 +398,39 @@ export default function RoadmapPage() {
                 </div>
               );
             })}
+
+            {isDemo && levelLessons.length > DEMO_MAX_LESSONS && (
+              <div className="rounded-2xl border-2 border-dashed border-amber-300 bg-amber-50/70 p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="space-y-1">
+                  <div className="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider text-amber-900">
+                    <span>🔒 Chế độ Tài khoản Học thử (Demo: Hiển thị {DEMO_MAX_LESSONS}/{levelLessons.length} bài đầu)</span>
+                  </div>
+                  <h3 className="text-base sm:text-lg font-extrabold text-slate-900">
+                    Mở khóa tiếp {levelLessons.length - DEMO_MAX_LESSONS} bài học chuyên sâu ({activeLevel}: Bài 4 — Bài {levelLessons.length})
+                  </h3>
+                  <p className="text-xs sm:text-sm text-slate-600">
+                    Tài khoản Demo giới hạn học thử 3 bài đầu tiên của mỗi cấp độ. Đăng ký hoặc đăng nhập tài khoản chính thức để học trọn bộ 120 bài HSK 1–6.
+                  </p>
+                </div>
+                <div className="flex items-center gap-2.5 shrink-0">
+                  <Link href="/login">
+                    <Button variant="outline" size="md" className="text-xs font-bold border-slate-300 text-slate-700">
+                      Đăng nhập
+                    </Button>
+                  </Link>
+                  <Link href="/register">
+                    <Button
+                      variant="primary"
+                      size="md"
+                      rightIcon={<ArrowRight className="w-4 h-4" />}
+                      className="bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-xs px-5"
+                    >
+                      Đăng ký mở khóa
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}

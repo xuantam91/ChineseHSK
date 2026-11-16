@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/Card';
 import { Lock, Mail, User, ArrowRight } from 'lucide-react';
+import { getStoredUserProfile, saveUserProfile } from '@/lib/student-store';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -17,10 +18,19 @@ export default function RegisterPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    const current = getStoredUserProfile();
+    saveUserProfile({
+      ...current,
+      id: `usr_${Date.now()}`,
+      email: email.trim(),
+      displayName: fullName.trim() || 'Học viên Chính thức',
+      role: 'student',
+      isDemo: false,
+    });
     setTimeout(() => {
       setIsLoading(false);
       router.push('/onboarding');
-    }, 600);
+    }, 500);
   };
 
   return (

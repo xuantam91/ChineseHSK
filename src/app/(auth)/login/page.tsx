@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/Card';
 import { Lock, Mail, ArrowRight, ShieldCheck, UserCheck } from 'lucide-react';
+import { getStoredUserProfile, saveUserProfile } from '@/lib/student-store';
+import { DEMO_USER_PROFILE } from '@/lib/mock-data';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -16,10 +18,32 @@ export default function LoginPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    const normalizedEmail = email.trim().toLowerCase();
+    const isDemo = normalizedEmail === 'student.demo@chinese-journey.edu.vn';
+    const isAdmin = normalizedEmail === 'admin@chinese-journey.edu.vn';
+    const current = getStoredUserProfile();
+
+    if (isDemo) {
+      saveUserProfile({
+        ...DEMO_USER_PROFILE,
+        currentHskLevel: current.currentHskLevel || 'HSK1',
+        isDemo: true,
+      });
+    } else {
+      saveUserProfile({
+        ...current,
+        id: isAdmin ? 'usr_admin_01' : `usr_${Date.now()}`,
+        email: email.trim(),
+        displayName: isAdmin ? 'Quản trị viên' : email.split('@')[0] || 'Học viên Chính thức',
+        role: isAdmin ? 'admin' : 'student',
+        isDemo: false,
+      });
+    }
+
     setTimeout(() => {
       setIsLoading(false);
-      router.push('/dashboard');
-    }, 600);
+      router.push(isAdmin ? '/admin' : '/dashboard');
+    }, 500);
   };
 
   const fillDemoStudent = () => {

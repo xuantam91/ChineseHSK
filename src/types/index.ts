@@ -26,6 +26,7 @@ export interface UserProfile {
   displayName: string;
   avatarUrl?: string;
   role: 'student' | 'admin';
+  isDemo?: boolean;
   ageGroup: AgeGroup;
   currentHskLevel?: HSKLevel; // e.g. 'HSK1' | 'HSK2' | 'HSK3' | 'HSK4' | 'HSK5' | 'HSK6' | 'HSK7-9'
   startDate: string; // YYYY-MM-DD in Asia/Ho_Chi_Minh
