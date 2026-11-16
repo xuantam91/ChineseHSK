@@ -5,20 +5,20 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
   ArrowLeft,
-  CheckCircle,
+  ArrowRight,
   CheckCircle2,
+  ChevronLeft,
   ChevronRight,
   Clock,
-  Sparkles,
   BookOpen,
   Award,
-  Gem,
   Flame,
-  Volume2,
+  Layers,
+  ListChecks,
+  Sparkles,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Progress } from '@/components/ui/Progress';
-import { Badge } from '@/components/ui/Badge';
 import { Dialog } from '@/components/ui/Dialog';
 import { RichTextBlock } from '@/components/lesson/RichTextBlock';
 import { VocabBlock } from '@/components/lesson/VocabBlock';
@@ -32,6 +32,7 @@ import { RoleplayDialogue } from '@/components/lesson/RoleplayDialogue';
 import { PinyinChart } from '@/components/lesson/PinyinChart';
 import { ImageBlock } from '@/components/lesson/ImageBlock';
 import { SupplementaryMediaBlock } from '@/components/lesson/SupplementaryMediaBlock';
+import { TTSVoiceSelector } from '@/components/common/TTSVoiceSelector';
 import { getMediaByLessonId, getThematicFlashcardByLessonId } from '@/lib/curriculum/media-resources';
 import { DEMO_LESSONS } from '@/lib/mock-data';
 import { HSK1_LESSONS, HSK2_LESSONS, HSK3_LESSONS, HSKLesson } from '@/lib/curriculum/hsk1-3-data';
@@ -40,7 +41,6 @@ import {
   getCompletedBlockIds,
   toggleBlockCompleted,
   markLessonCompleted,
-  getCompletedLessonIds,
 } from '@/lib/student-store';
 import {
   Lesson,
@@ -66,22 +66,29 @@ function adaptHskLessonToLesson(hsk: HSKLesson): Lesson {
   const blocks: LessonBlock[] = [];
   let seq = 1;
 
-  // 1. Overview & Intro
-  blocks.push({
-    id: `${hsk.id}-blk-intro`,
-    lessonId: hsk.id,
-    type: 'rich_text',
-    sequenceOrder: seq++,
-    isRequired: true,
-    data: {
-      content: `# ${hsk.title}\n\n**${hsk.subtitleVi}**\n\n${hsk.summaryVi}`,
-      callout: {
-        type: 'tip',
-        title: 'Mục tiêu bài học',
-        text: `Học ${hsk.vocabulary.length} từ vựng mới, đối thoại đời sống và luyện nói mic để đạt điểm tuyệt đối.`,
+  // 1. Vocabulary Items First (Learn core words before dialogue)
+  if (hsk.vocabulary && hsk.vocabulary.length > 0) {
+    blocks.push({
+      id: `${hsk.id}-blk-vocab`,
+      lessonId: hsk.id,
+      type: 'vocabulary',
+      sequenceOrder: seq++,
+      isRequired: true,
+      data: {
+        title: `Từ vựng trọng tâm (${hsk.vocabulary.length} từ)`,
+        description: 'Bấm vào từ hoặc biểu tượng loa để nghe phát âm. Bấm "Tập viết" để tô nét chữ Hán.',
+        items: hsk.vocabulary.map((v, i) => ({
+          id: `${hsk.id}-voc-${i}`,
+          hanzi: v.hanzi,
+          pinyin: v.pinyin,
+          meaningVi: v.meaningVi,
+          exampleSentence: v.exampleSentence,
+          exampleTranslation: v.exampleVi,
+          hskLevel: hsk.level === 'HSK1' ? 1 : hsk.level === 'HSK2' ? 2 : 3,
+        })),
       },
-    },
-  });
+    });
+  }
 
   // 2. Dialogue Roleplay
   if (hsk.dialogue && hsk.dialogue.length > 0) {
@@ -92,7 +99,7 @@ function adaptHskLessonToLesson(hsk: HSKLesson): Lesson {
       sequenceOrder: seq++,
       isRequired: true,
       data: {
-        title: 'Hội thoại đàm thoại tình huống thực tế',
+        title: 'Hội thoại thực tế',
         characterA: { name: hsk.dialogue[0]?.speakerName || 'Nhân vật A', avatar: '👨‍💼' },
         characterB: { name: hsk.dialogue[1]?.speakerName || 'Nhân vật B', avatar: '👩‍💼' },
         lines: hsk.dialogue.map((d, i) => ({
@@ -108,31 +115,7 @@ function adaptHskLessonToLesson(hsk: HSKLesson): Lesson {
     });
   }
 
-  // 3. Vocabulary Items
-  if (hsk.vocabulary && hsk.vocabulary.length > 0) {
-    blocks.push({
-      id: `${hsk.id}-blk-vocab`,
-      lessonId: hsk.id,
-      type: 'vocabulary',
-      sequenceOrder: seq++,
-      isRequired: true,
-      data: {
-        title: `Từ vựng cốt lõi New HSK 3.0 (${hsk.vocabulary.length} từ)`,
-        description: 'Bấm biểu tượng loa để nghe phát âm bản xứ và xem ví dụ minh họa.',
-        items: hsk.vocabulary.map((v, i) => ({
-          id: `${hsk.id}-voc-${i}`,
-          hanzi: v.hanzi,
-          pinyin: v.pinyin,
-          meaningVi: v.meaningVi,
-          exampleSentence: v.exampleSentence,
-          exampleTranslation: v.exampleVi,
-          hskLevel: hsk.level === 'HSK1' ? 1 : hsk.level === 'HSK2' ? 2 : 3,
-        })),
-      },
-    });
-  }
-
-  // 4. Speech Practice (Luyện nói mic)
+  // 3. Speech Practice (Luyện nói mic)
   if (hsk.speechDrills && hsk.speechDrills.length > 0) {
     const drill = hsk.speechDrills[0];
     blocks.push({
@@ -151,7 +134,7 @@ function adaptHskLessonToLesson(hsk: HSKLesson): Lesson {
     });
   }
 
-  // 5. Shadowing Sentences
+  // 4. Shadowing Sentences
   if (hsk.shadowSentences && hsk.shadowSentences.length > 0) {
     blocks.push({
       id: `${hsk.id}-blk-shadowing`,
@@ -160,7 +143,7 @@ function adaptHskLessonToLesson(hsk: HSKLesson): Lesson {
       sequenceOrder: seq++,
       isRequired: false,
       data: {
-        title: 'Luyện nhại giọng phản xạ (Shadowing bản xứ)',
+        title: 'Nhại âm phản xạ (Shadowing)',
         sentences: hsk.shadowSentences.map((s, i) => ({
           id: `${hsk.id}-sh-${i}`,
           hanzi: s.hanzi,
@@ -172,7 +155,7 @@ function adaptHskLessonToLesson(hsk: HSKLesson): Lesson {
     });
   }
 
-  // 6. Quiz Questions
+  // 5. Quiz Questions
   if (hsk.quizQuestions && hsk.quizQuestions.length > 0) {
     blocks.push({
       id: `${hsk.id}-blk-quiz`,
@@ -182,7 +165,7 @@ function adaptHskLessonToLesson(hsk: HSKLesson): Lesson {
       isRequired: true,
       data: {
         quizId: `quiz-${hsk.id}`,
-        title: 'Kiểm tra phản xạ & Củng cố kiến thức',
+        title: 'Kiểm tra nhanh cuối bài',
         passingScore: 80,
         questions: hsk.quizQuestions.map((q, i) => ({
           id: `${hsk.id}-q-${i}`,
@@ -201,34 +184,36 @@ function adaptHskLessonToLesson(hsk: HSKLesson): Lesson {
     dayId: 'day-01',
     sequenceOrder: hsk.lessonNumber,
     title: hsk.title,
-    description: hsk.subtitleVi,
+    description: `${hsk.subtitleVi} — ${hsk.summaryVi}`,
     estimatedMinutes: hsk.estimatedMinutes,
     blocks,
   };
 }
 
-function getBlockFriendlyLabel(type: string, seq: number) {
+function getStepShortLabel(type: string, index: number) {
   switch (type) {
     case 'rich_text':
-      return { title: `PHẦN ${seq}: HƯỚNG DẪN & BỐI CẢNH`, color: 'text-slate-800 bg-slate-100 border border-slate-200' };
+      return `${index + 1}. Lý thuyết`;
+    case 'pinyin_chart':
+      return `${index + 1}. Bảng Pinyin`;
     case 'vocabulary':
-      return { title: `PHẦN ${seq}: TỪ VỰNG CỐT LÕI`, color: 'text-emerald-900 bg-emerald-50 border border-emerald-200' };
-    case 'roleplay_dialogue':
-      return { title: `PHẦN ${seq}: HỘI THOẠI ĐỜI SỐNG`, color: 'text-slate-800 bg-slate-100 border border-slate-200' };
-    case 'speech_practice':
-      return { title: `PHẦN ${seq}: LUYỆN NÓI CHẤM MIC`, color: 'text-emerald-900 bg-emerald-50 border border-emerald-200' };
-    case 'shadowing':
-      return { title: `PHẦN ${seq}: NHẠI ÂM SHADOWING`, color: 'text-slate-800 bg-slate-100 border border-slate-200' };
-    case 'quiz':
-      return { title: `PHẦN ${seq}: BÀI TẬP TRẮC NGHIỆM`, color: 'text-slate-800 bg-slate-100 border border-slate-200' };
+      return `${index + 1}. Từ vựng`;
     case 'flashcard_set':
-      return { title: `PHẦN ${seq}: THẺ FLASHCARD LẬT`, color: 'text-emerald-900 bg-emerald-50 border border-emerald-200' };
+      return `${index + 1}. Flashcard`;
+    case 'roleplay_dialogue':
+      return `${index + 1}. Hội thoại`;
+    case 'speech_practice':
+      return `${index + 1}. Luyện nói`;
+    case 'shadowing':
+      return `${index + 1}. Nhại âm`;
+    case 'quiz':
+      return `${index + 1}. Kiểm tra`;
     case 'video':
-      return { title: `PHẦN ${seq}: VIDEO BỐI CẢNH`, color: 'text-slate-800 bg-slate-100 border border-slate-200' };
+      return `${index + 1}. Video`;
     case 'audio':
-      return { title: `PHẦN ${seq}: AUDIO LUYỆN NGHE`, color: 'text-slate-800 bg-slate-100 border border-slate-200' };
+      return `${index + 1}. Nghe Audio`;
     default:
-      return { title: `PHẦN ${seq}: NỘI DUNG BÀI HỌC`, color: 'text-slate-800 bg-slate-100 border border-slate-200' };
+      return `Bước ${index + 1}`;
   }
 }
 
@@ -263,18 +248,30 @@ export default function LessonReaderPage({
     }
   }
 
-  // Fallback to first demo lesson if still not found
+  // Fallback to first HSK1 lesson if still not found
   if (!currentLesson) {
-    currentLesson = DEMO_LESSONS['day-01'][0];
-    allDayLessons = DEMO_LESSONS['day-01'];
+    currentLesson = adaptHskLessonToLesson(HSK1_LESSONS[0]);
+    allDayLessons = ALL_HSK_LESSONS.map((h) => adaptHskLessonToLesson(h));
   }
 
   const [completedBlocks, setCompletedBlocks] = useState<string[]>([]);
+  const [activeStepIdx, setActiveStepIdx] = useState<number>(0);
+  const [viewMode, setViewMode] = useState<'step' | 'all'>('step');
+  const [showSupplementary, setShowSupplementary] = useState(false);
   const [isCompletedModalOpen, setIsCompletedModalOpen] = useState(false);
 
   useEffect(() => {
     setCompletedBlocks(getCompletedBlockIds());
-  }, []);
+    setActiveStepIdx(0);
+    setShowSupplementary(false);
+  }, [lessonId]);
+
+  const markBlockDone = (blockId: string) => {
+    if (!completedBlocks.includes(blockId)) {
+      toggleBlockCompleted(blockId);
+      setCompletedBlocks((prev) => [...prev, blockId]);
+    }
+  };
 
   const handleToggleBlock = (blockId: string) => {
     const isNowDone = toggleBlockCompleted(blockId);
@@ -285,16 +282,34 @@ export default function LessonReaderPage({
     }
   };
 
-  const requiredBlocks = currentLesson.blocks.filter((b) => b.isRequired);
-  const completedRequiredCount = requiredBlocks.filter((b) =>
-    completedBlocks.includes(b.id)
-  ).length;
+  const blocks = currentLesson.blocks;
+  const totalSteps = blocks.length;
+  const activeBlock = blocks[activeStepIdx] || blocks[0];
 
-  const isReadyToComplete =
-    requiredBlocks.length === 0 || completedRequiredCount === requiredBlocks.length;
+  const completedCount = blocks.filter((b) => completedBlocks.includes(b.id)).length;
+
+  const handleNextStep = () => {
+    if (activeBlock) {
+      markBlockDone(activeBlock.id);
+    }
+    if (activeStepIdx < totalSteps - 1) {
+      setActiveStepIdx((prev) => prev + 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      handleFinishLesson();
+    }
+  };
+
+  const handlePrevStep = () => {
+    if (activeStepIdx > 0) {
+      setActiveStepIdx((prev) => prev - 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
 
   const handleFinishLesson = () => {
     if (currentLesson) {
+      blocks.forEach((b) => markBlockDone(b.id));
       markLessonCompleted(currentLesson.id);
       setIsCompletedModalOpen(true);
     }
@@ -304,43 +319,16 @@ export default function LessonReaderPage({
   const currentIdx = allDayLessons.findIndex((l) => l.id === currentLesson?.id);
   const nextLesson = allDayLessons[currentIdx + 1];
 
-  const renderBlock = (block: LessonBlock) => {
-    const isBlockDone = completedBlocks.includes(block.id);
-    const friendly = getBlockFriendlyLabel(block.type, block.sequenceOrder || 1);
+  const supplementaryMedia = getMediaByLessonId(currentLesson.id);
+  const thematicFlashcardSet = getThematicFlashcardByLessonId(currentLesson.id);
+  const hasSupplementary =
+    !!thematicFlashcardSet || (supplementaryMedia && supplementaryMedia.length > 0);
+
+  const renderBlockContent = (block: LessonBlock) => {
+    if (!block) return null;
 
     return (
-      <div
-        key={block.id}
-        className="rounded-xl border border-slate-200 bg-white p-5 sm:p-6 shadow-2xs space-y-4"
-      >
-        <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-          <div className="flex items-center gap-2">
-            <span className={`text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded ${friendly.color}`}>
-              {friendly.title}
-            </span>
-            {block.isRequired && (
-              <span className="text-xs font-semibold text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded border border-slate-200">
-                Bắt buộc
-              </span>
-            )}
-          </div>
-
-          {block.isRequired && (
-            <button
-              onClick={() => handleToggleBlock(block.id)}
-              className={`flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-md transition-colors ${
-                isBlockDone
-                  ? 'bg-emerald-700 text-white shadow-2xs'
-                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-              }`}
-            >
-              <CheckCircle2 className="w-3.5 h-3.5" />
-              <span>{isBlockDone ? 'Đã hoàn thành' : 'Đánh dấu xong'}</span>
-            </button>
-          )}
-        </div>
-
-        {/* Content Type Dispatch */}
+      <div key={block.id} className="space-y-4">
         {block.type === 'rich_text' && (
           <RichTextBlock data={block.data as RichTextBlockData} />
         )}
@@ -360,7 +348,7 @@ export default function LessonReaderPage({
             data={block.data as QuizBlockData}
             onCompleted={(passed) => {
               if (passed) {
-                handleToggleBlock(block.id);
+                markBlockDone(block.id);
               }
             }}
           />
@@ -381,7 +369,7 @@ export default function LessonReaderPage({
             audioUrl={(block.data as any)?.audioUrl}
             onCompleted={(res) => {
               if (res.isPassed) {
-                handleToggleBlock(block.id);
+                markBlockDone(block.id);
               }
             }}
           />
@@ -397,7 +385,7 @@ export default function LessonReaderPage({
               audioUrl: s.audioUrl,
               speaker: s.speaker,
             }))}
-            onAllCompleted={() => handleToggleBlock(block.id)}
+            onAllCompleted={() => markBlockDone(block.id)}
           />
         )}
         {block.type === 'roleplay_dialogue' && (
@@ -420,7 +408,7 @@ export default function LessonReaderPage({
               meaningVi: l.meaningVi || l.vietnamese || '',
               audioUrl: l.audioUrl,
             }))}
-            onComplete={() => handleToggleBlock(block.id)}
+            onComplete={() => markBlockDone(block.id)}
           />
         )}
         {block.type === 'pinyin_chart' && (
@@ -434,131 +422,269 @@ export default function LessonReaderPage({
 
   return (
     <div className="min-h-screen bg-slate-50">
-      {/* Sticky Top Bar for Focused Reader */}
+      {/* Clean Sticky Header */}
       <div className="sticky top-0 z-30 w-full border-b border-slate-200 bg-white/95 backdrop-blur-sm">
-        <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4 sm:px-6">
+        <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4 sm:px-6 gap-3">
           <Link
-            href={`/roadmap`}
-            className="flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 transition-colors"
+            href="/roadmap"
+            className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-slate-600 hover:text-slate-900 transition-colors shrink-0"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span className="hidden sm:inline">Quay lại Lộ trình</span>
-            <span className="sm:hidden">Thoát</span>
+            <span className="hidden sm:inline">Lộ trình</span>
           </Link>
 
-          {/* Progress Bar & XP indicator */}
-          <div className="flex items-center gap-3">
-            <div className="w-32 sm:w-48 hidden sm:block">
+          {/* Progress Bar */}
+          <div className="flex items-center gap-3 flex-1 max-w-md">
+            <div className="flex-1">
               <Progress
-                value={completedRequiredCount}
-                max={requiredBlocks.length || 1}
+                value={viewMode === 'step' ? activeStepIdx + 1 : completedCount}
+                max={totalSteps || 1}
                 size="sm"
               />
             </div>
-            <div className="flex items-center gap-1 text-xs font-semibold text-slate-700 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
-              <Award className="w-3.5 h-3.5 text-slate-500" />
-              <span>+20 XP</span>
-            </div>
+            <span className="text-xs font-bold text-emerald-800 whitespace-nowrap">
+              {viewMode === 'step'
+                ? `Bước ${activeStepIdx + 1}/${totalSteps}`
+                : `${completedCount}/${totalSteps} xong`}
+            </span>
           </div>
 
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-slate-500 font-medium hidden sm:inline">
-              {completedRequiredCount}/{requiredBlocks.length} hoàn thành
-            </span>
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={() => setViewMode(viewMode === 'step' ? 'all' : 'step')}
+              className="hidden md:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 text-xs font-semibold text-slate-700 transition-colors"
+              title="Chuyển chế độ hiển thị"
+            >
+              <Layers className="w-3.5 h-3.5 text-emerald-700" />
+              <span>{viewMode === 'step' ? 'Xem tất cả' : 'Xem từng bước'}</span>
+            </button>
 
-            {isReadyToComplete ? (
-              <Button
-                variant="primary"
-                size="sm"
-                onClick={handleFinishLesson}
-                leftIcon={<CheckCircle2 className="w-3.5 h-3.5" />}
-                className="font-bold text-xs bg-emerald-700 hover:bg-emerald-800 text-white shadow-2xs"
-              >
-                Hoàn thành bài
-              </Button>
-            ) : (
-              <Button
-                variant="outline"
-                size="sm"
-                disabled
-                className="text-xs opacity-60 font-semibold"
-              >
-                Chưa xong hết
-              </Button>
-            )}
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={handleFinishLesson}
+              leftIcon={<CheckCircle2 className="w-3.5 h-3.5" />}
+              className="font-bold text-xs bg-emerald-700 hover:bg-emerald-800 text-white shadow-2xs"
+            >
+              Hoàn thành
+            </Button>
           </div>
         </div>
       </div>
 
-      {/* Main Reading Container */}
-      <main className="mx-auto max-w-4xl px-4 sm:px-6 py-6 sm:py-10 space-y-8">
-        {/* Lesson Title Header */}
-        <div>
-          <div className="flex items-center gap-2 text-xs font-bold text-emerald-700 mb-1.5">
-            <BookOpen className="w-4 h-4" />
-            <span>Bài học {currentLesson.sequenceOrder}</span>
-            <span>•</span>
-            <span className="flex items-center gap-1 text-gray-500 font-semibold">
-              <Clock className="w-3 h-3" />
-              {currentLesson.estimatedMinutes} phút
-            </span>
+      {/* Main Container */}
+      <main className="mx-auto max-w-4xl px-4 sm:px-6 py-6 sm:py-8 space-y-6">
+        {/* Compact Lesson Title Banner */}
+        <div className="rounded-2xl bg-gradient-to-br from-emerald-600 via-teal-600 to-emerald-800 text-white p-5 sm:p-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2 text-xs font-bold text-amber-300 mb-1">
+              <BookOpen className="w-3.5 h-3.5" />
+              <span>BÀI HỌC {currentLesson.sequenceOrder}</span>
+              <span>•</span>
+              <span className="inline-flex items-center gap-1 text-emerald-100">
+                <Clock className="w-3.5 h-3.5" />
+                {currentLesson.estimatedMinutes} phút
+              </span>
+            </div>
+            <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-white">
+              {currentLesson.title}
+            </h1>
+            <p className="mt-1 text-xs sm:text-sm text-emerald-100 line-clamp-2 max-w-2xl">
+              {currentLesson.description}
+            </p>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight">
-            {currentLesson.title}
-          </h1>
-          <p className="mt-1.5 text-xs sm:text-sm text-gray-600 leading-relaxed font-medium">
-            {currentLesson.description}
-          </p>
+
+          <div className="self-start sm:self-center shrink-0">
+            <TTSVoiceSelector variant="dropdown" />
+          </div>
         </div>
 
-        {/* Blocks rendered in sequential order */}
-        <div className="space-y-6">
-          {currentLesson.blocks.map((block) => renderBlock(block))}
-        </div>
+        {/* STEPPER NAVIGATION PILLS (Easy 1-click navigation between lesson parts) */}
+        {viewMode === 'step' && totalSteps > 1 && (
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+            {blocks.map((b, idx) => {
+              const isCurrent = !showSupplementary && idx === activeStepIdx;
+              const isDone = completedBlocks.includes(b.id);
+              return (
+                <button
+                  key={b.id}
+                  type="button"
+                  onClick={() => {
+                    setShowSupplementary(false);
+                    setActiveStepIdx(idx);
+                  }}
+                  className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all border ${
+                    isCurrent
+                      ? 'bg-emerald-700 text-white border-emerald-700 shadow-xs'
+                      : isDone
+                      ? 'bg-emerald-50 text-emerald-800 border-emerald-200 hover:bg-emerald-100/70'
+                      : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300 hover:text-slate-900'
+                  }`}
+                >
+                  {isDone && (
+                    <CheckCircle2
+                      className={`w-3.5 h-3.5 ${isCurrent ? 'text-amber-300' : 'text-emerald-600'}`}
+                    />
+                  )}
+                  <span>{getStepShortLabel(b.type, idx)}</span>
+                </button>
+              );
+            })}
 
-        {/* Supplementary Multimedia & Thematic Flashcards */}
-        <SupplementaryMediaBlock
-          lessonId={currentLesson.id}
-          supplementaryMedia={getMediaByLessonId(currentLesson.id)}
-          thematicFlashcardSet={getThematicFlashcardByLessonId(currentLesson.id)}
-        />
-
-        {/* Bottom Actions Bar */}
-        <div className="pt-6 pb-12 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-gray-200">
-          <Link href={`/roadmap`}>
-            <Button variant="ghost" size="sm" leftIcon={<ArrowLeft className="w-4 h-4" />}>
-              Quay lại lộ trình
-            </Button>
-          </Link>
-
-          <div className="flex items-center gap-3 w-full sm:w-auto">
-            <Button
-              variant="primary"
-              size="md"
-              onClick={handleFinishLesson}
-              rightIcon={<CheckCircle2 className="w-4 h-4" />}
-              className="w-full sm:w-auto font-black shadow-md shadow-emerald-700/20"
-            >
-              Hoàn thành bài học
-            </Button>
-
-            {nextLesson && (
-              <Link href={`/lesson/${nextLesson.id}`}>
-                <Button variant="outline" size="md" rightIcon={<ChevronRight className="w-4 h-4" />}>
-                  Bài tiếp theo
-                </Button>
-              </Link>
+            {hasSupplementary && (
+              <button
+                type="button"
+                onClick={() => setShowSupplementary(true)}
+                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all border ${
+                  showSupplementary
+                    ? 'bg-emerald-700 text-white border-emerald-700 shadow-xs'
+                    : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'
+                }`}
+              >
+                <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                <span>Mở rộng & Video</span>
+              </button>
             )}
           </div>
-        </div>
+        )}
+
+        {/* FOCUSED STEP VIEW (DEFAULT - UNCLUTTERED) */}
+        {viewMode === 'step' ? (
+          showSupplementary ? (
+            <div className="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-2xs space-y-6">
+              <SupplementaryMediaBlock
+                lessonId={currentLesson.id}
+                supplementaryMedia={supplementaryMedia}
+                thematicFlashcardSet={thematicFlashcardSet}
+              />
+              <div className="flex items-center justify-between pt-4 border-t border-slate-100">
+                <Button
+                  variant="outline"
+                  size="md"
+                  onClick={() => setShowSupplementary(false)}
+                  leftIcon={<ChevronLeft className="w-4 h-4" />}
+                >
+                  Quay lại bài học
+                </Button>
+                <Button
+                  variant="primary"
+                  size="md"
+                  onClick={handleFinishLesson}
+                  rightIcon={<CheckCircle2 className="w-4 h-4" />}
+                  className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold"
+                >
+                  Hoàn thành bài học
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div className="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-2xs space-y-6">
+              {renderBlockContent(activeBlock)}
+
+              {/* Step Bottom Navigation Bar */}
+              <div className="pt-5 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="md"
+                  disabled={activeStepIdx === 0}
+                  onClick={handlePrevStep}
+                  leftIcon={<ChevronLeft className="w-4 h-4" />}
+                  className="w-full sm:w-auto text-xs sm:text-sm font-semibold"
+                >
+                  Bước trước
+                </Button>
+
+                <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
+                  {activeStepIdx < totalSteps - 1 ? (
+                    <Button
+                      type="button"
+                      variant="primary"
+                      size="md"
+                      onClick={handleNextStep}
+                      rightIcon={<ArrowRight className="w-4 h-4" />}
+                      className="w-full sm:w-auto bg-emerald-700 hover:bg-emerald-800 text-white font-bold px-6 shadow-xs"
+                    >
+                      Tiếp tục: {getStepShortLabel(blocks[activeStepIdx + 1].type, activeStepIdx + 1)}
+                    </Button>
+                  ) : (
+                    <Button
+                      type="button"
+                      variant="primary"
+                      size="md"
+                      onClick={handleFinishLesson}
+                      rightIcon={<CheckCircle2 className="w-4 h-4" />}
+                      className="w-full sm:w-auto bg-emerald-700 hover:bg-emerald-800 text-white font-bold px-6 shadow-md shadow-emerald-700/20"
+                    >
+                      Hoàn thành bài học
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </div>
+          )
+        ) : (
+          /* ALL-AT-ONCE VIEW (For students who toggle "Xem tất cả") */
+          <div className="space-y-6">
+            {blocks.map((block, idx) => {
+              const isBlockDone = completedBlocks.includes(block.id);
+              return (
+                <div
+                  key={block.id}
+                  className="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-2xs space-y-4"
+                >
+                  <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <span className="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded bg-emerald-50 text-emerald-900 border border-emerald-200">
+                      {getStepShortLabel(block.type, idx)}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => handleToggleBlock(block.id)}
+                      className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-lg transition-colors ${
+                        isBlockDone
+                          ? 'bg-emerald-700 text-white'
+                          : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                      }`}
+                    >
+                      <CheckCircle2 className="w-3.5 h-3.5" />
+                      <span>{isBlockDone ? 'Đã xong' : 'Đánh dấu xong'}</span>
+                    </button>
+                  </div>
+                  {renderBlockContent(block)}
+                </div>
+              );
+            })}
+
+            {hasSupplementary && (
+              <SupplementaryMediaBlock
+                lessonId={currentLesson.id}
+                supplementaryMedia={supplementaryMedia}
+                thematicFlashcardSet={thematicFlashcardSet}
+              />
+            )}
+
+            <div className="pt-4 flex justify-end">
+              <Button
+                variant="primary"
+                size="lg"
+                onClick={handleFinishLesson}
+                rightIcon={<CheckCircle2 className="w-5 h-5" />}
+                className="w-full sm:w-auto bg-emerald-700 hover:bg-emerald-800 text-white font-bold px-8"
+              >
+                Hoàn thành bài học
+              </Button>
+            </div>
+          </div>
+        )}
       </main>
 
       {/* Congratulations Dialog */}
       <Dialog
         isOpen={isCompletedModalOpen}
         onClose={() => setIsCompletedModalOpen(false)}
-        title="Hoàn thành bài học thành công"
-        description="Bạn đã hoàn thành các khối học và được ghi nhận tiến độ."
+        title="Hoàn thành bài học xuất sắc!"
+        description="Tiến độ của bạn đã được lưu lại. Bạn có thể chuyển ngay sang bài kế tiếp."
       >
         <div className="py-4 text-center space-y-3">
           <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-700 text-white shadow-md shadow-emerald-700/20">
@@ -566,53 +692,52 @@ export default function LessonReaderPage({
           </div>
 
           <h3 className="text-lg font-bold text-slate-900">
-            Ghi nhận tiến độ học tập
+            {currentLesson.title}
           </h3>
 
           <div className="flex justify-center items-center gap-2 pt-1">
-            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 border border-slate-200 rounded-lg text-slate-800 text-xs font-bold">
-              <Award className="w-3.5 h-3.5 text-slate-600" />
+            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-900 text-xs font-bold">
+              <Award className="w-3.5 h-3.5 text-emerald-700" />
               <span>+50 XP</span>
             </div>
             <div className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 border border-amber-200 rounded-lg text-amber-900 text-xs font-bold">
               <Flame className="w-3.5 h-3.5 fill-amber-500 text-amber-600" />
-              <span>Duy trì chuỗi học</span>
+              <span>Giữ chuỗi Streak</span>
             </div>
           </div>
-
-          <p className="text-xs text-slate-500 max-w-xs mx-auto pt-1 font-medium">
-            Tiến độ đã được lưu tự động trên hệ thống. Tiếp tục duy trì nhịp học mỗi ngày!
-          </p>
         </div>
 
-        <div className="flex flex-col sm:flex-row justify-center gap-2 pt-4 border-t border-slate-100">
+        <div className="flex flex-col sm:flex-row justify-center gap-2.5 pt-4 border-t border-slate-100">
           <Button
             variant="outline"
-            size="sm"
-            onClick={() => router.push(`/roadmap`)}
+            size="md"
+            onClick={() => router.push('/roadmap')}
             className="font-semibold text-xs border-slate-300 text-slate-700"
           >
-            Về Lộ trình
+            Xem lộ trình
           </Button>
 
           {nextLesson ? (
             <Button
               variant="primary"
-              size="sm"
-              onClick={() => router.push(`/lesson/${nextLesson.id}`)}
+              size="md"
+              onClick={() => {
+                setIsCompletedModalOpen(false);
+                router.push(`/lesson/${nextLesson.id}`);
+              }}
               rightIcon={<ChevronRight className="w-4 h-4" />}
               className="font-bold text-xs bg-emerald-700 hover:bg-emerald-800 text-white"
             >
-              Học bài tiếp theo
+              Học bài tiếp theo: {nextLesson.title}
             </Button>
           ) : (
             <Button
               variant="primary"
-              size="sm"
+              size="md"
               onClick={() => router.push('/dashboard')}
               className="font-bold text-xs bg-emerald-700 hover:bg-emerald-800 text-white"
             >
-              Về Trang chủ
+              Về Bảng điều khiển
             </Button>
           )}
         </div>
