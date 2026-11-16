@@ -179,37 +179,39 @@ export default function StudentDashboardPage() {
           {/* 1-Click Start Current Lesson Card with Vivid Cover Banner */}
           {nextLesson && (
             <Card className="border-2 border-emerald-600/80 bg-white rounded-2xl shadow-sm overflow-hidden">
-              <div className="relative min-h-[150px] bg-slate-900 text-white p-5 sm:p-6 flex flex-col justify-between overflow-hidden">
+              <div className="relative min-h-[190px] sm:min-h-[210px] bg-slate-900 text-white p-5 sm:p-6 flex flex-col justify-between overflow-hidden">
                 <img
                   src={nextLesson.imageUrl || '/images/lessons/hsk1_lesson01_greeting.jpg'}
                   alt={nextLesson.title}
-                  className="absolute inset-0 w-full h-full object-cover opacity-40"
+                  className="absolute inset-0 w-full h-full object-cover object-center opacity-95 contrast-105 saturate-110"
                 />
-                <div className="absolute inset-0 bg-gradient-to-r from-emerald-950/95 via-emerald-900/85 to-teal-900/65" />
+                {/* Directional gradient: readable text on left/bottom, crystal-clear illustration on right */}
+                <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-emerald-950/65 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-slate-950/30" />
                 <div
                   aria-hidden="true"
-                  className="pointer-events-none select-none absolute -right-2 -bottom-4 text-7xl font-black text-white/10 tracking-widest"
+                  className="pointer-events-none select-none absolute right-3 bottom-2 text-6xl font-black text-white/20 tracking-widest drop-shadow"
                 >
                   {nextLesson.coverCalligraphy || nextLesson.vocabulary?.[0]?.hanzi || '汉语'}
                 </div>
 
                 <div className="relative z-10 flex items-center justify-between gap-2">
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider bg-amber-400 text-slate-950">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider bg-amber-400 text-slate-950 shadow-sm">
                     <Play className="w-3 h-3 fill-slate-950" />
                     <span>TRANG BÌA BÀI TIẾP THEO • {nextLesson.level} (BÀI {nextLesson.lessonNumber}/{levelLessons.length})</span>
                   </span>
-                  <span className="flex items-center gap-1 text-xs text-emerald-100 font-semibold bg-white/15 px-2.5 py-1 rounded-full">
+                  <span className="flex items-center gap-1 text-xs text-white font-bold bg-slate-950/60 backdrop-blur-xs border border-white/20 px-3 py-1 rounded-full shadow-2xs">
                     <Clock className="w-3.5 h-3.5 text-amber-300" />
                     {nextLesson.estimatedMinutes} phút
                   </span>
                 </div>
 
-                <div className="relative z-10 mt-4 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-                  <div>
-                    <h2 className="text-xl sm:text-2xl font-extrabold text-white">
+                <div className="relative z-10 mt-6 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+                  <div className="max-w-xl">
+                    <h2 className="text-xl sm:text-2xl font-black text-white drop-shadow-md">
                       {nextLesson.title}
                     </h2>
-                    <p className="text-xs sm:text-sm text-emerald-100 mt-1 leading-relaxed max-w-xl">
+                    <p className="text-xs sm:text-sm text-emerald-50 font-medium mt-1.5 leading-relaxed drop-shadow">
                       {nextLesson.subtitleVi} — {nextLesson.summaryVi}
                     </p>
                   </div>
@@ -219,7 +221,7 @@ export default function StudentDashboardPage() {
                       variant="primary"
                       size="lg"
                       rightIcon={<ArrowRight className="w-4 h-4" />}
-                      className="w-full sm:w-auto bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold px-6 shadow-sm"
+                      className="w-full sm:w-auto bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold px-6 shadow-md"
                     >
                       Vào học ngay
                     </Button>

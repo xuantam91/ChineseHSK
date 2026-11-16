@@ -248,47 +248,48 @@ export default function RoadmapPage() {
                       : 'border-slate-200 hover:border-emerald-300 shadow-2xs'
                   }`}
                 >
-                  {/* Left Visual Lesson Cover Thumbnail */}
+                  {/* Left Visual Lesson Cover Thumbnail - Crisp & Vibrant */}
                   <Link
                     href={`/lesson/${lesson.id}`}
-                    className="relative md:w-56 lg:w-64 min-h-[140px] bg-slate-900 text-white p-4 flex flex-col justify-between overflow-hidden shrink-0 group"
+                    className="relative md:w-60 lg:w-68 min-h-[155px] bg-slate-900 text-white p-4 flex flex-col justify-between overflow-hidden shrink-0 group"
                   >
                     <img
                       src={coverImg}
                       alt={lesson.title}
-                      className="absolute inset-0 w-full h-full object-cover opacity-45 group-hover:scale-105 transition-transform duration-500"
+                      className="absolute inset-0 w-full h-full object-cover object-center opacity-95 contrast-105 saturate-110 group-hover:scale-105 transition-transform duration-500"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-br from-emerald-950/90 via-emerald-900/75 to-teal-900/60" />
+                    {/* Subtle top/bottom scrims so the center of the cover artwork stays 100% sharp */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/15 to-slate-950/55" />
                     <div
                       aria-hidden="true"
-                      className="pointer-events-none select-none absolute -right-2 -bottom-3 text-5xl font-black text-white/15 tracking-widest"
+                      className="pointer-events-none select-none absolute right-2 bottom-1 text-4xl font-black text-white/25 tracking-widest drop-shadow"
                     >
                       {coverHanzi}
                     </div>
 
                     <div className="relative z-10 flex items-center justify-between gap-2">
                       <span
-                        className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-extrabold uppercase tracking-wider ${
+                        className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-extrabold uppercase tracking-wider shadow-2xs ${
                           isDone
                             ? 'bg-emerald-500 text-white'
                             : isNext
                             ? 'bg-amber-400 text-slate-950'
-                            : 'bg-white/20 text-white backdrop-blur-xs'
+                            : 'bg-slate-950/70 text-white border border-white/25 backdrop-blur-xs'
                         }`}
                       >
                         {isDone && <CheckCircle2 className="w-3 h-3" />}
                         BÀI {lesson.lessonNumber}/{levelLessons.length}
                       </span>
-                      <span className="text-[11px] font-bold text-amber-300">
+                      <span className="text-[11px] font-extrabold text-amber-300 bg-slate-950/60 px-2 py-0.5 rounded-md border border-white/15">
                         {lesson.level}
                       </span>
                     </div>
 
                     <div className="relative z-10 mt-3">
-                      <div className="text-xl font-black text-white tracking-wide">
+                      <div className="text-xl font-black text-white tracking-wide drop-shadow-md">
                         {coverHanzi}
                       </div>
-                      <div className="text-[11px] text-emerald-100 font-medium line-clamp-1">
+                      <div className="text-[11px] text-emerald-50 font-semibold line-clamp-1 drop-shadow">
                         Trang bìa Bài {lesson.lessonNumber} • {lesson.estimatedMinutes} phút
                       </div>
                     </div>

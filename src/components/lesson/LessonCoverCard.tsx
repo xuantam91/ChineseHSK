@@ -125,20 +125,21 @@ export const LessonCoverCard: React.FC<LessonCoverCardProps> = ({
   return (
     <div className="rounded-3xl overflow-hidden border border-emerald-200/80 bg-white shadow-md">
       {/* TOP VISUAL ARTWORK BANNER */}
-      <div className="relative min-h-[210px] sm:min-h-[240px] flex flex-col justify-between p-5 sm:p-7 text-white overflow-hidden bg-slate-900">
-        {/* Background Cover Illustration */}
+      <div className="relative min-h-[230px] sm:min-h-[260px] flex flex-col justify-between p-5 sm:p-7 text-white overflow-hidden bg-slate-900">
+        {/* Background Cover Illustration - Sharp & Vibrant */}
         <img
           src={coverImage}
           alt={title}
-          className="absolute inset-0 h-full w-full object-cover opacity-40 scale-105 transition-transform duration-700"
+          className="absolute inset-0 h-full w-full object-cover object-center opacity-95 contrast-105 saturate-110 transition-transform duration-700"
         />
-        {/* Rich Layered Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-emerald-950/95 via-emerald-900/85 to-teal-900/65" />
+        {/* Directional Gradient Overlay: Dark on left/bottom for crisp text, clear on right so artwork shines */}
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-emerald-950/60 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/20 to-slate-950/35" />
 
         {/* Decorative Chinese Calligraphy Watermark */}
         <div
           aria-hidden="true"
-          className="pointer-events-none select-none absolute -right-3 -bottom-6 text-7xl sm:text-9xl font-black text-white/10 tracking-widest leading-none"
+          className="pointer-events-none select-none absolute right-4 bottom-3 text-6xl sm:text-8xl font-black text-white/20 tracking-widest leading-none drop-shadow"
         >
           {calligraphy}
         </div>
@@ -146,15 +147,15 @@ export const LessonCoverCard: React.FC<LessonCoverCardProps> = ({
         {/* Top Row: Badges + Voice Selector */}
         <div className="relative z-10 flex flex-wrap items-center justify-between gap-3">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider bg-amber-400 text-slate-950 shadow-2xs">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider bg-amber-400 text-slate-950 shadow-sm">
               <Sparkles className="w-3.5 h-3.5" />
               {level} • BÀI {lessonNum}/{totalLessonsInLevel}
             </span>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-white/15 backdrop-blur-xs text-emerald-100 border border-white/15">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-slate-950/60 backdrop-blur-xs text-white border border-white/20">
               <Clock className="w-3.5 h-3.5 text-amber-300" />
               {estimatedMinutes} phút
             </span>
-            <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-white/15 backdrop-blur-xs text-emerald-100 border border-white/15">
+            <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-slate-950/60 backdrop-blur-xs text-emerald-100 border border-white/20">
               <BookOpen className="w-3.5 h-3.5 text-emerald-300" />
               Giáo trình HSK Chuẩn Quốc tế
             </span>
@@ -166,17 +167,17 @@ export const LessonCoverCard: React.FC<LessonCoverCardProps> = ({
         </div>
 
         {/* Center/Bottom Row: Lesson Title, Subtitle & Quick Actions */}
-        <div className="relative z-10 mt-5 flex flex-col lg:flex-row lg:items-end justify-between gap-5">
+        <div className="relative z-10 mt-6 flex flex-col lg:flex-row lg:items-end justify-between gap-5">
           <div className="space-y-2 max-w-2xl">
-            <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-amber-300">
+            <div className="inline-flex items-center gap-2 text-xs font-extrabold uppercase tracking-widest text-amber-300 drop-shadow">
               <span>TRANG BÌA NỘI DUNG BÀI HỌC</span>
               <span>•</span>
               <span>CHỦ ĐỀ: {calligraphy}</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white leading-tight">
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white leading-tight drop-shadow-md">
               {title}
             </h1>
-            <p className="text-sm sm:text-base text-emerald-100/95 leading-relaxed">
+            <p className="text-sm sm:text-base text-emerald-50 font-medium leading-relaxed drop-shadow">
               {summary}
             </p>
           </div>
