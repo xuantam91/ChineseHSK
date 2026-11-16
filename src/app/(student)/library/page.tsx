@@ -159,7 +159,15 @@ export default function LibraryPage() {
     },
   ];
 
-  const allResources: UnifiedResourceItem[] = [...curatedItems, ...legacyItems, ...additionalItems];
+  const seenResourceUrls = new Set<string>();
+  const allResources: UnifiedResourceItem[] = [];
+  for (const item of [...curatedItems, ...additionalItems, ...legacyItems]) {
+    const normUrl = item.url.replace(/\?usp=sharing$/, '').trim();
+    if (!seenResourceUrls.has(normUrl)) {
+      seenResourceUrls.add(normUrl);
+      allResources.push(item);
+    }
+  }
 
   const filteredResources = allResources.filter((res) => {
     const matchesCat = selectedCategory === 'all' || res.category === selectedCategory;
@@ -392,13 +400,19 @@ export default function LibraryPage() {
           className="max-w-3xl"
         >
           <div className="py-2 space-y-4">
-            <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-black shadow-inner">
+            <div
+              className={`relative w-full aspect-video rounded-2xl overflow-hidden shadow-inner ${
+                activeMediaModal.embedUrl?.includes('drive.google.com')
+                  ? 'bg-white border border-slate-200'
+                  : 'bg-black'
+              }`}
+            >
               <iframe
                 src={activeMediaModal.embedUrl}
                 title={activeMediaModal.title}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
-                className="absolute inset-0 w-full h-full"
+                className="absolute inset-0 w-full h-full bg-white"
               />
             </div>
 

@@ -145,8 +145,8 @@ export const THEMATIC_FLASHCARD_SETS: ThematicFlashcardSet[] = [
     videoUrl: 'https://www.youtube.com/watch?v=wwQUU4pSqO4',
     videoId: 'wwQUU4pSqO4',
     descriptionVi: 'Tên gọi các loại nước khoáng, sữa tươi, trà ô long, táo, chuối, dưa hấu thanh nhiệt.',
-    relatedHskLevel: 'HSK 1',
-    relatedLessonId: 'hsk1-lesson-05',
+    relatedHskLevel: 'HSK 2',
+    relatedLessonId: 'hsk2-lesson-03',
     words: [
       { id: 'tf-df-1', hanzi: '水', pinyin: 'shuǐ', vietnamese: 'nước', category: 'drinks', exampleSentence: '多喝水对身体好。', examplePinyin: 'Duō hē shuǐ duì shēntǐ hǎo.', exampleVi: 'Uống nhiều nước rất tốt cho cơ thể.' },
       { id: 'tf-df-2', hanzi: '牛奶', pinyin: 'niúnǎi', vietnamese: 'sữa bò', category: 'drinks', exampleSentence: '每天早上一杯热牛奶。', examplePinyin: 'Měitiān zǎoshang yì bēi rè niúnǎi.', exampleVi: 'Mỗi buổi sáng một ly sữa nóng.' },
@@ -164,7 +164,7 @@ export const THEMATIC_FLASHCARD_SETS: ThematicFlashcardSet[] = [
     videoId: '2eBi5q5JyDQ',
     descriptionVi: 'Các gam màu đỏ, vàng, xanh lam, xanh lá, đen, trắng giúp miêu tả đồ vật và lựa chọn khi mua sắm.',
     relatedHskLevel: 'HSK 1',
-    relatedLessonId: 'hsk1-lesson-05',
+    relatedLessonId: 'hsk1-lesson-02',
     words: [
       { id: 'tf-col-1', hanzi: '红色', pinyin: 'hóngsè', vietnamese: 'màu đỏ', category: 'color', exampleSentence: '中国人过年喜欢穿红色的衣服。', examplePinyin: 'Zhōngguórén guònián xǐhuan chuān hóngsè de yīfu.', exampleVi: 'Người Trung Quốc dịp Tết thích mặc quần áo màu đỏ.' },
       { id: 'tf-col-2', hanzi: '黄色', pinyin: 'huángsè', vietnamese: 'màu vàng', category: 'color', exampleSentence: '秋天的银杏叶是黄色的。', examplePinyin: 'Qiūtiān de yínxìng yè shì huángsè de.', exampleVi: 'Lá ngân hạnh mùa thu có màu vàng.' },
@@ -182,7 +182,7 @@ export const THEMATIC_FLASHCARD_SETS: ThematicFlashcardSet[] = [
     videoId: 'WeYArTD9IHk',
     descriptionVi: 'Cách đọc, viết Hán tự và phát âm chuẩn các con số từ 1 đến 10, nền tảng cho ngày tháng và số tiền.',
     relatedHskLevel: 'HSK 1',
-    relatedLessonId: 'hsk1-lesson-04',
+    relatedLessonId: 'hsk1-lesson-01',
     words: [
       { id: 'tf-num-1', hanzi: '一', pinyin: 'yī', vietnamese: 'số 1', category: 'numbers', exampleSentence: '第一名 (hạng nhất)', examplePinyin: 'Dì-yī míng', exampleVi: 'Hạng nhất' },
       { id: 'tf-num-2', hanzi: '二', pinyin: 'èr', vietnamese: 'số 2', category: 'numbers', exampleSentence: '星期二 (thứ Ba)', examplePinyin: 'Xīngqī\'èr', exampleVi: 'Thứ Ba' },

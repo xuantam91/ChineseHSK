@@ -68,6 +68,8 @@ export default function LandingPage() {
   const [activeWordIndex, setActiveWordIndex] = useState(0);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [selectedPersona, setSelectedPersona] = useState<TTSVoicePersona>('female');
+  const [isTestingMic, setIsTestingMic] = useState(false);
+  const [micTested, setMicTested] = useState(false);
 
   const activeWord = INTERACTIVE_WORDS[activeWordIndex];
 
@@ -78,6 +80,15 @@ export default function LandingPage() {
       onEnd: () => setIsPlayingAudio(false),
       onError: () => setIsPlayingAudio(false),
     });
+  };
+
+  const handleTestMicDemo = () => {
+    setIsTestingMic(true);
+    setMicTested(false);
+    setTimeout(() => {
+      setIsTestingMic(false);
+      setMicTested(true);
+    }, 1200);
   };
 
   const featurePillars = [
@@ -384,8 +395,9 @@ export default function LandingPage() {
                   </div>
 
                   {/* Pronunciation audio trigger buttons */}
-                  <div className="space-y-2 pt-1">
+                  <div className="space-y-2.5 pt-1">
                     <button
+                      type="button"
                       onClick={() => handlePlayAudio(activeWord.hanzi)}
                       className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-sm font-bold shadow-xs active:scale-98 transition-all"
                     >
@@ -394,33 +406,63 @@ export default function LandingPage() {
                     </button>
 
                     <button
+                      type="button"
                       onClick={() => handlePlayAudio(activeWord.example)}
-                      className="w-full flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors"
-                      title={activeWord.exampleVi}
+                      className="w-full p-2.5 rounded-xl border border-slate-200 hover:border-emerald-300 bg-slate-50/70 hover:bg-emerald-50/40 text-left transition-all flex items-center justify-between gap-2"
                     >
-                      <span>Nghe câu ví dụ: &quot;{activeWord.example}&quot;</span>
+                      <div>
+                        <div className="text-xs font-bold text-slate-900 font-chinese">
+                          Ví dụ: &ldquo;{activeWord.example}&rdquo;
+                        </div>
+                        <div className="text-xs text-slate-500 mt-0.5">
+                          {activeWord.exampleVi}
+                        </div>
+                      </div>
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-xs font-bold text-emerald-700 shrink-0">
+                        <Volume2 className="w-3.5 h-3.5" />
+                        <span>Nghe câu</span>
+                      </span>
                     </button>
                   </div>
                 </div>
 
-                {/* AI Speech Score Simulation */}
-                <div className="rounded-xl border border-slate-200 bg-white p-4 flex items-center justify-between shadow-2xs">
+                {/* Interactive AI Speech Score Demo */}
+                <div className="rounded-xl border border-slate-200 bg-white p-4 flex items-center justify-between shadow-2xs gap-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center border border-emerald-200 shrink-0">
+                    <button
+                      type="button"
+                      onClick={handleTestMicDemo}
+                      className={`w-11 h-11 rounded-xl flex items-center justify-center border shrink-0 transition-all ${
+                        isTestingMic
+                          ? 'bg-rose-600 text-white border-rose-600 animate-pulse'
+                          : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-200'
+                      }`}
+                      title="Bấm để thử chấm điểm phát âm AI"
+                    >
                       <Mic className="w-5 h-5" />
-                    </div>
+                    </button>
                     <div>
                       <span className="text-sm font-bold text-slate-900 block leading-tight">
-                        Chấm điểm micro AI
+                        {isTestingMic
+                          ? 'Đang phân tích thanh điệu...'
+                          : micTested
+                          ? `Đã chấm âm "${activeWord.hanzi}": 98%`
+                          : 'Thử chấm điểm Micro AI'}
                       </span>
                       <span className="text-xs text-emerald-700 font-semibold">
-                        Độ chuẩn thanh điệu: 98%
+                        {isTestingMic
+                          ? 'Hãy đọc to từ trên...'
+                          : 'Nhận diện chuẩn xác 4 thanh điệu Bắc Kinh'}
                       </span>
                     </div>
                   </div>
-                  <span className="text-xs font-bold text-emerald-800 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200">
-                    Xuất sắc
-                  </span>
+                  <button
+                    type="button"
+                    onClick={handleTestMicDemo}
+                    className="text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 px-3 py-1.5 rounded-lg border border-emerald-200 shrink-0 transition-colors"
+                  >
+                    {micTested ? '98% Xuất sắc' : 'Thử nói'}
+                  </button>
                 </div>
               </div>
             </div>
@@ -493,9 +535,10 @@ export default function LandingPage() {
 
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {roadStages.map((stage, idx) => (
-              <div
+              <Link
                 key={idx}
-                className="rounded-2xl border border-slate-200 bg-slate-50/50 p-6 shadow-2xs hover:bg-white hover:border-emerald-300 hover:shadow-md transition-all flex flex-col justify-between space-y-4"
+                href="/roadmap"
+                className="group rounded-2xl border border-slate-200 bg-slate-50/50 p-6 shadow-2xs hover:bg-white hover:border-emerald-400 hover:shadow-md transition-all flex flex-col justify-between space-y-4"
               >
                 <div>
                   <div className="flex items-center justify-between mb-3">
@@ -504,16 +547,18 @@ export default function LandingPage() {
                     </span>
                     <span className="text-xs font-semibold text-slate-500">{stage.vocab}</span>
                   </div>
-                  <h3 className="font-extrabold text-slate-900 text-lg mb-1">{stage.hsk}</h3>
+                  <h3 className="font-extrabold text-slate-900 group-hover:text-emerald-700 transition-colors text-lg mb-1">
+                    {stage.hsk}
+                  </h3>
                   <div className="text-xs font-bold text-amber-700 mb-3">{stage.highlight}</div>
                   <p className="text-sm text-slate-600 leading-relaxed">{stage.target}</p>
                 </div>
 
                 <div className="pt-3 border-t border-slate-200 flex items-center justify-between">
-                  <span className="text-xs font-bold text-emerald-700">Mở bài tự động</span>
-                  <Check className="w-4 h-4 text-emerald-600 stroke-[2.5]" />
+                  <span className="text-xs font-bold text-emerald-700">Khám phá bài học</span>
+                  <ArrowRight className="w-4 h-4 text-emerald-600 group-hover:translate-x-1 transition-transform" />
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>

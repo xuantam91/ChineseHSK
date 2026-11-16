@@ -165,7 +165,10 @@ export function RoleplayDialogue({
       (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
 
     if (!SpeechRecognition) {
-      alert('Trình duyệt chưa hỗ trợ Web Speech API. Bạn có thể nhấn Tiếp tục để bỏ qua.');
+      if (currentLine) {
+        setCompletedLineIds((prev) => ({ ...prev, [currentLine.id]: 95 }));
+      }
+      advanceToNextLine();
       return;
     }
 
@@ -521,16 +524,22 @@ export function RoleplayDialogue({
                   </div>
                 </div>
 
-                {/* Proceed / Skip Button */}
+                {/* Proceed / 1-Click Practice Button */}
                 <div className="flex items-center gap-2">
                   <Button
                     type="button"
-                    variant="ghost"
+                    variant="outline"
                     size="sm"
-                    onClick={advanceToNextLine}
-                    className="text-xs text-gray-500"
+                    onClick={() => {
+                      if (currentLine) {
+                        setCompletedLineIds((prev) => ({ ...prev, [currentLine.id]: 95 }));
+                      }
+                      advanceToNextLine();
+                    }}
+                    leftIcon={<CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />}
+                    className="text-xs font-bold text-slate-700 border-slate-300 hover:bg-emerald-50"
                   >
-                    Bỏ qua lượt này
+                    Đã tự đọc theo (Qua lượt)
                   </Button>
 
                   {evaluation?.isPassed && (

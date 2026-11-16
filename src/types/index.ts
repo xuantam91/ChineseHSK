@@ -99,6 +99,7 @@ export interface QuizQuestionClient {
   options: string[];
   explanation: string;
   type: 'single_choice' | 'fill_in';
+  correctIndex?: number;
 }
 
 export interface QuizBlockData {

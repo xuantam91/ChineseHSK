@@ -43,6 +43,17 @@ export function FlashcardBlock({ data }: FlashcardBlockProps) {
     }));
   };
 
+  const markMasteredAndNext = () => {
+    setMasteredIds((prev) => ({
+      ...prev,
+      [currentCard.id]: true,
+    }));
+    setIsFlipped(false);
+    if (currentIndex < cards.length - 1) {
+      setCurrentIndex((prev) => prev + 1);
+    }
+  };
+
   const shuffleCards = () => {
     setIsFlipped(false);
     const shuffled = [...cards].sort(() => Math.random() - 0.5);
@@ -172,27 +183,41 @@ export function FlashcardBlock({ data }: FlashcardBlockProps) {
       </div>
 
       {/* Navigation Controls */}
-      <div className="flex items-center justify-center gap-4 mt-2">
+      <div className="flex flex-wrap items-center justify-center gap-3 mt-3">
         <Button
           variant="outline"
           size="sm"
           onClick={handlePrev}
           leftIcon={<ChevronLeft className="w-4 h-4" />}
         >
-          Trước
+          Thẻ trước
         </Button>
-        <span className="text-xs font-semibold text-gray-500">
-          {currentIndex + 1} / {cards.length}
-        </span>
+
+        <Button
+          variant="primary"
+          size="sm"
+          onClick={markMasteredAndNext}
+          leftIcon={<CheckCircle2 className="w-4 h-4" />}
+          className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold"
+        >
+          Đã thuộc (Qua thẻ tiếp)
+        </Button>
+
         <Button
           variant="outline"
           size="sm"
           onClick={handleNext}
           rightIcon={<ChevronRight className="w-4 h-4" />}
         >
-          Tiếp theo
+          Thẻ tiếp theo
         </Button>
       </div>
+
+      {masteredCount === cards.length && cards.length > 0 && (
+        <div className="mt-4 p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-center text-xs sm:text-sm font-bold text-emerald-900">
+          🎉 Tuyệt vời! Bạn đã thuộc toàn bộ {cards.length}/{cards.length} thẻ từ vựng trong bộ này!
+        </div>
+      )}
     </div>
   );
 }

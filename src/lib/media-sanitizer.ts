@@ -136,20 +136,24 @@ export function sanitizeMediaResource(rawUrl: string): SanitizedMediaInfo {
     };
   }
 
-  // Check YouTube Video
+  // Check YouTube Video (and preserve playlistId if watch?v=...&list=...)
   const videoId = extractYouTubeVideoId(safeUrl);
+  const playlistId = extractYouTubePlaylistId(safeUrl);
   if (videoId) {
+    const embedUrl = playlistId
+      ? `https://www.youtube.com/embed/${videoId}?list=${playlistId}&rel=0`
+      : `https://www.youtube.com/embed/${videoId}?rel=0`;
     return {
       safeUrl,
       mediaType: 'youtube_video',
       videoId,
-      embedUrl: `https://www.youtube.com/embed/${videoId}?rel=0`,
+      playlistId: playlistId || undefined,
+      embedUrl,
       isEmbeddable: true,
     };
   }
 
   // Check YouTube Playlist
-  const playlistId = extractYouTubePlaylistId(safeUrl);
   if (playlistId) {
     return {
       safeUrl,
@@ -161,7 +165,13 @@ export function sanitizeMediaResource(rawUrl: string): SanitizedMediaInfo {
   }
 
   // Check YouTube Channel
-  if (safeUrl.includes('youtube.com/') && (safeUrl.includes('/@') || safeUrl.includes('/user/') || safeUrl.includes('/c/'))) {
+  if (
+    safeUrl.includes('youtube.com/') &&
+    (safeUrl.includes('/@') ||
+      safeUrl.includes('/user/') ||
+      safeUrl.includes('/c/') ||
+      safeUrl.includes('/channel/'))
+  ) {
     return {
       safeUrl,
       mediaType: 'youtube_channel',

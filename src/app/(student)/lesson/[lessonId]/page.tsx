@@ -65,6 +65,7 @@ const ALL_HSK_LESSONS: HSKLesson[] = [
 function adaptHskLessonToLesson(hsk: HSKLesson): Lesson {
   const blocks: LessonBlock[] = [];
   let seq = 1;
+  const numericLevel = (Number(hsk.level.replace('HSK', '')) || 1) as 1 | 2 | 3 | 4 | 5 | 6;
 
   // 1. Vocabulary Items First (Learn core words before dialogue)
   if (hsk.vocabulary && hsk.vocabulary.length > 0) {
@@ -84,13 +85,45 @@ function adaptHskLessonToLesson(hsk: HSKLesson): Lesson {
           meaningVi: v.meaningVi,
           exampleSentence: v.exampleSentence,
           exampleTranslation: v.exampleVi,
-          hskLevel: hsk.level === 'HSK1' ? 1 : hsk.level === 'HSK2' ? 2 : 3,
+          audioUrl: v.audioUrl,
+          hskLevel: numericLevel,
         })),
       },
     });
   }
 
-  // 2. Dialogue Roleplay
+  // 2. Grammar Notes & Key Patterns (Ngữ pháp trọng tâm)
+  if (hsk.grammarNotes && hsk.grammarNotes.length > 0) {
+    const grammarMarkdown = hsk.grammarNotes
+      .map((g, idx) => {
+        const examplesText = (g.examples || [])
+          .map(
+            (ex) =>
+              `- **${ex.hanzi}** (${ex.pinyin}) — *${ex.vietnamese}*`
+          )
+          .join('\n');
+        return `### ${idx + 1}. ${g.title}\n**Cấu trúc:** \`${g.pattern}\`\n\n${g.explanationVi}\n\n${examplesText}`;
+      })
+      .join('\n\n---\n\n');
+
+    blocks.push({
+      id: `${hsk.id}-blk-grammar`,
+      lessonId: hsk.id,
+      type: 'rich_text',
+      sequenceOrder: seq++,
+      isRequired: true,
+      data: {
+        content: grammarMarkdown,
+        callout: {
+          type: 'grammar_note',
+          title: 'Ghi nhớ nhanh cấu trúc câu',
+          text: `Áp dụng ngay ${hsk.grammarNotes.length} điểm ngữ pháp trên vào phần Hội thoại và Luyện nói tiếp theo.`,
+        },
+      },
+    });
+  }
+
+  // 3. Dialogue Roleplay
   if (hsk.dialogue && hsk.dialogue.length > 0) {
     blocks.push({
       id: `${hsk.id}-blk-dialogue`,
@@ -100,8 +133,14 @@ function adaptHskLessonToLesson(hsk: HSKLesson): Lesson {
       isRequired: true,
       data: {
         title: 'Hội thoại thực tế',
-        characterA: { name: hsk.dialogue[0]?.speakerName || 'Nhân vật A', avatar: '👨‍💼' },
-        characterB: { name: hsk.dialogue[1]?.speakerName || 'Nhân vật B', avatar: '👩‍💼' },
+        characterA: {
+          name: hsk.dialogue[0]?.speakerName || 'Nhân vật A',
+          avatar: hsk.dialogue[0]?.avatar || '👨‍💼',
+        },
+        characterB: {
+          name: hsk.dialogue[1]?.speakerName || 'Nhân vật B',
+          avatar: hsk.dialogue[1]?.avatar || '👩‍💼',
+        },
         lines: hsk.dialogue.map((d, i) => ({
           id: `${hsk.id}-d-${i}`,
           role: (d.speaker === 'A' ? 'A' : 'B') as 'A' | 'B',
@@ -115,7 +154,7 @@ function adaptHskLessonToLesson(hsk: HSKLesson): Lesson {
     });
   }
 
-  // 3. Speech Practice (Luyện nói từng bước: Từ vựng -> Cụm từ -> Câu giao tiếp)
+  // 4. Speech Practice (Curated 6-8 progressive items: Core words -> Speech Drills -> Dialogue)
   const speechItems: Array<{
     id: string;
     hanzi: string;
@@ -127,8 +166,7 @@ function adaptHskLessonToLesson(hsk: HSKLesson): Lesson {
   }> = [];
   const seenSpeechHanzi = new Set<string>();
 
-  // Add core vocabulary words first so learner warms up with short words
-  for (const v of hsk.vocabulary || []) {
+  for (const v of (hsk.vocabulary || []).slice(0, 4)) {
     const key = v.hanzi.trim();
     if (key && !seenSpeechHanzi.has(key)) {
       seenSpeechHanzi.add(key);
@@ -143,7 +181,6 @@ function adaptHskLessonToLesson(hsk: HSKLesson): Lesson {
     }
   }
 
-  // Add dedicated speech drills with pronunciation coaching tips
   for (const drill of hsk.speechDrills || []) {
     const key = drill.hanzi.trim();
     if (key && !seenSpeechHanzi.has(key)) {
@@ -160,8 +197,8 @@ function adaptHskLessonToLesson(hsk: HSKLesson): Lesson {
     }
   }
 
-  // Add dialogue sentences for conversational speaking practice
   for (const line of hsk.dialogue || []) {
+    if (speechItems.length >= 8) break;
     const key = line.hanzi.trim();
     if (key && !seenSpeechHanzi.has(key)) {
       seenSpeechHanzi.add(key);
@@ -194,7 +231,7 @@ function adaptHskLessonToLesson(hsk: HSKLesson): Lesson {
     });
   }
 
-  // 4. Shadowing Sentences (Enriched with shadowSentences + dialogue + vocab examples)
+  // 5. Shadowing Sentences (Curated up to 7 sentences)
   const shadowList: Array<{
     id: string;
     hanzi: string;
@@ -219,6 +256,7 @@ function adaptHskLessonToLesson(hsk: HSKLesson): Lesson {
   }
 
   for (const d of hsk.dialogue || []) {
+    if (shadowList.length >= 7) break;
     const key = d.hanzi.trim();
     if (key && !seenShadowHanzi.has(key)) {
       seenShadowHanzi.add(key);
@@ -232,6 +270,7 @@ function adaptHskLessonToLesson(hsk: HSKLesson): Lesson {
   }
 
   for (const v of hsk.vocabulary || []) {
+    if (shadowList.length >= 7) break;
     if (v.exampleSentence && v.examplePinyin) {
       const key = v.exampleSentence.trim();
       if (key && !seenShadowHanzi.has(key)) {
@@ -261,8 +300,117 @@ function adaptHskLessonToLesson(hsk: HSKLesson): Lesson {
     });
   }
 
-  // 5. Quiz Questions
-  if (hsk.quizQuestions && hsk.quizQuestions.length > 0) {
+  // 6. Quiz Questions (Properly convert single_choice, ordering, and speaking_response into 4 selectable options with exact correctIndex)
+  const adaptedQuizQuestions = (hsk.quizQuestions || []).map((q, i) => {
+    let options: string[] = [];
+    let correctIndex = 0;
+
+    if (q.options && q.options.length > 0) {
+      options = q.options;
+      if (typeof q.correctAnswer === 'number') {
+        correctIndex = q.correctAnswer;
+      } else if (typeof q.correctAnswer === 'string') {
+        const ansStr = q.correctAnswer.trim();
+        const foundIdx = options.findIndex(
+          (opt) => opt.trim() === ansStr || opt.startsWith(ansStr)
+        );
+        correctIndex = foundIdx >= 0 ? foundIdx : 0;
+      }
+    } else if (q.type === 'ordering' && q.orderingTokens && q.orderingTokens.length > 0) {
+      const correctArr = Array.isArray(q.correctAnswer)
+        ? q.correctAnswer
+        : q.orderingTokens;
+      const correctStr = correctArr.join(' ');
+      const revStr = [...correctArr].reverse().join(' ');
+      const swapFirstStr =
+        correctArr.length >= 2
+          ? [correctArr[1], correctArr[0], ...correctArr.slice(2)].join(' ')
+          : `${correctStr} 吗`;
+      const shiftStr =
+        correctArr.length >= 2
+          ? [...correctArr.slice(1), correctArr[0]].join(' ')
+          : `不 ${correctStr}`;
+
+      const uniqueOpts = Array.from(
+        new Set([correctStr, swapFirstStr, revStr, shiftStr])
+      );
+      while (uniqueOpts.length < 4) {
+        uniqueOpts.push(`${correctStr} (${uniqueOpts.length})`);
+      }
+      // Place correct answer at index (i % 4) for natural variety
+      const targetPos = i % Math.min(4, uniqueOpts.length);
+      const distractors = uniqueOpts.filter((o) => o !== correctStr);
+      options = [
+        ...distractors.slice(0, targetPos),
+        correctStr,
+        ...distractors.slice(targetPos),
+      ].slice(0, 4);
+      correctIndex = options.indexOf(correctStr);
+    } else if (q.type === 'speaking_response' && q.targetSpeech) {
+      const correctOpt = `${q.targetSpeech} (${
+        typeof q.correctAnswer === 'string' ? q.correctAnswer : 'Phản hồi chuẩn'
+      })`;
+      const fallbackDistractors = [
+        '对不起，我不知道。 (Xin lỗi, tôi không biết.)',
+        '谢谢你，不客气！ (Cảm ơn bạn, đừng khách sáo!)',
+        '请问洗手间在哪里？ (Xin hỏi nhà vệ sinh ở đâu?)',
+      ].filter((d) => !d.includes(q.targetSpeech!));
+
+      options = [correctOpt, ...fallbackDistractors.slice(0, 3)];
+      correctIndex = 0;
+    }
+
+    return {
+      id: `${hsk.id}-q-${i}`,
+      type: 'single_choice' as const,
+      question: q.prompt,
+      pinyin: q.pinyin,
+      options,
+      explanation: q.explanation,
+      correctIndex,
+    };
+  });
+
+  // If a lesson (e.g. HSK 4-6) has fewer than 3 quiz questions, enrich from vocabulary & dialogue
+  if (adaptedQuizQuestions.length < 3 && hsk.vocabulary && hsk.vocabulary.length > 0) {
+    const v0 = hsk.vocabulary[0];
+    adaptedQuizQuestions.push({
+      id: `${hsk.id}-q-voc-extra-1`,
+      type: 'single_choice' as const,
+      question: `Từ vựng "${v0.hanzi}" (${v0.pinyin}) có ý nghĩa tiếng Việt là gì?`,
+      pinyin: v0.pinyin,
+      options: [
+        v0.meaningVi,
+        'Xin lỗi / Làm phiền một chút',
+        'Thời tiết hôm nay rất đẹp',
+        'Tạm biệt và hẹn gặp lại',
+      ],
+      explanation: `"${v0.hanzi}" (${v0.pinyin}) nghĩa là "${v0.meaningVi}". ${
+        v0.exampleSentence ? `Ví dụ: ${v0.exampleSentence} (${v0.exampleVi || ''})` : ''
+      }`,
+      correctIndex: 0,
+    });
+  }
+
+  if (adaptedQuizQuestions.length < 3 && hsk.dialogue && hsk.dialogue.length > 0) {
+    const d0 = hsk.dialogue[0];
+    adaptedQuizQuestions.push({
+      id: `${hsk.id}-q-dlg-extra-2`,
+      type: 'single_choice' as const,
+      question: `Câu thoại "${d0.hanzi}" trong bài có nghĩa là gì?`,
+      pinyin: d0.pinyin,
+      options: [
+        'Tôi đang đi mua sắm ở siêu thị.',
+        d0.vietnamese,
+        'Xin hỏi bây giờ là mấy giờ?',
+        'Cảm ơn sự giúp đỡ của bạn.',
+      ],
+      explanation: `Câu "${d0.hanzi}" (${d0.pinyin}) nghĩa là: "${d0.vietnamese}".`,
+      correctIndex: 1,
+    });
+  }
+
+  if (adaptedQuizQuestions.length > 0) {
     blocks.push({
       id: `${hsk.id}-blk-quiz`,
       lessonId: hsk.id,
@@ -273,14 +421,7 @@ function adaptHskLessonToLesson(hsk: HSKLesson): Lesson {
         quizId: `quiz-${hsk.id}`,
         title: 'Kiểm tra nhanh cuối bài',
         passingScore: 80,
-        questions: hsk.quizQuestions.map((q, i) => ({
-          id: `${hsk.id}-q-${i}`,
-          type: (q.type === 'fill_in' ? 'fill_in' : 'single_choice') as 'single_choice' | 'fill_in',
-          question: q.prompt,
-          pinyin: q.pinyin,
-          options: q.options || [],
-          explanation: q.explanation,
-        })),
+        questions: adaptedQuizQuestions,
       },
     });
   }
@@ -299,7 +440,7 @@ function adaptHskLessonToLesson(hsk: HSKLesson): Lesson {
 function getStepShortLabel(type: string, index: number) {
   switch (type) {
     case 'rich_text':
-      return `${index + 1}. Lý thuyết`;
+      return `${index + 1}. Ngữ pháp`;
     case 'pinyin_chart':
       return `${index + 1}. Bảng Pinyin`;
     case 'vocabulary':
@@ -795,23 +936,28 @@ export default function LessonReaderPage({
         title="Hoàn thành bài học xuất sắc!"
         description="Tiến độ của bạn đã được lưu lại. Bạn có thể chuyển ngay sang bài kế tiếp."
       >
-        <div className="py-4 text-center space-y-3">
+        <div className="py-4 text-center space-y-4">
           <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-700 text-white shadow-md shadow-emerald-700/20">
             <Award className="w-8 h-8 text-amber-300 stroke-[1.75]" />
           </div>
 
-          <h3 className="text-lg font-bold text-slate-900">
+          <h3 className="text-lg font-extrabold text-slate-900">
             {currentLesson.title}
           </h3>
 
-          <div className="flex justify-center items-center gap-2 pt-1">
-            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-900 text-xs font-bold">
-              <Award className="w-3.5 h-3.5 text-emerald-700" />
-              <span>+50 XP</span>
+          {/* Visual 3-Column Achievement Summary */}
+          <div className="grid grid-cols-3 gap-2.5 text-center pt-1">
+            <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200">
+              <div className="text-lg font-black text-emerald-800">{totalSteps}/{totalSteps}</div>
+              <div className="text-xs font-semibold text-emerald-700 mt-0.5">Phần hoàn thành</div>
             </div>
-            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 border border-amber-200 rounded-lg text-amber-900 text-xs font-bold">
-              <Flame className="w-3.5 h-3.5 fill-amber-500 text-amber-600" />
-              <span>Giữ chuỗi Streak</span>
+            <div className="p-3 rounded-xl bg-amber-50 border border-amber-200">
+              <div className="text-lg font-black text-amber-900">+50 XP</div>
+              <div className="text-xs font-semibold text-amber-800 mt-0.5">Điểm tích lũy</div>
+            </div>
+            <div className="p-3 rounded-xl bg-teal-50 border border-teal-200">
+              <div className="text-lg font-black text-teal-900">{currentLesson.estimatedMinutes}p</div>
+              <div className="text-xs font-semibold text-teal-800 mt-0.5">Thời lượng học</div>
             </div>
           </div>
         </div>

@@ -643,6 +643,29 @@ export function SpeechPractice({
             </p>
           )}
         </div>
+
+        {/* 1-Click Self-Check Button for Quiet Environment / No-Mic Users */}
+        {!isListening && (
+          <button
+            type="button"
+            onClick={() => {
+              const simulated = evaluateSpeech({
+                expectedHanzi: currentDrill.hanzi,
+                expectedPinyin: currentDrill.pinyin,
+                receivedText: currentDrill.hanzi,
+                passingThreshold,
+              });
+              handleEvaluationSuccess(simulated);
+              if (currentIndex < drills.length - 1) {
+                setTimeout(() => selectDrillIndex(currentIndex + 1), 650);
+              }
+            }}
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300 text-xs font-semibold text-slate-600 hover:text-emerald-800 transition-colors shadow-2xs"
+          >
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+            <span>Đã tự đọc to rõ (Qua câu tiếp 1-chạm)</span>
+          </button>
+        )}
       </div>
 
       {/* Instant Accuracy Score & Detailed Feedback Card */}
@@ -715,6 +738,37 @@ export function SpeechPractice({
               >
                 Thử lại
               </Button>
+
+              {evaluation.isPassed && currentIndex < drills.length - 1 && (
+                <Button
+                  type="button"
+                  variant="primary"
+                  size="sm"
+                  onClick={() => selectDrillIndex(currentIndex + 1)}
+                  rightIcon={<ChevronRight className="w-3.5 h-3.5" />}
+                  className="text-xs font-bold bg-emerald-700 hover:bg-emerald-800 text-white"
+                >
+                  Câu tiếp theo
+                </Button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {passedCount === drills.length && drills.length > 1 && (
+        <div className="p-4 rounded-2xl bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold">
+              ✓
+            </div>
+            <div>
+              <h4 className="text-sm font-extrabold text-slate-900">
+                Hoàn thành xuất sắc cả {drills.length}/{drills.length} câu luyện nói!
+              </h4>
+              <p className="text-xs text-slate-600">
+                Bạn đã nắm vững phát âm của bài học này. Hãy bấm &ldquo;Tiếp tục&rdquo; ở bên dưới để sang bước kế tiếp.
+              </p>
             </div>
           </div>
         </div>

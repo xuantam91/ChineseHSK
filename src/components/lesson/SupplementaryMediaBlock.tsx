@@ -304,13 +304,19 @@ export function SupplementaryMediaBlock({
           className="max-w-3xl"
         >
           <div className="py-2 space-y-4">
-            <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-black shadow-inner">
+            <div
+              className={`relative w-full aspect-video rounded-2xl overflow-hidden shadow-inner ${
+                activeMediaModal.sanitizedInfo.mediaType === 'drive_folder'
+                  ? 'bg-white border border-slate-200'
+                  : 'bg-black'
+              }`}
+            >
               <iframe
                 src={activeMediaModal.sanitizedInfo.embedUrl}
                 title={activeMediaModal.title}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
-                className="absolute inset-0 w-full h-full"
+                className="absolute inset-0 w-full h-full bg-white"
               />
             </div>
 

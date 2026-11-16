@@ -730,10 +730,26 @@ export function getAllCuratedMedia(): CuratedMediaItem[] {
 
 export function getMediaByLessonId(lessonId: string): CuratedMediaItem[] {
   const normalized = normalizeLessonId(lessonId);
-  return CURATED_MEDIA_RESOURCES.filter(
+  const directMatches = CURATED_MEDIA_RESOURCES.filter(
     (item) =>
       (item.relatedLessonIds && item.relatedLessonIds.includes(lessonId)) ||
       (item.relatedLessonIds && item.relatedLessonIds.includes(normalized))
+  );
+
+  if (directMatches.length > 0) {
+    return directMatches;
+  }
+
+  // Fallback curated resources for HSK 3 - HSK 6 lessons so every lesson has supplementary media
+  return CURATED_MEDIA_RESOURCES.filter((item) =>
+    [
+      'media-drive-hsk-standard',
+      'media-drive-vocab-all',
+      'media-drive-craven-audio',
+      'media-read-xiaomin',
+      'media-yt-everydaychinese',
+      'media-drive-roadmap-12m',
+    ].includes(item.id)
   );
 }
 

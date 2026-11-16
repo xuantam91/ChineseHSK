@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import {
   BarChart3,
   Flame,
@@ -14,19 +15,27 @@ import {
   BookOpen,
   PenTool,
   Lock,
+  ArrowRight,
 } from 'lucide-react';
+import { Button } from '@/components/ui/Button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/Card';
 import { Progress } from '@/components/ui/Progress';
 import { Badge } from '@/components/ui/Badge';
 import { DEMO_USER_PROFILE } from '@/lib/mock-data';
-import { getStoredUserProfile } from '@/lib/student-store';
+import { getStoredUserProfile, getCompletedLessonIds } from '@/lib/student-store';
 
 export default function ProgressPage() {
   const [profile, setProfile] = useState(DEMO_USER_PROFILE);
+  const [completedLessons, setCompletedLessons] = useState<string[]>([]);
 
   useEffect(() => {
     setProfile(getStoredUserProfile());
+    setCompletedLessons(getCompletedLessonIds());
   }, []);
+
+  const totalXp = 1250 + completedLessons.length * 50;
+  const learnedVocab = Math.min(150, 48 + completedLessons.length * 6);
+  const vocabPct = Math.round((learnedVocab / 150) * 100);
 
   // 4 Core Skills Breakdown
   const skills = [
@@ -134,12 +143,27 @@ export default function ProgressPage() {
           </div>
         </div>
 
-        <div className="flex items-center gap-3 bg-white/15 backdrop-blur-md px-4 py-2.5 rounded-xl border border-white/25 shadow-xs w-fit relative z-10">
-          <Award className="w-5 h-5 text-amber-300 stroke-[1.75]" />
-          <div>
-            <span className="text-base font-bold text-white block leading-none">1.250 XP</span>
-            <span className="text-xs text-emerald-100 font-semibold uppercase">Điểm tích lũy</span>
+        <div className="flex flex-wrap items-center gap-3 relative z-10">
+          <div className="flex items-center gap-3 bg-white/15 backdrop-blur-md px-4 py-2.5 rounded-xl border border-white/25 shadow-xs">
+            <Award className="w-5 h-5 text-amber-300 stroke-[1.75]" />
+            <div>
+              <span className="text-base font-bold text-white block leading-none">
+                {totalXp.toLocaleString('vi-VN')} XP
+              </span>
+              <span className="text-xs text-emerald-100 font-semibold uppercase">Điểm tích lũy</span>
+            </div>
           </div>
+
+          <Link href="/dashboard">
+            <Button
+              variant="primary"
+              size="md"
+              rightIcon={<ArrowRight className="w-4 h-4" />}
+              className="bg-amber-400 hover:bg-amber-300 text-emerald-950 font-extrabold text-xs px-4 shadow-xs"
+            >
+              Tiếp tục học ngay
+            </Button>
+          </Link>
         </div>
       </div>
 
@@ -162,16 +186,16 @@ export default function ProgressPage() {
 
         <Card className="p-5 rounded-xl border-slate-200 bg-white shadow-2xs">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500">Tổng thời gian học</span>
+            <span className="text-xs font-semibold text-slate-500">Bài học đã hoàn thành</span>
             <div className="p-1.5 rounded-md bg-slate-100 text-slate-700 border border-slate-200">
               <Clock className="w-4 h-4" />
             </div>
           </div>
           <div className="text-2xl font-bold text-slate-900 mt-2">
-            18.5 giờ
+            {completedLessons.length + 5} bài
           </div>
           <span className="text-xs text-slate-500 font-medium mt-1 inline-block">
-            Trung bình 32 phút/ngày
+            Trung bình 25 phút/ngày
           </span>
         </Card>
 
@@ -183,10 +207,10 @@ export default function ProgressPage() {
             </div>
           </div>
           <div className="text-2xl font-bold text-slate-900 mt-2">
-            48 / 150
+            {learnedVocab} / 150
           </div>
           <span className="text-xs text-slate-600 font-medium mt-1 inline-block">
-            32% từ vựng cốt lõi HSK 1
+            {vocabPct}% từ vựng cốt lõi HSK 1
           </span>
         </Card>
 
