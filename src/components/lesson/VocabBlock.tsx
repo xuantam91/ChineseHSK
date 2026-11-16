@@ -1,16 +1,58 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { VocabBlockData, VocabItem } from '@/types';
-import { Volume2, Check, Copy, PenTool, Eraser, X } from 'lucide-react';
-import { Badge } from '@/components/ui/Badge';
+import {
+  Volume2,
+  Check,
+  Copy,
+  PenTool,
+  Eraser,
+  X,
+  Play,
+  Square,
+  SkipBack,
+  SkipForward,
+  Sparkles,
+} from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { VocabVisualIcon } from '@/components/ui/VocabVisualIcon';
-import { speakChinese } from '@/lib/tts';
+import { speakChinese, speakVietnamese, stopChineseSpeech } from '@/lib/tts';
 import { TTSVoiceSelector } from '@/components/common/TTSVoiceSelector';
 
 export interface VocabBlockProps {
   data: VocabBlockData;
+}
+
+type SeqPhase =
+  | 'word-1'
+  | 'word-2'
+  | 'word-3'
+  | 'meaning-1'
+  | 'example-1'
+  | 'example-2'
+  | 'example-3'
+  | null;
+
+function getPhaseLabelVi(phase: SeqPhase): string {
+  switch (phase) {
+    case 'word-1':
+      return 'Từ tiếng Trung (Lần 1/3)';
+    case 'word-2':
+      return 'Từ tiếng Trung (Lần 2/3)';
+    case 'word-3':
+      return 'Từ tiếng Trung (Lần 3/3)';
+    case 'meaning-1':
+      return 'Nghĩa tiếng Việt (1 lần)';
+    case 'example-1':
+      return 'Câu mẫu (Lần 1/3)';
+    case 'example-2':
+      return 'Câu mẫu (Lần 2/3)';
+    case 'example-3':
+      return 'Câu mẫu (Lần 3/3)';
+    default:
+      return '';
+  }
 }
 
 export function VocabBlock({ data }: VocabBlockProps) {
@@ -19,31 +61,164 @@ export function VocabBlock({ data }: VocabBlockProps) {
   const [writingItem, setWritingItem] = useState<VocabItem | null>(null);
   const [activeCharIdx, setActiveCharIdx] = useState(0);
 
+  // Auto-Sequential 3-1-3 Player State
+  const [isSeqPlaying, setIsSeqPlaying] = useState(false);
+  const [seqItemIndex, setSeqItemIndex] = useState<number>(0);
+  const [seqPhase, setSeqPhase] = useState<SeqPhase>(null);
+
+  const runIdRef = useRef<number>(0);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const cardRefs = useRef<Record<string, HTMLDivElement | null>>({});
+
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const isDrawingRef = useRef(false);
 
-  const playAudio = (item: VocabItem) => {
-    if (typeof window === 'undefined') return;
-    setPlayingId(item.id);
-
-    if (item.audioUrl) {
-      const audio = new Audio(item.audioUrl);
-      audio.onended = () => setPlayingId(null);
-      audio.onerror = () => fallbackSpeechSynthesis(item.hanzi, item.id);
-      audio.play().catch(() => fallbackSpeechSynthesis(item.hanzi, item.id));
-    } else {
-      fallbackSpeechSynthesis(item.hanzi, item.id);
+  const stopSequentialPlay = useCallback(() => {
+    runIdRef.current += 1;
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
     }
+    stopChineseSpeech();
+    setIsSeqPlaying(false);
+    setSeqPhase(null);
+    setPlayingId(null);
+  }, []);
+
+  // Promise helpers for sequential playback
+  const waitMs = (ms: number, runId: number): Promise<boolean> =>
+    new Promise((resolve) => {
+      if (runIdRef.current !== runId) {
+        resolve(false);
+        return;
+      }
+      timerRef.current = setTimeout(() => {
+        resolve(runIdRef.current === runId);
+      }, ms);
+    });
+
+  const speakZhOnce = (text: string, runId: number, speedRate = 0.8): Promise<boolean> =>
+    new Promise((resolve) => {
+      if (runIdRef.current !== runId) {
+        resolve(false);
+        return;
+      }
+      speakChinese(text, {
+        speedRate,
+        onEnd: () => resolve(runIdRef.current === runId),
+        onError: () => resolve(runIdRef.current === runId),
+      });
+    });
+
+  const speakViOnce = (text: string, runId: number): Promise<boolean> =>
+    new Promise((resolve) => {
+      if (runIdRef.current !== runId) {
+        resolve(false);
+        return;
+      }
+      speakVietnamese(text, {
+        speedRate: 0.95,
+        onEnd: () => resolve(runIdRef.current === runId),
+      });
+    });
+
+  // Core 3-1-3 Sequential Runner
+  const startSequentialPlay = useCallback(
+    async (startIndex = 0) => {
+      const items = data.items || [];
+      if (items.length === 0) return;
+
+      stopSequentialPlay();
+      const myRunId = runIdRef.current + 1;
+      runIdRef.current = myRunId;
+      setIsSeqPlaying(true);
+
+      for (let i = startIndex; i < items.length; i++) {
+        if (runIdRef.current !== myRunId) return;
+        const item = items[i];
+        setSeqItemIndex(i);
+        setPlayingId(item.id);
+
+        // Smooth scroll card into view
+        const el = cardRefs.current[item.id];
+        if (el && typeof el.scrollIntoView === 'function') {
+          el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // 1. Speak Chinese word 3 times
+        const wordPhases: SeqPhase[] = ['word-1', 'word-2', 'word-3'];
+        for (const wp of wordPhases) {
+          if (runIdRef.current !== myRunId) return;
+          setSeqPhase(wp);
+          const ok = await speakZhOnce(item.hanzi, myRunId, 0.78);
+          if (!ok) return;
+          const waited = await waitMs(520, myRunId);
+          if (!waited) return;
+        }
+
+        // 2. Speak Vietnamese meaning 1 time
+        if (runIdRef.current !== myRunId) return;
+        setSeqPhase('meaning-1');
+        const okVi = await speakViOnce(item.meaningVi, myRunId);
+        if (!okVi) return;
+        const waitedVi = await waitMs(580, myRunId);
+        if (!waitedVi) return;
+
+        // 3. Speak Chinese example sentence 3 times (if present)
+        if (item.exampleSentence) {
+          const exPhases: SeqPhase[] = ['example-1', 'example-2', 'example-3'];
+          for (const ep of exPhases) {
+            if (runIdRef.current !== myRunId) return;
+            setSeqPhase(ep);
+            const okEx = await speakZhOnce(item.exampleSentence, myRunId, 0.76);
+            if (!okEx) return;
+            const waitedEx = await waitMs(620, myRunId);
+            if (!waitedEx) return;
+          }
+        }
+
+        // Brief pause before moving to next word
+        const waitedNext = await waitMs(750, myRunId);
+        if (!waitedNext) return;
+      }
+
+      if (runIdRef.current === myRunId) {
+        setIsSeqPlaying(false);
+        setSeqPhase(null);
+        setPlayingId(null);
+      }
+    },
+    [data.items, stopSequentialPlay]
+  );
+
+  // Auto-start sequential playback when entering Vocabulary block
+  useEffect(() => {
+    const startTimer = setTimeout(() => {
+      startSequentialPlay(0);
+    }, 450);
+
+    return () => {
+      clearTimeout(startTimer);
+      stopSequentialPlay();
+    };
+  }, [data.items, startSequentialPlay, stopSequentialPlay]);
+
+  // Single play handlers (when user clicks a single word or sentence speaker icon)
+  const playSingleWord = (item: VocabItem) => {
+    stopSequentialPlay();
+    setPlayingId(item.id);
+    speakChinese(item.hanzi, {
+      speedRate: 0.78,
+      onEnd: () => setPlayingId((prev) => (prev === item.id ? null : prev)),
+      onError: () => setPlayingId((prev) => (prev === item.id ? null : prev)),
+    });
   };
 
-  const playSentenceAudio = (sentence: string, id: string) => {
-    if (typeof window === 'undefined') return;
+  const playSingleSentence = (sentence: string, id: string) => {
+    stopSequentialPlay();
     setPlayingId(id);
-    fallbackSpeechSynthesis(sentence, id);
-  };
-
-  const fallbackSpeechSynthesis = (text: string, id: string) => {
-    speakChinese(text, {
+    speakChinese(sentence, {
+      speedRate: 0.76,
       onEnd: () => setPlayingId((prev) => (prev === id ? null : prev)),
       onError: () => setPlayingId((prev) => (prev === id ? null : prev)),
     });
@@ -67,22 +242,18 @@ export function VocabBlock({ data }: VocabBlockProps) {
     const size = canvas.width;
     ctx.clearRect(0, 0, size, size);
 
-    // Background
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, size, size);
 
-    // Mizige dashed lines
     ctx.strokeStyle = '#e2e8f0';
     ctx.lineWidth = 1.5;
     ctx.setLineDash([6, 6]);
 
-    // Horizontal & Vertical center
     ctx.beginPath();
     ctx.moveTo(0, size / 2);
     ctx.lineTo(size, size / 2);
     ctx.moveTo(size / 2, 0);
     ctx.lineTo(size / 2, size);
-    // Diagonals
     ctx.moveTo(0, 0);
     ctx.lineTo(size, size);
     ctx.moveTo(size, 0);
@@ -90,12 +261,10 @@ export function VocabBlock({ data }: VocabBlockProps) {
     ctx.stroke();
     ctx.setLineDash([]);
 
-    // Outer border
     ctx.strokeStyle = '#cbd5e1';
     ctx.lineWidth = 2;
     ctx.strokeRect(1, 1, size - 2, size - 2);
 
-    // Watermark guide character
     ctx.fillStyle = 'rgba(16, 185, 129, 0.14)';
     ctx.font = `bold ${Math.round(size * 0.72)}px "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif`;
     ctx.textAlign = 'center';
@@ -169,9 +338,12 @@ export function VocabBlock({ data }: VocabBlockProps) {
     isDrawingRef.current = false;
   };
 
+  const currentSeqItem = data.items[seqItemIndex] || data.items[0];
+
   return (
     <div className="space-y-4">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
+      {/* Header & Voice Switcher */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         {data.title ? (
           <div>
             <h3 className="text-lg md:text-xl font-bold text-slate-900">{data.title}</h3>
@@ -187,28 +359,145 @@ export function VocabBlock({ data }: VocabBlockProps) {
         </div>
       </div>
 
+      {/* AUTO-SEQUENTIAL 3-1-3 PLAYER BAR */}
+      <div className="rounded-2xl border border-emerald-200 bg-gradient-to-r from-emerald-50/90 via-teal-50/60 to-emerald-50/90 p-3.5 sm:p-4 flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-2xs">
+        <div className="space-y-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider text-emerald-900 bg-white px-2.5 py-1 rounded-lg border border-emerald-200 shadow-2xs">
+              <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+              <span>Chế độ đọc 3–1–3 tự động</span>
+            </span>
+            <span className="text-xs font-semibold text-emerald-800">
+              Từ tiếng Trung ×3 → Nghĩa tiếng Việt ×1 → Câu mẫu ×3
+            </span>
+          </div>
+
+          {isSeqPlaying && currentSeqItem ? (
+            <div className="text-xs sm:text-sm font-bold text-slate-900 flex flex-wrap items-center gap-2 pt-0.5">
+              <span className="text-emerald-700">
+                Đang phát Từ {seqItemIndex + 1}/{data.items.length}:
+              </span>
+              <span className="font-chinese text-base font-extrabold bg-white px-2 py-0.5 rounded border border-emerald-200">
+                {currentSeqItem.hanzi} ({currentSeqItem.pinyin})
+              </span>
+              {seqPhase && (
+                <span className="px-2.5 py-0.5 rounded-full bg-amber-400 text-emerald-950 text-xs font-extrabold animate-pulse">
+                  🔊 {getPhaseLabelVi(seqPhase)}
+                </span>
+              )}
+            </div>
+          ) : (
+            <p className="text-xs text-slate-600">
+              Bấm &ldquo;Phát lần lượt toàn bộ&rdquo; hoặc bấm nút &ldquo;Đọc 3-1-3&rdquo; trên từng thẻ từ vựng.
+            </p>
+          )}
+        </div>
+
+        <div className="flex items-center gap-2 shrink-0">
+          <button
+            type="button"
+            disabled={seqItemIndex <= 0}
+            onClick={() => startSequentialPlay(Math.max(0, seqItemIndex - 1))}
+            className="p-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 disabled:opacity-40 transition-colors"
+            title="Từ trước"
+          >
+            <SkipBack className="w-4 h-4" />
+          </button>
+
+          {isSeqPlaying ? (
+            <Button
+              type="button"
+              variant="primary"
+              size="sm"
+              onClick={stopSequentialPlay}
+              leftIcon={<Square className="w-3.5 h-3.5 fill-current" />}
+              className="bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs px-4"
+            >
+              Tạm dừng đọc
+            </Button>
+          ) : (
+            <Button
+              type="button"
+              variant="primary"
+              size="sm"
+              onClick={() => startSequentialPlay(0)}
+              leftIcon={<Play className="w-3.5 h-3.5 fill-current" />}
+              className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs px-4"
+            >
+              Phát lần lượt toàn bộ (3-1-3)
+            </Button>
+          )}
+
+          <button
+            type="button"
+            disabled={seqItemIndex >= data.items.length - 1}
+            onClick={() =>
+              startSequentialPlay(Math.min(data.items.length - 1, seqItemIndex + 1))
+            }
+            className="p-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 disabled:opacity-40 transition-colors"
+            title="Từ tiếp theo"
+          >
+            <SkipForward className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+
+      {/* Vocabulary Grid */}
       <div className="grid gap-3.5 sm:grid-cols-2">
-        {data.items.map((item) => {
-          const isPlaying = playingId === item.id;
-          const isPlayingSentence = playingId === `${item.id}-ex`;
+        {data.items.map((item, idx) => {
+          const isThisSeqActive = isSeqPlaying && seqItemIndex === idx;
+          const isPlayingWord =
+            playingId === item.id &&
+            (!isThisSeqActive ||
+              seqPhase === 'word-1' ||
+              seqPhase === 'word-2' ||
+              seqPhase === 'word-3');
+          const isPlayingMeaning = isThisSeqActive && seqPhase === 'meaning-1';
+          const isPlayingExample =
+            playingId === `${item.id}-ex` ||
+            (isThisSeqActive &&
+              (seqPhase === 'example-1' ||
+                seqPhase === 'example-2' ||
+                seqPhase === 'example-3'));
           const isCopied = copiedId === item.id;
 
           return (
             <div
               key={item.id}
-              className="group relative flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-4 md:p-5 shadow-2xs transition-all duration-200 hover:border-emerald-300 hover:shadow-md"
+              ref={(el) => {
+                cardRefs.current[item.id] = el;
+              }}
+              className={`group relative flex flex-col justify-between rounded-2xl border p-4 md:p-5 transition-all duration-200 ${
+                isThisSeqActive
+                  ? 'border-2 border-emerald-600 bg-emerald-50/20 shadow-md ring-2 ring-emerald-200'
+                  : 'border-slate-200 bg-white shadow-2xs hover:border-emerald-300 hover:shadow-md'
+              }`}
             >
               <div>
+                {/* Active phase indicator on card */}
+                {isThisSeqActive && seqPhase && (
+                  <div className="mb-2.5 flex items-center justify-between text-xs font-extrabold text-emerald-900 bg-emerald-100/80 px-3 py-1 rounded-lg border border-emerald-200">
+                    <span>🔊 {getPhaseLabelVi(seqPhase)}</span>
+                    <span>
+                      Từ {idx + 1}/{data.items.length}
+                    </span>
+                  </div>
+                )}
+
                 <div className="flex items-start justify-between gap-3 mb-2.5">
                   <button
                     type="button"
-                    onClick={() => playAudio(item)}
+                    onClick={() => playSingleWord(item)}
                     className="flex items-center gap-3 text-left group/word"
-                    title="Bấm để nghe phát âm"
+                    title="Bấm để nghe phát âm từ"
                   >
                     <VocabVisualIcon hanzi={item.hanzi} pinyin={item.pinyin} size="md" />
                     <div>
-                      <div className="flex items-baseline gap-2.5 flex-wrap">
+                      <div
+                        className={`flex items-baseline gap-2.5 flex-wrap px-2 py-0.5 rounded-lg transition-colors ${
+                          isPlayingWord ? 'bg-amber-100 ring-1 ring-amber-300' : ''
+                        }`}
+                      >
                         <span className="font-chinese text-2xl md:text-3xl font-extrabold text-slate-900 group-hover/word:text-emerald-700 transition-colors tracking-tight">
                           {item.hanzi}
                         </span>
@@ -216,17 +505,40 @@ export function VocabBlock({ data }: VocabBlockProps) {
                           {item.pinyin}
                         </span>
                       </div>
-                      <div className="text-sm font-bold text-slate-800 mt-1">
+
+                      <div
+                        className={`text-sm font-bold text-slate-800 mt-1 px-2 py-0.5 rounded-lg transition-colors ${
+                          isPlayingMeaning
+                            ? 'bg-amber-100 text-amber-950 ring-1 ring-amber-300'
+                            : ''
+                        }`}
+                      >
                         {item.meaningVi}
                       </div>
                     </div>
                   </button>
 
                   <div className="flex items-center gap-1 shrink-0">
+                    {/* Play 3-1-3 from this word */}
+                    <button
+                      type="button"
+                      onClick={() => startSequentialPlay(idx)}
+                      title="Đọc 3 lần từ + 1 lần nghĩa + 3 lần câu mẫu"
+                      className={`px-2.5 py-1.5 rounded-xl text-xs font-bold transition-colors flex items-center gap-1 border ${
+                        isThisSeqActive
+                          ? 'bg-emerald-700 text-white border-emerald-700'
+                          : 'bg-emerald-50 text-emerald-800 border-emerald-200 hover:bg-emerald-100'
+                      }`}
+                    >
+                      <Volume2 className="w-3.5 h-3.5" />
+                      <span>3-1-3</span>
+                    </button>
+
                     {/* Practice Writing Button */}
                     <button
                       type="button"
                       onClick={() => {
+                        stopSequentialPlay();
                         setWritingItem(item);
                         setActiveCharIdx(0);
                       }}
@@ -234,7 +546,7 @@ export function VocabBlock({ data }: VocabBlockProps) {
                       className="px-2.5 py-1.5 rounded-xl text-xs font-semibold text-slate-600 hover:text-emerald-800 bg-slate-100 hover:bg-emerald-50 transition-colors flex items-center gap-1"
                     >
                       <PenTool className="w-3.5 h-3.5" />
-                      <span className="hidden sm:inline">Tập viết</span>
+                      <span className="hidden sm:inline">Viết</span>
                     </button>
 
                     {/* Copy Button */}
@@ -251,46 +563,35 @@ export function VocabBlock({ data }: VocabBlockProps) {
                         <Copy className="w-4 h-4" />
                       )}
                     </button>
-
-                    {/* Audio Pronunciation Button */}
-                    <button
-                      type="button"
-                      onClick={() => playAudio(item)}
-                      title="Nghe phát âm từ vựng"
-                      className={`p-2.5 rounded-xl transition-all ${
-                        isPlaying
-                          ? 'bg-emerald-600 text-white animate-pulse shadow-xs'
-                          : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200/60'
-                      }`}
-                      aria-label="Phát âm"
-                    >
-                      <Volume2 className="w-4 h-4" />
-                    </button>
                   </div>
                 </div>
               </div>
 
               {/* Example Sentence with Audio */}
               {item.exampleSentence && (
-                <div className="mt-2 pt-2.5 border-t border-slate-100 rounded-xl bg-slate-50 p-3 text-xs flex items-start justify-between gap-2">
+                <div
+                  className={`mt-2 pt-2.5 border-t rounded-xl p-3 text-xs flex items-start justify-between gap-2 transition-colors ${
+                    isPlayingExample
+                      ? 'bg-amber-50 border-amber-300 ring-1 ring-amber-300'
+                      : 'bg-slate-50 border-slate-100'
+                  }`}
+                >
                   <div>
                     <div className="font-chinese text-sm font-bold text-slate-900 mb-0.5">
                       {item.exampleSentence}
                     </div>
                     {item.exampleTranslation && (
-                      <div className="text-slate-600">
-                        {item.exampleTranslation}
-                      </div>
+                      <div className="text-slate-600">{item.exampleTranslation}</div>
                     )}
                   </div>
                   <button
                     type="button"
                     onClick={() =>
-                      playSentenceAudio(item.exampleSentence!, `${item.id}-ex`)
+                      playSingleSentence(item.exampleSentence!, `${item.id}-ex`)
                     }
-                    title="Nghe câu ví dụ"
+                    title="Nghe câu mẫu"
                     className={`p-1.5 rounded-lg shrink-0 transition-colors ${
-                      isPlayingSentence
+                      isPlayingExample
                         ? 'bg-emerald-600 text-white animate-pulse'
                         : 'bg-white text-slate-600 hover:text-emerald-700 border border-slate-200'
                     }`}
@@ -326,7 +627,6 @@ export function VocabBlock({ data }: VocabBlockProps) {
               </button>
             </div>
 
-            {/* Character selector if word has multiple characters */}
             {Array.from(writingItem.hanzi).length > 1 && (
               <div className="flex items-center justify-center gap-2">
                 {Array.from(writingItem.hanzi).map((ch, idx) => (
@@ -346,7 +646,6 @@ export function VocabBlock({ data }: VocabBlockProps) {
               </div>
             )}
 
-            {/* Canvas */}
             <div className="flex flex-col items-center">
               <canvas
                 ref={canvasRef}
@@ -366,7 +665,6 @@ export function VocabBlock({ data }: VocabBlockProps) {
               </p>
             </div>
 
-            {/* Modal Actions */}
             <div className="flex items-center justify-between gap-2 pt-2 border-t border-slate-100">
               <div className="flex items-center gap-2">
                 <Button
@@ -386,7 +684,7 @@ export function VocabBlock({ data }: VocabBlockProps) {
                   type="button"
                   variant="outline"
                   size="sm"
-                  onClick={() => playAudio(writingItem)}
+                  onClick={() => playSingleWord(writingItem)}
                   leftIcon={<Volume2 className="w-3.5 h-3.5 text-emerald-700" />}
                   className="text-xs font-semibold"
                 >

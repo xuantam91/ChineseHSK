@@ -371,42 +371,130 @@ function adaptHskLessonToLesson(hsk: HSKLesson): Lesson {
     };
   });
 
-  // If a lesson (e.g. HSK 4-6) has fewer than 3 quiz questions, enrich from vocabulary & dialogue
-  if (adaptedQuizQuestions.length < 3 && hsk.vocabulary && hsk.vocabulary.length > 0) {
-    const v0 = hsk.vocabulary[0];
+  // Enrich Final Comprehensive Quiz to 8-10 questions covering Vocabulary, Pinyin, Grammar, and Dialogue
+  const fallbackViMeanings = [
+    'Xin lỗi / Làm phiền một chút',
+    'Thời tiết hôm nay rất đẹp',
+    'Tạm biệt và hẹn gặp lại',
+    'Đi siêu thị mua hoa quả',
+    'Tôi đang làm việc ở văn phòng',
+  ];
+  const fallbackPinyins = ['wǒ men', 'xīng qī', 'piào liang', 'zhōng guó', 'xué xí'];
+  const fallbackHanzis = ['对不起', '没关系', '再见', '明天', '朋友'];
+
+  // Add Vocabulary Meaning questions
+  for (let idx = 0; idx < (hsk.vocabulary || []).length; idx++) {
+    if (adaptedQuizQuestions.length >= 10) break;
+    const v = hsk.vocabulary[idx];
+    const otherMeanings = (hsk.vocabulary || [])
+      .filter((other) => other.hanzi !== v.hanzi)
+      .map((other) => other.meaningVi);
+    const distractors = [...otherMeanings, ...fallbackViMeanings]
+      .filter((m) => m !== v.meaningVi)
+      .slice(0, 3);
+    const pos = idx % 4;
+    const opts = [
+      ...distractors.slice(0, pos),
+      v.meaningVi,
+      ...distractors.slice(pos),
+    ].slice(0, 4);
+
     adaptedQuizQuestions.push({
-      id: `${hsk.id}-q-voc-extra-1`,
+      id: `${hsk.id}-q-voc-meaning-${idx}`,
       type: 'single_choice' as const,
-      question: `Từ vựng "${v0.hanzi}" (${v0.pinyin}) có ý nghĩa tiếng Việt là gì?`,
-      pinyin: v0.pinyin,
-      options: [
-        v0.meaningVi,
-        'Xin lỗi / Làm phiền một chút',
-        'Thời tiết hôm nay rất đẹp',
-        'Tạm biệt và hẹn gặp lại',
-      ],
-      explanation: `"${v0.hanzi}" (${v0.pinyin}) nghĩa là "${v0.meaningVi}". ${
-        v0.exampleSentence ? `Ví dụ: ${v0.exampleSentence} (${v0.exampleVi || ''})` : ''
+      question: `Từ vựng "${v.hanzi}" (${v.pinyin}) có nghĩa tiếng Việt là gì?`,
+      pinyin: v.pinyin,
+      options: opts,
+      explanation: `"${v.hanzi}" (${v.pinyin}) có nghĩa là "${v.meaningVi}". ${
+        v.exampleSentence ? `Ví dụ: ${v.exampleSentence} (${v.exampleVi || ''})` : ''
       }`,
-      correctIndex: 0,
+      correctIndex: opts.indexOf(v.meaningVi),
     });
+
+    // Also add Reverse Vocab (Meaning -> Hanzi) or Pinyin question for the first 2 words
+    if (idx < 2 && adaptedQuizQuestions.length < 10) {
+      const otherHanzis = (hsk.vocabulary || [])
+        .filter((other) => other.hanzi !== v.hanzi)
+        .map((other) => `${other.hanzi} (${other.pinyin})`);
+      const targetChoice = `${v.hanzi} (${v.pinyin})`;
+      const zhDistractors = [
+        ...otherHanzis,
+        ...fallbackHanzis.map((hz, k) => `${hz} (${fallbackPinyins[k]})`),
+      ]
+        .filter((item) => item !== targetChoice)
+        .slice(0, 3);
+      const revPos = (idx + 1) % 4;
+      const revOpts = [
+        ...zhDistractors.slice(0, revPos),
+        targetChoice,
+        ...zhDistractors.slice(revPos),
+      ].slice(0, 4);
+
+      adaptedQuizQuestions.push({
+        id: `${hsk.id}-q-voc-hanzi-${idx}`,
+        type: 'single_choice' as const,
+        question: `Trong tiếng Trung, từ nào dưới đây mang nghĩa là "${v.meaningVi}"?`,
+        pinyin: v.pinyin,
+        options: revOpts,
+        explanation: `Để diễn đạt "${v.meaningVi}", tiếng Trung dùng từ "${v.hanzi}" (${v.pinyin}).`,
+        correctIndex: revOpts.indexOf(targetChoice),
+      });
+    }
   }
 
-  if (adaptedQuizQuestions.length < 3 && hsk.dialogue && hsk.dialogue.length > 0) {
-    const d0 = hsk.dialogue[0];
+  // Add Grammar Pattern Comprehension questions
+  for (let gIdx = 0; gIdx < (hsk.grammarNotes || []).length; gIdx++) {
+    if (adaptedQuizQuestions.length >= 10) break;
+    const g = hsk.grammarNotes[gIdx];
+    const ex = g.examples?.[0];
+    if (ex) {
+      const exOpts = [
+        ex.vietnamese,
+        'Xin hỏi nhà ga tàu điện ngầm ở đâu?',
+        'Hôm nay tôi rất bận không đi được.',
+        'Quyển sách tiếng Trung này của ai?',
+      ].filter((val, i, arr) => arr.indexOf(val) === i);
+      while (exOpts.length < 4) {
+        exOpts.push(`Phương án khác ${exOpts.length}`);
+      }
+
+      adaptedQuizQuestions.push({
+        id: `${hsk.id}-q-gram-${gIdx}`,
+        type: 'single_choice' as const,
+        question: `Áp dụng điểm ngữ pháp "${g.title}" (${g.pattern}), câu "${ex.hanzi}" có nghĩa là gì?`,
+        pinyin: ex.pinyin,
+        options: exOpts.slice(0, 4),
+        explanation: `Theo cấu trúc "${g.pattern}": câu "${ex.hanzi}" (${ex.pinyin}) nghĩa là "${ex.vietnamese}".`,
+        correctIndex: 0,
+      });
+    }
+  }
+
+  // Add Dialogue Comprehension questions
+  for (let dIdx = 0; dIdx < (hsk.dialogue || []).length; dIdx++) {
+    if (adaptedQuizQuestions.length >= 10) break;
+    const d = hsk.dialogue[dIdx];
+    const otherDlgMeanings = (hsk.dialogue || [])
+      .filter((line) => line.hanzi !== d.hanzi)
+      .map((line) => line.vietnamese);
+    const dlgDistractors = [...otherDlgMeanings, ...fallbackViMeanings]
+      .filter((m) => m !== d.vietnamese)
+      .slice(0, 3);
+    const dPos = (dIdx + 2) % 4;
+    const dOpts = [
+      ...dlgDistractors.slice(0, dPos),
+      d.vietnamese,
+      ...dlgDistractors.slice(dPos),
+    ].slice(0, 4);
+
     adaptedQuizQuestions.push({
-      id: `${hsk.id}-q-dlg-extra-2`,
+      id: `${hsk.id}-q-dlg-${dIdx}`,
       type: 'single_choice' as const,
-      question: `Câu thoại "${d0.hanzi}" trong bài có nghĩa là gì?`,
-      pinyin: d0.pinyin,
-      options: [
-        'Tôi đang đi mua sắm ở siêu thị.',
-        d0.vietnamese,
-        'Xin hỏi bây giờ là mấy giờ?',
-        'Cảm ơn sự giúp đỡ của bạn.',
-      ],
-      explanation: `Câu "${d0.hanzi}" (${d0.pinyin}) nghĩa là: "${d0.vietnamese}".`,
-      correctIndex: 1,
+      question: `Trong hội thoại, khi ${d.speakerName} nói "${d.hanzi}", câu này có nghĩa là gì?`,
+      pinyin: d.pinyin,
+      options: dOpts,
+      explanation: `Câu "${d.hanzi}" (${d.pinyin}) nghĩa là: "${d.vietnamese}".`,
+      correctIndex: dOpts.indexOf(d.vietnamese),
     });
   }
 
@@ -419,7 +507,7 @@ function adaptHskLessonToLesson(hsk: HSKLesson): Lesson {
       isRequired: true,
       data: {
         quizId: `quiz-${hsk.id}`,
-        title: 'Kiểm tra nhanh cuối bài',
+        title: `Kiểm tra tổng hợp cuối bài (${adaptedQuizQuestions.length} câu hỏi bao phủ toàn bài)`,
         passingScore: 80,
         questions: adaptedQuizQuestions,
       },
@@ -462,6 +550,309 @@ function getStepShortLabel(type: string, index: number) {
     default:
       return `Bước ${index + 1}`;
   }
+}
+
+function make4Options(correct: string, candidates: string[], targetIdx: number): { options: string[]; correctIndex: number } {
+  const fallbacks = [
+    'Xin lỗi, tôi không biết',
+    'Thời tiết hôm nay rất tốt',
+    'Cảm ơn và hẹn gặp lại',
+    'Tôi đang học tiếng Trung',
+  ];
+  const distractors = Array.from(new Set([...candidates, ...fallbacks]))
+    .filter((c) => c && c.trim() !== correct.trim())
+    .slice(0, 3);
+  const pos = targetIdx % 4;
+  const options = [
+    ...distractors.slice(0, pos),
+    correct,
+    ...distractors.slice(pos),
+  ].slice(0, 4);
+  return {
+    options,
+    correctIndex: Math.max(0, options.indexOf(correct)),
+  };
+}
+
+/**
+ * Generates a 2-3 question Mini Checkpoint Quiz for the end of each section (Parts 1 to 5).
+ */
+function buildSectionMiniQuiz(block: LessonBlock, lesson: Lesson): QuizBlockData | null {
+  if (!block || block.type === 'quiz' || block.type === 'video' || block.type === 'audio' || block.type === 'image' || block.type === 'pdf') {
+    return null;
+  }
+
+  // Gather lesson-wide vocabulary items for realistic distractors
+  const vocabBlock = lesson.blocks.find((b) => b.type === 'vocabulary');
+  const vocabItems = ((vocabBlock?.data as VocabBlockData)?.items || []) as Array<{
+    hanzi: string;
+    pinyin: string;
+    meaningVi: string;
+    exampleSentence?: string;
+    exampleTranslation?: string;
+  }>;
+
+  if (block.type === 'vocabulary') {
+    const items = (block.data as VocabBlockData)?.items || [];
+    if (items.length === 0) return null;
+    const v0 = items[0];
+    const v1 = items[Math.min(1, items.length - 1)];
+    const v2 = items[Math.min(2, items.length - 1)];
+
+    const q1Opts = make4Options(
+      v0.meaningVi,
+      items.map((x) => x.meaningVi),
+      0
+    );
+    const q2Opts = make4Options(
+      `${v1.hanzi} (${v1.pinyin})`,
+      items.map((x) => `${x.hanzi} (${x.pinyin})`),
+      1
+    );
+    const q3Opts = make4Options(
+      v2.pinyin,
+      [...items.map((x) => x.pinyin), 'wǒ men', 'xīng qī', 'zhōng guó'],
+      2
+    );
+
+    return {
+      quizId: `mini-quiz-${block.id}`,
+      title: 'Mini Quiz Phần 1: Củng cố nhanh Từ vựng vừa học',
+      passingScore: 60,
+      questions: [
+        {
+          id: `${block.id}-mq-1`,
+          type: 'single_choice',
+          question: `Từ vựng "${v0.hanzi}" (${v0.pinyin}) vừa nghe có nghĩa là gì?`,
+          pinyin: v0.pinyin,
+          options: q1Opts.options,
+          explanation: `"${v0.hanzi}" (${v0.pinyin}) có nghĩa là "${v0.meaningVi}".`,
+          correctIndex: q1Opts.correctIndex,
+        },
+        {
+          id: `${block.id}-mq-2`,
+          type: 'single_choice',
+          question: `Để diễn đạt "${v1.meaningVi}" bằng tiếng Trung, bạn chọn từ nào?`,
+          options: q2Opts.options,
+          explanation: `"${v1.meaningVi}" trong tiếng Trung là "${v1.hanzi}" (${v1.pinyin}).`,
+          correctIndex: q2Opts.correctIndex,
+        },
+        {
+          id: `${block.id}-mq-3`,
+          type: 'single_choice',
+          question: `Phiên âm Pinyin chuẩn của chữ "${v2.hanzi}" (${v2.meaningVi}) là gì?`,
+          options: q3Opts.options,
+          explanation: `Chữ "${v2.hanzi}" đọc là "${v2.pinyin}" (${v2.meaningVi}).`,
+          correctIndex: q3Opts.correctIndex,
+        },
+      ],
+    };
+  }
+
+  if (block.type === 'rich_text') {
+    const v0 = vocabItems[0] || {
+      hanzi: '你好',
+      pinyin: 'nǐ hǎo',
+      meaningVi: 'Xin chào',
+      exampleSentence: '你好，很高兴认识你。',
+      exampleTranslation: 'Xin chào, rất vui được làm quen với bạn.',
+    };
+    const vLast = vocabItems[vocabItems.length - 1] || v0;
+
+    const exSentence = v0.exampleSentence || v0.hanzi;
+    const exMeaning = v0.exampleTranslation || v0.meaningVi;
+    const q1Opts = make4Options(
+      exMeaning,
+      vocabItems.map((x) => x.exampleTranslation || x.meaningVi),
+      1
+    );
+    const q2Opts = make4Options(
+      vLast.exampleSentence || vLast.hanzi,
+      [
+        ...vocabItems.map((x) => x.exampleSentence || x.hanzi),
+        '请问洗手间在哪里？',
+        '明天见！',
+      ],
+      2
+    );
+
+    return {
+      quizId: `mini-quiz-${block.id}`,
+      title: 'Mini Quiz Phần 2: Nắm vững Ngữ pháp & Mẫu câu',
+      passingScore: 60,
+      questions: [
+        {
+          id: `${block.id}-mq-1`,
+          type: 'single_choice',
+          question: `Mẫu câu ví dụ "${exSentence}" trong bài mang ý nghĩa gì?`,
+          options: q1Opts.options,
+          explanation: `Câu "${exSentence}" có nghĩa là: "${exMeaning}".`,
+          correctIndex: q1Opts.correctIndex,
+        },
+        {
+          id: `${block.id}-mq-2`,
+          type: 'single_choice',
+          question: `Câu tiếng Trung nào dưới đây diễn đạt đúng ý "${vLast.exampleTranslation || vLast.meaningVi}"?`,
+          options: q2Opts.options,
+          explanation: `Đáp án chuẩn là: "${vLast.exampleSentence || vLast.hanzi}".`,
+          correctIndex: q2Opts.correctIndex,
+        },
+      ],
+    };
+  }
+
+  if (block.type === 'roleplay_dialogue') {
+    const rawLines = ((block.data as any)?.lines || (block.data as any)?.dialogue || []) as Array<{
+      hanzi: string;
+      pinyin: string;
+      meaningVi?: string;
+      vietnamese?: string;
+      speakerName?: string;
+    }>;
+    if (rawLines.length === 0) return null;
+
+    const l0 = rawLines[0];
+    const l1 = rawLines[Math.min(1, rawLines.length - 1)];
+    const l0Meaning = l0.meaningVi || l0.vietnamese || 'Xin chào';
+    const l1Meaning = l1.meaningVi || l1.vietnamese || 'Rất vui được gặp bạn';
+
+    const q1Opts = make4Options(
+      l0Meaning,
+      rawLines.map((x) => x.meaningVi || x.vietnamese || ''),
+      0
+    );
+    const q2Opts = make4Options(
+      l1.hanzi,
+      [...rawLines.map((x) => x.hanzi), '对不起，我不知道。', '再见！'],
+      1
+    );
+
+    return {
+      quizId: `mini-quiz-${block.id}`,
+      title: 'Mini Quiz Phần 3: Kiểm tra hiểu Hội thoại thực tế',
+      passingScore: 60,
+      questions: [
+        {
+          id: `${block.id}-mq-1`,
+          type: 'single_choice',
+          question: `Khi nhân vật mở đầu nói "${l0.hanzi}", câu này có nghĩa là gì?`,
+          pinyin: l0.pinyin,
+          options: q1Opts.options,
+          explanation: `"${l0.hanzi}" (${l0.pinyin}) có nghĩa là: "${l0Meaning}".`,
+          correctIndex: q1Opts.correctIndex,
+        },
+        {
+          id: `${block.id}-mq-2`,
+          type: 'single_choice',
+          question: `Để đáp lại với ý "${l1Meaning}", nhân vật tiếp theo đã nói câu nào?`,
+          options: q2Opts.options,
+          explanation: `Câu thoại đáp lại là: "${l1.hanzi}" (${l1.pinyin}).`,
+          correctIndex: q2Opts.correctIndex,
+        },
+      ],
+    };
+  }
+
+  if (block.type === 'speech_practice') {
+    const items = ((block.data as any)?.items || [
+      {
+        hanzi: (block.data as any)?.hanzi || '你好',
+        pinyin: (block.data as any)?.pinyin || 'nǐ hǎo',
+        meaningVi: (block.data as any)?.meaningVi || 'Xin chào',
+      },
+    ]) as Array<{ hanzi: string; pinyin: string; meaningVi: string }>;
+
+    const s0 = items[0];
+    const sLast = items[items.length - 1];
+
+    const q1Opts = make4Options(
+      s0.pinyin,
+      [...items.map((x) => x.pinyin), 'xiè xie', 'bú kè qi', 'zài jiàn'],
+      0
+    );
+    const q2Opts = make4Options(
+      sLast.hanzi,
+      [...items.map((x) => x.hanzi), '谢谢你', '没关系'],
+      2
+    );
+
+    return {
+      quizId: `mini-quiz-${block.id}`,
+      title: 'Mini Quiz Phần 4: Củng cố Phản xạ Luyện nói & Phiên âm',
+      passingScore: 60,
+      questions: [
+        {
+          id: `${block.id}-mq-1`,
+          type: 'single_choice',
+          question: `Khi luyện nói "${s0.hanzi}" (${s0.meaningVi}), phiên âm Pinyin chuẩn là gì?`,
+          options: q1Opts.options,
+          explanation: `"${s0.hanzi}" được phát âm theo Pinyin là "${s0.pinyin}".`,
+          correctIndex: q1Opts.correctIndex,
+        },
+        {
+          id: `${block.id}-mq-2`,
+          type: 'single_choice',
+          question: `Khi muốn nói "${sLast.meaningVi}" bằng tiếng Trung, bạn đọc câu nào?`,
+          options: q2Opts.options,
+          explanation: `Câu chuẩn là "${sLast.hanzi}" (${sLast.pinyin}).`,
+          correctIndex: q2Opts.correctIndex,
+        },
+      ],
+    };
+  }
+
+  if (block.type === 'shadowing') {
+    const sentences = ((block.data as any)?.sentences || []) as Array<{
+      hanzi: string;
+      pinyin: string;
+      meaningVi?: string;
+      vietnamese?: string;
+    }>;
+    if (sentences.length === 0) return null;
+
+    const sh0 = sentences[0];
+    const sh1 = sentences[Math.min(1, sentences.length - 1)];
+    const sh0Meaning = sh0.meaningVi || sh0.vietnamese || 'Xin chào';
+    const sh1Meaning = sh1.meaningVi || sh1.vietnamese || 'Cảm ơn';
+
+    const q1Opts = make4Options(
+      sh0Meaning,
+      sentences.map((x) => x.meaningVi || x.vietnamese || ''),
+      1
+    );
+    const q2Opts = make4Options(
+      sh1.hanzi,
+      [...sentences.map((x) => x.hanzi), '我不知道。', '明天见！'],
+      0
+    );
+
+    return {
+      quizId: `mini-quiz-${block.id}`,
+      title: 'Mini Quiz Phần 5: Kiểm tra nhanh các câu vừa Nhại âm',
+      passingScore: 60,
+      questions: [
+        {
+          id: `${block.id}-mq-1`,
+          type: 'single_choice',
+          question: `Câu nhại âm "${sh0.hanzi}" (${sh0.pinyin}) có nghĩa tiếng Việt là gì?`,
+          pinyin: sh0.pinyin,
+          options: q1Opts.options,
+          explanation: `"${sh0.hanzi}" (${sh0.pinyin}) nghĩa là "${sh0Meaning}".`,
+          correctIndex: q1Opts.correctIndex,
+        },
+        {
+          id: `${block.id}-mq-2`,
+          type: 'single_choice',
+          question: `Câu nào trong bài nhại âm mang ý nghĩa "${sh1Meaning}"?`,
+          options: q2Opts.options,
+          explanation: `"${sh1Meaning}" tương ứng với câu "${sh1.hanzi}" (${sh1.pinyin}).`,
+          correctIndex: q2Opts.correctIndex,
+        },
+      ],
+    };
+  }
+
+  return null;
 }
 
 export default function LessonReaderPage({
@@ -573,9 +964,10 @@ export default function LessonReaderPage({
 
   const renderBlockContent = (block: LessonBlock) => {
     if (!block) return null;
+    const sectionMiniQuiz = buildSectionMiniQuiz(block, currentLesson);
 
     return (
-      <div key={block.id} className="space-y-4">
+      <div key={block.id} className="space-y-6">
         {block.type === 'rich_text' && (
           <RichTextBlock data={block.data as RichTextBlockData} />
         )}
@@ -665,6 +1057,20 @@ export default function LessonReaderPage({
           <PinyinChart
             defaultTab={(block.data as any)?.defaultTab || 'initials'}
           />
+        )}
+
+        {/* Section Mini Checkpoint Quiz (For Parts 1 to 5) */}
+        {sectionMiniQuiz && (
+          <div className="pt-4 border-t border-slate-200">
+            <QuizBlock
+              data={sectionMiniQuiz}
+              onCompleted={(passed) => {
+                if (passed) {
+                  markBlockDone(block.id);
+                }
+              }}
+            />
+          </div>
         )}
       </div>
     );

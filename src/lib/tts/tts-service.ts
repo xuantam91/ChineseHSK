@@ -388,3 +388,83 @@ export function speakChineseCharByChar(
     options.onCharIndex?.(null);
   };
 }
+
+/**
+ * Speaks Vietnamese text (meaningVi) using Web Speech API (vi-VN) with reliable callback fallback.
+ */
+export function speakVietnamese(
+  text: string,
+  options: { speedRate?: number; onStart?: () => void; onEnd?: () => void } = {}
+): () => void {
+  if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
+    setTimeout(() => {
+      options.onEnd?.();
+    }, 600);
+    return () => {};
+  }
+
+  const cleanText = text.trim();
+  if (!cleanText) {
+    options.onEnd?.();
+    return () => {};
+  }
+
+  if (currentSafetyTimeout) {
+    clearTimeout(currentSafetyTimeout);
+    currentSafetyTimeout = null;
+  }
+
+  try {
+    window.speechSynthesis.cancel();
+  } catch {
+    // ignore
+  }
+
+  const utterance = new SpeechSynthesisUtterance(cleanText);
+  utterance.lang = 'vi-VN';
+  utterance.rate = options.speedRate ?? 0.95;
+
+  const voices = cachedVoices.length > 0 ? cachedVoices : window.speechSynthesis.getVoices();
+  const viVoice = voices.find((v) => {
+    const lang = (v.lang || '').toLowerCase();
+    const name = (v.name || '').toLowerCase();
+    return lang.startsWith('vi') || name.includes('viet') || name.includes('linh');
+  });
+  if (viVoice) {
+    utterance.voice = viVoice;
+  }
+
+  let hasFinished = false;
+  const done = () => {
+    if (hasFinished) return;
+    hasFinished = true;
+    isCurrentlySpeaking = false;
+    if (currentSafetyTimeout) {
+      clearTimeout(currentSafetyTimeout);
+      currentSafetyTimeout = null;
+    }
+    options.onEnd?.();
+  };
+
+  utterance.onstart = () => {
+    isCurrentlySpeaking = true;
+    options.onStart?.();
+  };
+  utterance.onend = () => done();
+  utterance.onerror = () => done();
+
+  const estMs = Math.max(1500, cleanText.split(/\s+/).length * 320 + 800);
+  currentSafetyTimeout = setTimeout(() => {
+    done();
+  }, estMs);
+
+  try {
+    window.speechSynthesis.speak(utterance);
+  } catch {
+    done();
+  }
+
+  return () => {
+    stopChineseSpeech();
+  };
+}
