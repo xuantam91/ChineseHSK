@@ -1,0 +1,27 @@
+#!/bin/zsh
+export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
+
+APP_DIR="/Users/tamtran/Documents/WorkSpace/Globy/ChineseHSK"
+APP_URL="http://localhost:3000/dashboard"
+LOG_FILE="/tmp/chinese-hsk-journey.log"
+
+cd "$APP_DIR" || exit 1
+
+# Check if port 3000 is already serving
+if ! curl -s -o /dev/null --max-time 2 "http://localhost:3000"; then
+  nohup npm run dev > "$LOG_FILE" 2>&1 &
+  # Wait up to 20 seconds for local server to be ready
+  for i in {1..40}; do
+    if curl -s -o /dev/null --max-time 1 "http://localhost:3000"; then
+      break
+    fi
+    sleep 0.5
+  done
+fi
+
+# Open as standalone macOS app window if Google Chrome is installed, otherwise default browser
+if [ -d "/Applications/Google Chrome.app" ]; then
+  open -na "Google Chrome" --args --app="$APP_URL"
+else
+  open "$APP_URL"
+fi

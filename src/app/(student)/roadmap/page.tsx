@@ -412,12 +412,25 @@ export default function RoadmapPage() {
                     Tài khoản Demo giới hạn học thử 3 bài đầu tiên của mỗi cấp độ. Đăng ký hoặc đăng nhập tài khoản chính thức để học trọn bộ 120 bài HSK 1–6.
                   </p>
                 </div>
-                <div className="flex items-center gap-2.5 shrink-0">
-                  <Link href="/login">
-                    <Button variant="outline" size="md" className="text-xs font-bold border-slate-300 text-slate-700">
-                      Đăng nhập
-                    </Button>
-                  </Link>
+                <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+                  <Button
+                    variant="outline"
+                    size="md"
+                    onClick={() => {
+                      const unlocked = {
+                        ...profile,
+                        id: 'usr_vip_local',
+                        email: 'hocvien.vip@chinese-journey.edu.vn',
+                        displayName: 'Học viên Chính thức',
+                        isDemo: false,
+                      };
+                      setProfile(unlocked);
+                      saveUserProfile(unlocked);
+                    }}
+                    className="text-xs font-bold border-emerald-600 text-emerald-800 hover:bg-emerald-50"
+                  >
+                    Mở khóa Học viên Chính thức (1-chạm)
+                  </Button>
                   <Link href="/register">
                     <Button
                       variant="primary"

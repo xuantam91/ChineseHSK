@@ -363,20 +363,40 @@ export default function StudentDashboardPage() {
                       🔒 Giới hạn Tài khoản Học thử (Demo: {DEMO_MAX_LESSONS}/{levelLessons.length} bài đầu)
                     </div>
                     <p className="text-xs sm:text-sm text-slate-700">
-                      Tài khoản Demo chỉ hiển thị và học thử {DEMO_MAX_LESSONS} bài đầu. Đăng ký hoặc đăng nhập tài khoản chính thức để mở khóa toàn bộ{' '}
+                      Tài khoản Demo chỉ hiển thị và học thử {DEMO_MAX_LESSONS} bài đầu. Đăng ký hoặc kích hoạt tài khoản chính thức để mở khóa toàn bộ{' '}
                       <strong>{levelLessons.length} bài học</strong> của {activeLevel}.
                     </p>
                   </div>
-                  <Link href="/register" className="shrink-0">
+                  <div className="flex flex-wrap items-center gap-2 shrink-0">
                     <Button
-                      variant="primary"
+                      variant="outline"
                       size="sm"
-                      rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
-                      className="bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-xs px-4"
+                      onClick={() => {
+                        const unlocked = {
+                          ...profile,
+                          id: 'usr_vip_local',
+                          email: 'hocvien.vip@chinese-journey.edu.vn',
+                          displayName: 'Học viên Chính thức',
+                          isDemo: false,
+                        };
+                        setProfile(unlocked);
+                        saveUserProfile(unlocked);
+                      }}
+                      className="text-xs font-bold border-emerald-600 text-emerald-800 hover:bg-emerald-50"
                     >
-                      Đăng ký mở khóa
+                      Mở khóa Học viên Chính thức (1-chạm)
                     </Button>
-                  </Link>
+                    <Link href="/register" className="shrink-0">
+                      <Button
+                        variant="primary"
+                        size="sm"
+                        rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
+                        className="bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-xs px-4"
+                      >
+                        Đăng ký tài khoản
+                      </Button>
+                    </Link>
+                  </div>
                 </div>
               )}
             </CardContent>

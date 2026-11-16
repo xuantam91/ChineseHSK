@@ -51,6 +51,11 @@ export default function LoginPage() {
     setPassword('DemoStudent123!');
   };
 
+  const fillFullStudent = () => {
+    setEmail('hocvien.vip@chinese-journey.edu.vn');
+    setPassword('StudentFull123!');
+  };
+
   const fillDemoAdmin = () => {
     setEmail('admin@chinese-journey.edu.vn');
     setPassword('AdminMasterSecret123!');
@@ -84,19 +89,27 @@ export default function LoginPage() {
           <div className="flex flex-wrap gap-2">
             <button
               type="button"
+              onClick={fillFullStudent}
+              className="flex items-center gap-1.5 bg-emerald-700 text-white px-3 py-1.5 rounded-xl border border-emerald-700 font-bold hover:bg-emerald-800 transition-colors shadow-2xs cursor-pointer"
+            >
+              <UserCheck className="w-3.5 h-3.5 text-amber-300" />
+              <span>Học viên Chính thức (Đủ 120 bài)</span>
+            </button>
+            <button
+              type="button"
               onClick={fillDemoStudent}
-              className="flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-xl border border-emerald-200 text-emerald-800 font-medium hover:bg-emerald-100 transition-colors shadow-2xs"
+              className="flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-xl border border-emerald-200 text-emerald-800 font-medium hover:bg-emerald-100 transition-colors shadow-2xs cursor-pointer"
             >
               <UserCheck className="w-3.5 h-3.5 text-emerald-600" />
-              <span>Học viên Demo</span>
+              <span>Học viên Demo (3 bài đầu)</span>
             </button>
             <button
               type="button"
               onClick={fillDemoAdmin}
-              className="flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-xl border border-emerald-200 text-emerald-800 font-medium hover:bg-emerald-100 transition-colors shadow-2xs"
+              className="flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-xl border border-emerald-200 text-emerald-800 font-medium hover:bg-emerald-100 transition-colors shadow-2xs cursor-pointer"
             >
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-              <span>Admin Demo</span>
+              <span>Admin</span>
             </button>
           </div>
         </div>
