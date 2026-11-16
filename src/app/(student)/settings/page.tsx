@@ -22,6 +22,7 @@ import { Toast } from '@/components/ui/Toast';
 import { TTSVoiceSelector } from '@/components/common/TTSVoiceSelector';
 import { AgeGroup, HSKLevel } from '@/types';
 import { getStoredUserProfile, saveUserProfile } from '@/lib/student-store';
+import { DEMO_USER_PROFILE } from '@/lib/mock-data';
 
 const HSK_LEVEL_OPTIONS: {
   level: HSKLevel;
@@ -90,7 +91,7 @@ const HSK_LEVEL_OPTIONS: {
 ];
 
 export default function SettingsPage() {
-  const [profile, setProfile] = useState(getStoredUserProfile());
+  const [profile, setProfile] = useState(DEMO_USER_PROFILE);
   const [displayName, setDisplayName] = useState(profile.displayName);
   const [ageGroup, setAgeGroup] = useState<AgeGroup>(profile.ageGroup);
   const [currentHskLevel, setCurrentHskLevel] = useState<HSKLevel>(profile.currentHskLevel || 'HSK1');

@@ -19,7 +19,7 @@ import { Progress } from '@/components/ui/Progress';
 import { Dialog } from '@/components/ui/Dialog';
 import { PinyinChart } from '@/components/lesson/PinyinChart';
 import { NotionMethodologySection } from '@/components/roadmap/NotionMethodologySection';
-import { DEMO_MONTHS_OVERVIEW } from '@/lib/mock-data';
+import { DEMO_MONTHS_OVERVIEW, DEMO_USER_PROFILE } from '@/lib/mock-data';
 import {
   getStoredUserProfile,
   saveUserProfile,
@@ -54,7 +54,7 @@ const LEVEL_TABS: { id: HSKViewLevel; label: string; tier: string; vocab: string
 export default function RoadmapPage() {
   const [activeLevel, setActiveLevel] = useState<HSKViewLevel>('HSK1');
   const [completedLessons, setCompletedLessons] = useState<string[]>([]);
-  const [profile, setProfile] = useState(getStoredUserProfile());
+  const [profile, setProfile] = useState(DEMO_USER_PROFILE);
   const [isPinyinModalOpen, setIsPinyinModalOpen] = useState(false);
   const [showMethodology, setShowMethodology] = useState(false);
 

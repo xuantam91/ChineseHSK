@@ -30,6 +30,7 @@ import {
   isDemoAccount,
   DEMO_MAX_LESSONS,
 } from '@/lib/student-store';
+import { DEMO_USER_PROFILE } from '@/lib/mock-data';
 import { getFormattedTodayVi } from '@/lib/timezone';
 import { HSKLevel } from '@/types';
 import { HSK1_LESSONS, HSK2_LESSONS, HSK3_LESSONS, HSKLesson } from '@/lib/curriculum/hsk1-3-data';
@@ -64,7 +65,7 @@ function getLessonsByLevel(level: HSKLevel): HSKLesson[] {
 }
 
 export default function StudentDashboardPage() {
-  const [profile, setProfile] = useState(getStoredUserProfile());
+  const [profile, setProfile] = useState(DEMO_USER_PROFILE);
   const [todayText, setTodayText] = useState('');
   const [completedLessons, setCompletedLessons] = useState<string[]>([]);
   const [isPinyinModalOpen, setIsPinyinModalOpen] = useState(false);
