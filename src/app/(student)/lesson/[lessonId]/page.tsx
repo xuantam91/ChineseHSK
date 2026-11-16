@@ -115,9 +115,69 @@ function adaptHskLessonToLesson(hsk: HSKLesson): Lesson {
     });
   }
 
-  // 3. Speech Practice (Luyện nói mic)
-  if (hsk.speechDrills && hsk.speechDrills.length > 0) {
-    const drill = hsk.speechDrills[0];
+  // 3. Speech Practice (Luyện nói từng bước: Từ vựng -> Cụm từ -> Câu giao tiếp)
+  const speechItems: Array<{
+    id: string;
+    hanzi: string;
+    pinyin: string;
+    meaningVi: string;
+    tip?: string;
+    audioUrl?: string;
+    category?: 'word' | 'sentence';
+  }> = [];
+  const seenSpeechHanzi = new Set<string>();
+
+  // Add core vocabulary words first so learner warms up with short words
+  for (const v of hsk.vocabulary || []) {
+    const key = v.hanzi.trim();
+    if (key && !seenSpeechHanzi.has(key)) {
+      seenSpeechHanzi.add(key);
+      speechItems.push({
+        id: `${hsk.id}-sp-voc-${speechItems.length}`,
+        hanzi: v.hanzi,
+        pinyin: v.pinyin,
+        meaningVi: v.meaningVi,
+        tip: v.exampleSentence ? `Ví dụ: ${v.exampleSentence} (${v.exampleVi || ''})` : undefined,
+        category: 'word',
+      });
+    }
+  }
+
+  // Add dedicated speech drills with pronunciation coaching tips
+  for (const drill of hsk.speechDrills || []) {
+    const key = drill.hanzi.trim();
+    if (key && !seenSpeechHanzi.has(key)) {
+      seenSpeechHanzi.add(key);
+      speechItems.push({
+        id: `${hsk.id}-sp-drill-${speechItems.length}`,
+        hanzi: drill.hanzi,
+        pinyin: drill.pinyin,
+        meaningVi: drill.vietnamese,
+        tip: drill.pronunciationTipVi,
+        audioUrl: drill.audioUrl,
+        category: 'sentence',
+      });
+    }
+  }
+
+  // Add dialogue sentences for conversational speaking practice
+  for (const line of hsk.dialogue || []) {
+    const key = line.hanzi.trim();
+    if (key && !seenSpeechHanzi.has(key)) {
+      seenSpeechHanzi.add(key);
+      speechItems.push({
+        id: `${hsk.id}-sp-dlg-${speechItems.length}`,
+        hanzi: line.hanzi,
+        pinyin: line.pinyin,
+        meaningVi: line.vietnamese,
+        tip: `Câu thoại của ${line.speakerName}`,
+        audioUrl: line.audioUrl,
+        category: 'sentence',
+      });
+    }
+  }
+
+  if (speechItems.length > 0) {
     blocks.push({
       id: `${hsk.id}-blk-speech`,
       lessonId: hsk.id,
@@ -125,17 +185,69 @@ function adaptHskLessonToLesson(hsk: HSKLesson): Lesson {
       sequenceOrder: seq++,
       isRequired: true,
       data: {
-        hanzi: drill.hanzi,
-        pinyin: drill.pinyin,
-        meaningVi: drill.vietnamese,
-        audioUrl: drill.audioUrl,
-        prompt: drill.pronunciationTipVi,
+        hanzi: speechItems[0].hanzi,
+        pinyin: speechItems[0].pinyin,
+        meaningVi: speechItems[0].meaningVi,
+        prompt: speechItems[0].tip,
+        items: speechItems,
       },
     });
   }
 
-  // 4. Shadowing Sentences
-  if (hsk.shadowSentences && hsk.shadowSentences.length > 0) {
+  // 4. Shadowing Sentences (Enriched with shadowSentences + dialogue + vocab examples)
+  const shadowList: Array<{
+    id: string;
+    hanzi: string;
+    pinyin: string;
+    meaningVi: string;
+    focusToneSandhi?: string;
+  }> = [];
+  const seenShadowHanzi = new Set<string>();
+
+  for (const s of hsk.shadowSentences || []) {
+    const key = s.hanzi.trim();
+    if (key && !seenShadowHanzi.has(key)) {
+      seenShadowHanzi.add(key);
+      shadowList.push({
+        id: `${hsk.id}-sh-${shadowList.length}`,
+        hanzi: s.hanzi,
+        pinyin: s.pinyin,
+        meaningVi: s.vietnamese,
+        focusToneSandhi: s.focusToneSandhi,
+      });
+    }
+  }
+
+  for (const d of hsk.dialogue || []) {
+    const key = d.hanzi.trim();
+    if (key && !seenShadowHanzi.has(key)) {
+      seenShadowHanzi.add(key);
+      shadowList.push({
+        id: `${hsk.id}-sh-dlg-${shadowList.length}`,
+        hanzi: d.hanzi,
+        pinyin: d.pinyin,
+        meaningVi: d.vietnamese,
+      });
+    }
+  }
+
+  for (const v of hsk.vocabulary || []) {
+    if (v.exampleSentence && v.examplePinyin) {
+      const key = v.exampleSentence.trim();
+      if (key && !seenShadowHanzi.has(key)) {
+        seenShadowHanzi.add(key);
+        shadowList.push({
+          id: `${hsk.id}-sh-ex-${shadowList.length}`,
+          hanzi: v.exampleSentence,
+          pinyin: v.examplePinyin,
+          meaningVi: v.exampleVi || v.meaningVi,
+          focusToneSandhi: `Từ trọng tâm: ${v.hanzi} (${v.pinyin} - ${v.meaningVi})`,
+        });
+      }
+    }
+  }
+
+  if (shadowList.length > 0) {
     blocks.push({
       id: `${hsk.id}-blk-shadowing`,
       lessonId: hsk.id,
@@ -143,14 +255,8 @@ function adaptHskLessonToLesson(hsk: HSKLesson): Lesson {
       sequenceOrder: seq++,
       isRequired: false,
       data: {
-        title: 'Nhại âm phản xạ (Shadowing)',
-        sentences: hsk.shadowSentences.map((s, i) => ({
-          id: `${hsk.id}-sh-${i}`,
-          hanzi: s.hanzi,
-          pinyin: s.pinyin,
-          meaningVi: s.vietnamese,
-          focusToneSandhi: s.focusToneSandhi,
-        })),
+        title: `Luyện nhại âm phản xạ (${shadowList.length} câu thực tế)`,
+        sentences: shadowList,
       },
     });
   }
@@ -366,6 +472,8 @@ export default function LessonReaderPage({
               (block.data as any)?.meaning_vi ||
               'Xin chào'
             }
+            prompt={(block.data as any)?.prompt || (block.data as any)?.hints}
+            items={(block.data as any)?.items}
             audioUrl={(block.data as any)?.audioUrl}
             onCompleted={(res) => {
               if (res.isPassed) {
@@ -384,6 +492,7 @@ export default function LessonReaderPage({
               meaningVi: s.meaningVi || s.vietnamese || '',
               audioUrl: s.audioUrl,
               speaker: s.speaker,
+              focusToneSandhi: s.focusToneSandhi,
             }))}
             onAllCompleted={() => markBlockDone(block.id)}
           />

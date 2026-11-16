@@ -16,6 +16,8 @@ let cachedVoices: SpeechSynthesisVoice[] = [];
 let voicesLoaded = false;
 let isCurrentlySpeaking = false;
 let currentSafetyTimeout: ReturnType<typeof setTimeout> | null = null;
+let charSequenceCancelled = false;
+let charSequenceTimeout: ReturnType<typeof setTimeout> | null = null;
 
 /**
  * Initializes and fetches available system voices.
@@ -176,6 +178,11 @@ export interface SpeakOptions {
  * Stops any active Chinese speech playback immediately.
  */
 export function stopChineseSpeech(): void {
+  charSequenceCancelled = true;
+  if (charSequenceTimeout) {
+    clearTimeout(charSequenceTimeout);
+    charSequenceTimeout = null;
+  }
   if (currentSafetyTimeout) {
     clearTimeout(currentSafetyTimeout);
     currentSafetyTimeout = null;
@@ -303,5 +310,81 @@ export function speakChinese(text: string, options: SpeakOptions = {}): () => vo
   // Return cancel function
   return () => {
     stopChineseSpeech();
+  };
+}
+
+export interface CharByCharOptions {
+  pauseMs?: number;
+  speedRate?: number;
+  onCharIndex?: (idx: number | null) => void;
+  onEnd?: () => void;
+}
+
+/**
+ * Speaks a Chinese string character-by-character with a clear pause between each syllable,
+ * calling onCharIndex(idx) so UI can highlight each character for the learner to follow.
+ */
+export function speakChineseCharByChar(
+  text: string,
+  options: CharByCharOptions = {}
+): () => void {
+  const chars = Array.from(text.replace(/\s+/g, ''));
+  if (chars.length === 0) {
+    options.onEnd?.();
+    return () => {};
+  }
+
+  stopChineseSpeech();
+  charSequenceCancelled = false;
+
+  const pauseMs = options.pauseMs ?? 450;
+  const speedRate = options.speedRate ?? 0.68;
+  const punctuationRegex = /^[，。！？、；：“”‘’（）,.!?;:()"\-—…]+$/;
+
+  const speakAtIndex = (index: number) => {
+    if (charSequenceCancelled || index >= chars.length) {
+      options.onCharIndex?.(null);
+      options.onEnd?.();
+      return;
+    }
+
+    const ch = chars[index];
+    options.onCharIndex?.(index);
+
+    if (punctuationRegex.test(ch)) {
+      charSequenceTimeout = setTimeout(() => {
+        speakAtIndex(index + 1);
+      }, 220);
+      return;
+    }
+
+    speakChinese(ch, {
+      speedRate,
+      onEnd: () => {
+        if (charSequenceCancelled) {
+          options.onCharIndex?.(null);
+          return;
+        }
+        charSequenceTimeout = setTimeout(() => {
+          speakAtIndex(index + 1);
+        }, pauseMs);
+      },
+      onError: () => {
+        if (charSequenceCancelled) {
+          options.onCharIndex?.(null);
+          return;
+        }
+        charSequenceTimeout = setTimeout(() => {
+          speakAtIndex(index + 1);
+        }, pauseMs);
+      },
+    });
+  };
+
+  speakAtIndex(0);
+
+  return () => {
+    stopChineseSpeech();
+    options.onCharIndex?.(null);
   };
 }

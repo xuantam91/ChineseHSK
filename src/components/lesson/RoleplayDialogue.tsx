@@ -253,8 +253,12 @@ export function RoleplayDialogue({
   };
 
   // Play reference audio for student line
-  const playReference = (line: DialogueLine) => {
-    speakTTS(line.hanzi);
+  const playReference = (line: DialogueLine, speedRate = 0.78) => {
+    speakChinese(line.hanzi, {
+      speedRate,
+      onEnd: () => setIsAiSpeaking(false),
+      onError: () => setIsAiSpeaking(false),
+    });
   };
 
   // Restart dialogue
@@ -454,16 +458,28 @@ export function RoleplayDialogue({
                   </h4>
                 </div>
 
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => playReference(currentLine)}
-                  leftIcon={<Volume2 className="w-3.5 h-3.5 text-emerald-600" />}
-                  className="text-xs"
-                >
-                  Nghe mẫu
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => playReference(currentLine, 0.78)}
+                    leftIcon={<Volume2 className="w-3.5 h-3.5 text-emerald-600" />}
+                    className="text-xs font-semibold"
+                  >
+                    Nghe mẫu
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => playReference(currentLine, 0.55)}
+                    leftIcon={<Volume2 className="w-3.5 h-3.5 text-amber-600" />}
+                    className="text-xs font-semibold"
+                  >
+                    Nghe chậm (0.55x)
+                  </Button>
+                </div>
               </div>
 
               {/* Target Line Display */}
