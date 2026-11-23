@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+  <key>CFBundleDevelopmentRegion</key>
+  <string>vi</string>
   <key>CFBundleDisplayName</key>
   <string>Chinese HSK Journey</string>
   <key>CFBundleExecutable</key>
@@ -19,10 +21,21 @@
   <key>CFBundleShortVersionString</key>
   <string>1.0.0</string>
   <key>CFBundleVersion</key>
-  <string>1</string>
+  <string>2</string>
+  <key>LSApplicationCategoryType</key>
+  <string>public.app-category.education</string>
   <key>LSMinimumSystemVersion</key>
   <string>12.0</string>
+  <key>LSUIElement</key>
+  <false/>
+  <key>NSAppTransportSecurity</key>
+  <dict>
+    <key>NSAllowsLocalNetworking</key>
+    <true/>
+  </dict>
   <key>NSHighResolutionCapable</key>
   <true/>
+  <key>NSMicrophoneUsageDescription</key>
+  <string>Ứng dụng cần quyền truy cập micro để luyện phát âm và nhại âm tiếng Trung.</string>
 </dict>
 </plist>
