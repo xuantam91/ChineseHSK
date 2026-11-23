@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { HSKLesson } from '@/lib/curriculum/hsk1-3-data';
 import { TTSVoiceSelector } from '@/components/common/TTSVoiceSelector';
+import { VideoSubtitlePanel } from '@/components/lesson/VideoSubtitlePanel';
 import { useTTS } from '@/lib/tts';
 
 const DEFAULT_VIDEO_BY_LEVEL: Record<string, { url: string; title: string }> = {
@@ -162,21 +163,26 @@ const DEFAULT_COVER_IMAGE_BY_LEVEL: Record<string, string> = {
   HSK6: '/images/lessons/hsk6_lesson01_business_negotiation.jpg',
 };
 
-function extractYouTubeEmbedUrl(url: string): string | null {
+function extractYouTubeVideoId(url: string): string | null {
   try {
     const parsed = new URL(url);
     if (parsed.hostname.includes('youtu.be')) {
       const id = parsed.pathname.slice(1);
-      return id ? `https://www.youtube.com/embed/${id}` : null;
+      return id || null;
     }
     const v = parsed.searchParams.get('v');
-    if (v) {
-      return `https://www.youtube.com/embed/${v}`;
-    }
+    if (v) return v;
   } catch {
     // ignore
   }
   return null;
+}
+
+function extractYouTubeEmbedUrl(url: string): string | null {
+  const id = extractYouTubeVideoId(url);
+  return id
+    ? `https://www.youtube.com/embed/${id}?rel=0&cc_load_policy=1&cc_lang_pref=vi&hl=vi`
+    : null;
 }
 
 function extractCoverCalligraphy(lesson?: HSKLesson, fallbackTitle?: string): string {
@@ -227,6 +233,7 @@ export const LessonCoverCard: React.FC<LessonCoverCardProps> = ({
       DEFAULT_VIDEO_BY_LEVEL[level] ||
       DEFAULT_VIDEO_BY_LEVEL.HSK1;
 
+  const videoId = extractYouTubeVideoId(videoInfo.url);
   const embedUrl = extractYouTubeEmbedUrl(videoInfo.url);
   const vocabHighlights = (hskLesson?.vocabulary || []).slice(0, 6);
   const grammarHighlights = (hskLesson?.grammarNotes || []).slice(0, 3);
@@ -358,6 +365,13 @@ export const LessonCoverCard: React.FC<LessonCoverCardProps> = ({
               allowFullScreen
             />
           </div>
+
+          {/* Bilingual Subtitles & Transcript Companion (Tiếng Việt / English / 中文 + Pinyin) */}
+          <VideoSubtitlePanel
+            videoId={videoId}
+            hskLesson={hskLesson}
+            title={videoInfo.title}
+          />
         </div>
       )}
 

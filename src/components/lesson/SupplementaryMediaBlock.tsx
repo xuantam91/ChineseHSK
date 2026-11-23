@@ -19,6 +19,7 @@ import { Button } from '@/components/ui/Button';
 import { Dialog } from '@/components/ui/Dialog';
 import { CuratedMediaItem } from '@/lib/curriculum/media-resources';
 import { ThematicFlashcardSet, ThematicFlashcardWord } from '@/lib/curriculum/topic-flashcards';
+import { VideoSubtitlePanel } from '@/components/lesson/VideoSubtitlePanel';
 import { speakChinese } from '@/lib/tts';
 
 export interface SupplementaryMediaBlockProps {
@@ -103,20 +104,25 @@ export function SupplementaryMediaBlock({
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             {/* Embedded YouTube Thematic Video */}
-            <div className="lg:col-span-7">
+            <div className="lg:col-span-7 space-y-3">
               <div className="relative w-full aspect-video rounded-2xl overflow-hidden border border-emerald-200 bg-black shadow-sm">
                 <iframe
-                  src={`https://www.youtube.com/embed/${thematicFlashcardSet.videoId}?rel=0`}
+                  src={`https://www.youtube.com/embed/${thematicFlashcardSet.videoId}?rel=0&cc_load_policy=1&cc_lang_pref=vi&hl=vi`}
                   title={thematicFlashcardSet.topic}
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
                   className="absolute inset-0 w-full h-full"
                 />
               </div>
-              <p className="text-[11px] text-gray-500 mt-2 flex items-center justify-between">
-                <span>Nguồn video: GamelearnChinese & A Little Chinese</span>
-                <span className="font-semibold text-emerald-700">Bộ từ vựng tương tác</span>
+              <p className="text-[11px] text-gray-500 flex items-center justify-between">
+                <span>Nguồn video: GamesLearnChinese &amp; Little Fox Chinese</span>
+                <span className="font-semibold text-emerald-700">Phụ đề song ngữ Việt – Anh – Trung</span>
               </p>
+              <VideoSubtitlePanel
+                videoId={thematicFlashcardSet.videoId}
+                thematicWords={thematicFlashcardSet.words}
+                title={thematicFlashcardSet.topic}
+              />
             </div>
 
             {/* Interactive Flashcard Card & Word Selector */}
