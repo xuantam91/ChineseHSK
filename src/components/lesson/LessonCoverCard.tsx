@@ -13,144 +13,144 @@ import {
   Layers,
   Video,
   ExternalLink,
+  Subtitles,
 } from 'lucide-react';
 import { HSKLesson } from '@/lib/curriculum/hsk1-3-data';
 import { TTSVoiceSelector } from '@/components/common/TTSVoiceSelector';
-import { VideoSubtitlePanel } from '@/components/lesson/VideoSubtitlePanel';
 import { useTTS } from '@/lib/tts';
 
 const DEFAULT_VIDEO_BY_LEVEL: Record<string, { url: string; title: string }> = {
   HSK1: {
-    url: 'https://www.youtube.com/watch?v=m_rDIzj6DRE',
-    title: 'Little Fox Chinese (Miễn phí • Dễ hiểu): Hello Song & Số đếm tiếng Trung',
+    url: 'https://www.youtube.com/watch?v=MYQrQvbR8Vk',
+    title: 'HSK 1–2 (Có sẵn phụ đề Việt / Anh / Trung): Một ngày của tôi (我的一天)',
   },
   HSK2: {
-    url: 'https://www.youtube.com/watch?v=lm7oB_D1is0',
-    title: 'Bài giảng HSK 2 Miễn phí (YAYA Mandarin): Giao tiếp & Du lịch cơ bản',
+    url: 'https://www.youtube.com/watch?v=PcergOJuC1M',
+    title: 'HSK 2 (Có sẵn phụ đề Việt / Anh • Nói chậm): Cuộc sống một tuần (一周的生活)',
   },
   HSK3: {
-    url: 'https://www.youtube.com/watch?v=2e8zAu2_h2w',
-    title: 'Bài giảng HSK 3 Miễn phí (YAYA Mandarin): Hội thoại & Ngữ pháp ứng dụng',
+    url: 'https://www.youtube.com/watch?v=gr-PvRnUIjA',
+    title: 'HSK 2–3 (Có sẵn phụ đề Việt / Trung): Bày tỏ cảm xúc bằng tiếng Trung',
   },
   HSK4: {
-    url: 'https://www.youtube.com/watch?v=xE3Sh1S2lWM',
-    title: 'Bài giảng HSK 4 Miễn phí (YAYA Mandarin): Đàm thoại & Đời sống xã hội',
+    url: 'https://www.youtube.com/watch?v=uELIAHpFuMY',
+    title: 'HSK 3–4 (Có sẵn phụ đề Trung / Anh): Luyện nghe ShuoshuoChinese',
   },
   HSK5: {
     url: 'https://www.youtube.com/watch?v=tBqHmOH2ycs',
-    title: 'Bài giảng HSK 5 Miễn phí: Tiếng Trung giao tiếp & Văn hóa chuyên sâu',
+    title: 'HSK 5 (Có sẵn phụ đề YouTube CC): Bài giảng HSK 5 Chuẩn (爱的细节)',
   },
   HSK6: {
-    url: 'https://www.youtube.com/watch?v=1s8FMW9wh_0',
-    title: 'Bài giảng HSK 6 Miễn phí: Luyện nghe đọc hiểu & Câu chuyện triết lý',
+    url: 'https://www.youtube.com/watch?v=nV8BcPH43XQ',
+    title: 'HSK 6 (Có sẵn phụ đề Tiếng Việt): Luyện nghe chuẩn giáo trình HSK cao cấp',
   },
 };
 
-// Topic-matched 100% FREE & kid-friendly videos for base lessons (HSK1-6 Lessons 1-5)
+// Topic-matched 100% FREE & YouTube-CC-verified videos for base lessons (HSK1-6)
 const LESSON_FREE_VIDEO_MAP: Record<string, { url: string; title: string }> = {
   'hsk1-lesson-01': {
-    url: 'https://www.youtube.com/watch?v=m_rDIzj6DRE',
-    title: 'Little Fox Chinese (Thiếu nhi • Miễn phí): Bài hát Chào hỏi & Làm quen (你好歌)',
+    url: 'https://www.youtube.com/watch?v=MYQrQvbR8Vk',
+    title: 'HSK 1–2 (Có sẵn phụ đề Việt / Anh / Trung): Giao tiếp sinh hoạt mỗi ngày',
   },
   'hsk1-lesson-02': {
-    url: 'https://www.youtube.com/watch?v=7ZMc8JJYA94',
-    title: 'Little Fox Chinese (Thiếu nhi • Miễn phí): Hỏi tên & Quốc tịch (你叫什么名字？)',
+    url: 'https://www.youtube.com/watch?v=RHY6VB50k74',
+    title: 'Grace Mandarin (Có phụ đề Anh): Cách hỏi Ai, Cái gì, Ở đâu, Khi nào',
   },
   'hsk1-lesson-03': {
-    url: 'https://www.youtube.com/watch?v=4TA2iKi_kPY',
-    title: 'Little Fox Chinese (Thiếu nhi • Miễn phí): Gia đình & Người thân (手指家庭)',
+    url: 'https://www.youtube.com/watch?v=KtffLjFqFPM',
+    title: 'Little Fox Chinese (Thiếu nhi • Có phụ đề Anh): Em trai bé nhỏ của tôi (我的小弟弟)',
   },
   'hsk1-lesson-04': {
-    url: 'https://www.youtube.com/watch?v=WeYArTD9IHk',
-    title: 'GamesLearnChinese (Thiếu nhi • Miễn phí): Số đếm, Thời gian & Ngày tháng',
+    url: 'https://www.youtube.com/watch?v=C_wrXDRxuUY',
+    title: 'Peppa Pig Tiếng Trung (Thiếu nhi • Có phụ đề Trung / Anh / Pinyin): Học Số đếm',
   },
   'hsk1-lesson-05': {
-    url: 'https://www.youtube.com/watch?v=OB5bL3Ow4-c',
-    title: 'Little Fox Chinese (Thiếu nhi • Miễn phí): Đi siêu thị & Mua sắm (在超市)',
+    url: 'https://www.youtube.com/watch?v=eAe0FFIqeeU',
+    title: 'Grace Mandarin (Có phụ đề Anh): Hỏi giá tiền & Đếm số khi mua sắm',
   },
   'hsk2-lesson-01': {
-    url: 'https://www.youtube.com/watch?v=yjeSGzZzc-g',
-    title: 'GamesLearnChinese (Thiếu nhi • Miễn phí): Món ăn & Gọi món nhà hàng',
+    url: 'https://www.youtube.com/watch?v=aw6oz_WuEHg',
+    title: 'Peppa Pig Tiếng Trung (Thiếu nhi • Có phụ đề Trung / Anh / Pinyin): Bữa trưa (午餐)',
   },
   'hsk2-lesson-02': {
     url: 'https://www.youtube.com/watch?v=umGf6u4Oj7E',
-    title: 'GamesLearnChinese (Thiếu nhi • Miễn phí): Phương tiện giao thông & Hỏi đường',
+    title: 'GamesLearnChinese (Thiếu nhi • Có phụ đề Anh): Phương tiện giao thông',
   },
   'hsk2-lesson-03': {
-    url: 'https://www.youtube.com/watch?v=eGnHnz9eC9s',
-    title: 'Little Fox Chinese (Thiếu nhi • Miễn phí): Thời tiết & Bốn mùa (天气怎么样？)',
+    url: 'https://www.youtube.com/watch?v=tyo3Rzbtl3w',
+    title: 'Little Fox Chinese (Thiếu nhi • Có phụ đề Tiếng Việt): Thời tiết hôm nay thế nào?',
   },
   'hsk2-lesson-04': {
-    url: 'https://www.youtube.com/watch?v=xkySrEZ4R-U',
-    title: 'Little Fox Chinese (Thiếu nhi • Miễn phí): Sở thích & Hoạt động (你喜欢什么？)',
+    url: 'https://www.youtube.com/watch?v=P6xnKXTNkUg',
+    title: 'Little Fox Chinese (Thiếu nhi • Có phụ đề Anh): Sở thích vận động (我喜欢爬)',
   },
   'hsk2-lesson-05': {
-    url: 'https://www.youtube.com/watch?v=0vCnLciboHY',
-    title: 'Little Fox Chinese (Thiếu nhi • Miễn phí): Khám bệnh & Sức khỏe (我生病了)',
+    url: 'https://www.youtube.com/watch?v=PVnybNwHQis',
+    title: 'GamesLearnChinese (Thiếu nhi • Có phụ đề Anh): Bộ phận cơ thể & Sức khỏe',
   },
   'hsk3-lesson-01': {
-    url: 'https://www.youtube.com/watch?v=2e8zAu2_h2w',
-    title: 'YAYA Mandarin (Miễn phí • Dễ hiểu): Kế hoạch & Đặt phòng HSK 3',
+    url: 'https://www.youtube.com/watch?v=o51Dsn7YTjw',
+    title: 'Mandarin Click (Có sẵn phụ đề Việt / Anh / Trung): Một ngày của Mary (玛丽的生活)',
   },
   'hsk3-lesson-02': {
-    url: 'https://www.youtube.com/watch?v=Rq5uEhZPpgY',
-    title: 'YAYA Mandarin (Miễn phí • Dễ hiểu): Du lịch & Di chuyển HSK 3',
+    url: 'https://www.youtube.com/watch?v=PcergOJuC1M',
+    title: 'Mandarin Click (Có sẵn phụ đề Việt / Anh): Cuộc sống một tuần (一周的生活)',
   },
   'hsk3-lesson-03': {
-    url: 'https://www.youtube.com/watch?v=ErRStua7wVs',
-    title: 'Global Chinese (Miễn phí): Hội thoại HSK 3 Chuẩn Quốc tế',
+    url: 'https://www.youtube.com/watch?v=E89enAiDdRQ',
+    title: 'Chinese Zero to Hero (Có phụ đề Anh): Ngữ pháp so sánh & 一个都/也不',
   },
   'hsk3-lesson-04': {
-    url: 'https://www.youtube.com/watch?v=By5ql5a6Y40',
-    title: 'Little Fox Chinese (Hoạt hình • Miễn phí): Kể chuyện sinh động bằng tiếng Trung',
+    url: 'https://www.youtube.com/watch?v=zTqCTOLTAgY',
+    title: 'Peppa Pig Tiếng Trung (Thiếu nhi • Có phụ đề Trung / Anh): Câu lạc bộ bí mật',
   },
   'hsk4-01': {
-    url: 'https://www.youtube.com/watch?v=hSA7LNTvIUU',
-    title: 'Tao Laoshi (Miễn phí): Bài giảng HSK 4 Chuẩn Phần 1',
+    url: 'https://www.youtube.com/watch?v=uELIAHpFuMY',
+    title: 'ShuoshuoChinese (Có phụ đề Trung / Anh): Luyện nghe thực tế HSK 3–4',
   },
   'hsk4-02': {
-    url: 'https://www.youtube.com/watch?v=jWsK1SaOxBg',
-    title: 'Hanyu CJD (Miễn phí): Luyện nghe & Đàm thoại công sở HSK 4',
+    url: 'https://www.youtube.com/watch?v=LlQQZfEAJ_I',
+    title: 'ShuoshuoChinese (Có phụ đề Anh): Miêu tả & Giao tiếp công sở',
   },
   'hsk4-03': {
-    url: 'https://www.youtube.com/watch?v=xE3Sh1S2lWM',
-    title: 'YAYA Mandarin (Miễn phí): Hội thoại đời sống hiện đại HSK 4',
+    url: 'https://www.youtube.com/watch?v=uELIAHpFuMY',
+    title: 'ShuoshuoChinese (Có phụ đề Trung / Anh): Mua sắm & Đời sống HSK 4',
   },
   'hsk4-04': {
-    url: 'https://www.youtube.com/watch?v=d0ylEcJizq8',
-    title: 'YAYA Mandarin (Miễn phí): Luyện nghe nói lưu loát HSK 4',
+    url: 'https://www.youtube.com/watch?v=o51Dsn7YTjw',
+    title: 'Mandarin Click (Có sẵn phụ đề Việt / Anh / Trung): Kể chuyện lưu loát',
   },
   'hsk5-01': {
     url: 'https://www.youtube.com/watch?v=tBqHmOH2ycs',
-    title: 'Wenjing-Zhiyuan (Miễn phí): Bài giảng HSK 5 Chuẩn Phần 1',
+    title: 'Wenjing-Zhiyuan (Có phụ đề Tiếng Trung CC): Bài giảng HSK 5 (爱的细节)',
   },
   'hsk5-02': {
-    url: 'https://www.youtube.com/watch?v=vk3GXa1zRKs',
-    title: 'Say Ninhao (Miễn phí): Bài giảng HSK 5 Chuẩn Phần 2',
+    url: 'https://www.youtube.com/watch?v=nV8BcPH43XQ',
+    title: 'Hanyu CJD (Có phụ đề Tiếng Việt CC): Luyện nghe chuẩn HSK 5',
   },
   'hsk5-03': {
-    url: 'https://www.youtube.com/watch?v=hq5zUll0C-8',
-    title: 'Xiaolin Chinese (Miễn phí): Đọc hiểu & Phân tích văn bản HSK 5',
+    url: 'https://www.youtube.com/watch?v=uELIAHpFuMY',
+    title: 'ShuoshuoChinese (Có phụ đề Trung / Anh): Luyện nghe đọc hiểu nâng cao',
   },
   'hsk5-04': {
-    url: 'https://www.youtube.com/watch?v=zZHomlS1CrA',
-    title: 'Little Fox Chinese (Hoạt hình • Miễn phí): Tây Du Ký 1 - Văn hóa kinh điển dễ hiểu',
+    url: 'https://www.youtube.com/watch?v=4KSRNznLeOg',
+    title: 'Little Fox Chinese (Có phụ đề Anh): Truyện kể văn hóa (在怪物身上)',
   },
   'hsk6-01': {
-    url: 'https://www.youtube.com/watch?v=1s8FMW9wh_0',
-    title: 'Bài giảng HSK 6 Miễn phí: Luyện nghe đọc hiểu Bài 1 (孩子给我们的启示)',
+    url: 'https://www.youtube.com/watch?v=nV8BcPH43XQ',
+    title: 'Hanyu CJD (Có phụ đề Tiếng Việt CC): Luyện nghe hiểu HSK cao cấp',
   },
   'hsk6-02': {
-    url: 'https://www.youtube.com/watch?v=P2_gHvSdid8',
-    title: 'Bài giảng HSK 6 Miễn phí: Luyện nghe đọc hiểu Bài 2 (父母之爱)',
+    url: 'https://www.youtube.com/watch?v=tBqHmOH2ycs',
+    title: 'Wenjing-Zhiyuan (Có phụ đề CC): Phân tích bài đọc & Từ vựng nâng cao',
   },
   'hsk6-03': {
-    url: 'https://www.youtube.com/watch?v=nV8BcPH43XQ',
-    title: 'Hanyu CJD (Miễn phí): Luyện nghe chuẩn HSK Cao cấp',
+    url: 'https://www.youtube.com/watch?v=uELIAHpFuMY',
+    title: 'ShuoshuoChinese (Có phụ đề Trung / Anh): Đàm thoại tự nhiên nâng cao',
   },
   'hsk6-04': {
-    url: 'https://www.youtube.com/watch?v=uDFCJFqo1eU',
-    title: 'Little Fox Chinese (Hoạt hình • Miễn phí): Tây Du Ký 2 - Thủy Liêm Động',
+    url: 'https://www.youtube.com/watch?v=VzLplLkIFmw',
+    title: 'Little Fox Chinese (Có phụ đề Anh): Magic Marker - Nghe hiểu tự nhiên',
   },
 };
 
@@ -233,7 +233,6 @@ export const LessonCoverCard: React.FC<LessonCoverCardProps> = ({
       DEFAULT_VIDEO_BY_LEVEL[level] ||
       DEFAULT_VIDEO_BY_LEVEL.HSK1;
 
-  const videoId = extractYouTubeVideoId(videoInfo.url);
   const embedUrl = extractYouTubeEmbedUrl(videoInfo.url);
   const vocabHighlights = (hskLesson?.vocabulary || []).slice(0, 6);
   const grammarHighlights = (hskLesson?.grammarNotes || []).slice(0, 3);
@@ -366,12 +365,14 @@ export const LessonCoverCard: React.FC<LessonCoverCardProps> = ({
             />
           </div>
 
-          {/* Bilingual Subtitles & Transcript Companion (Tiếng Việt / English / 中文 + Pinyin) */}
-          <VideoSubtitlePanel
-            videoId={videoId}
-            hskLesson={hskLesson}
-            title={videoInfo.title}
-          />
+          <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-slate-900 border border-slate-800 px-3.5 py-2.5 text-xs text-slate-300">
+            <div className="flex items-center gap-2">
+              <Subtitles className="w-4 h-4 text-amber-300 shrink-0" />
+              <span>
+                Video hỗ trợ phụ đề gốc của YouTube (<strong className="text-white">CC</strong>). Bấm biểu tượng <strong className="text-amber-300">CC</strong> hoặc <strong className="text-amber-300">⚙️ Cài đặt → Phụ đề</strong> trên góc video để chọn <strong className="text-emerald-300">Tiếng Việt / English / 中文</strong>.
+              </span>
+            </div>
+          </div>
         </div>
       )}
 

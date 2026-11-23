@@ -19,7 +19,6 @@ import { Button } from '@/components/ui/Button';
 import { Dialog } from '@/components/ui/Dialog';
 import { CuratedMediaItem } from '@/lib/curriculum/media-resources';
 import { ThematicFlashcardSet, ThematicFlashcardWord } from '@/lib/curriculum/topic-flashcards';
-import { VideoSubtitlePanel } from '@/components/lesson/VideoSubtitlePanel';
 import { speakChinese } from '@/lib/tts';
 
 export interface SupplementaryMediaBlockProps {
@@ -116,13 +115,8 @@ export function SupplementaryMediaBlock({
               </div>
               <p className="text-[11px] text-gray-500 flex items-center justify-between">
                 <span>Nguồn video: GamesLearnChinese &amp; Little Fox Chinese</span>
-                <span className="font-semibold text-emerald-700">Phụ đề song ngữ Việt – Anh – Trung</span>
+                <span className="font-semibold text-emerald-700">Bấm CC / ⚙️ trên video để đổi phụ đề Việt/Anh</span>
               </p>
-              <VideoSubtitlePanel
-                videoId={thematicFlashcardSet.videoId}
-                thematicWords={thematicFlashcardSet.words}
-                title={thematicFlashcardSet.topic}
-              />
             </div>
 
             {/* Interactive Flashcard Card & Word Selector */}
