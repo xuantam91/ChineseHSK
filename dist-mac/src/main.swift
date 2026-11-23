@@ -1,13 +1,24 @@
 import Cocoa
 import WebKit
+import Speech
+import AVFoundation
 
-final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate, WKUIDelegate {
+final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate, WKUIDelegate, WKScriptMessageHandler {
     private var window: NSWindow!
     private var webView: WKWebView!
     private var splashView: NSView!
     private var statusLabel: NSTextField!
     private var serverProcess: Process?
     private var launchedOwnServer = false
+
+    // Native Speech Recognition (macOS SFSpeechRecognizer for zh-CN)
+    private var speechRecognizer: SFSpeechRecognizer?
+    private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
+    private var recognitionTask: SFSpeechRecognitionTask?
+    private var audioEngine: AVAudioEngine?
+    private var isRecognizing = false
+    private var sentFinalResult = false
+    private var latestTranscript = ""
 
     private let appDir = "/Users/tamtran/Documents/WorkSpace/Globy/ChineseHSK"
     private let appURLString = "http://localhost:3000/dashboard"
@@ -25,6 +36,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate, 
     }
 
     func applicationWillTerminate(_ notification: Notification) {
+        stopNativeSpeechRecognition(notifyEnd: false)
         stopServerIfOwned()
     }
 
@@ -80,6 +92,78 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate, 
         NSApp.mainMenu = mainMenu
     }
 
+    private func buildNativeSpeechPolyfillScript() -> String {
+        return """
+        (function() {
+          if (!window.webkit || !window.webkit.messageHandlers || !window.webkit.messageHandlers.nativeSpeech) return;
+          window.__IS_NATIVE_MAC_APP__ = true;
+          var activeInstance = null;
+
+          function NativeSpeechRecognition() {
+            this.lang = 'zh-CN';
+            this.continuous = false;
+            this.interimResults = true;
+            this.maxAlternatives = 1;
+            this.onstart = null;
+            this.onresult = null;
+            this.onerror = null;
+            this.onend = null;
+            this._started = false;
+          }
+
+          NativeSpeechRecognition.prototype.start = function() {
+            activeInstance = this;
+            this._started = true;
+            window.webkit.messageHandlers.nativeSpeech.postMessage({
+              action: 'start',
+              lang: this.lang || 'zh-CN'
+            });
+          };
+
+          NativeSpeechRecognition.prototype.stop = function() {
+            window.webkit.messageHandlers.nativeSpeech.postMessage({ action: 'stop' });
+          };
+
+          NativeSpeechRecognition.prototype.abort = function() {
+            window.webkit.messageHandlers.nativeSpeech.postMessage({ action: 'abort' });
+          };
+
+          window.__nativeSpeechBridge = {
+            _onStart: function() {
+              if (activeInstance && typeof activeInstance.onstart === 'function') {
+                activeInstance.onstart();
+              }
+            },
+            _onResult: function(text, isFinal) {
+              if (!activeInstance || typeof activeInstance.onresult !== 'function') return;
+              var resultList = [[{ transcript: text, confidence: 0.95 }]];
+              resultList[0].isFinal = !!isFinal;
+              resultList[0].length = 1;
+              activeInstance.onresult({
+                resultIndex: 0,
+                results: resultList
+              });
+            },
+            _onError: function(errCode) {
+              if (activeInstance && typeof activeInstance.onerror === 'function') {
+                activeInstance.onerror({ error: errCode });
+              }
+            },
+            _onEnd: function() {
+              var inst = activeInstance;
+              activeInstance = null;
+              if (inst && typeof inst.onend === 'function') {
+                inst.onend();
+              }
+            }
+          };
+
+          window.SpeechRecognition = NativeSpeechRecognition;
+          window.webkitSpeechRecognition = NativeSpeechRecognition;
+        })();
+        """
+    }
+
     private func setupWindow() {
         let frame = NSRect(x: 0, y: 0, width: 1280, height: 840)
         window = NSWindow(
@@ -97,7 +181,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate, 
         container.autoresizingMask = [.width, .height]
         window.contentView = container
 
+        let userContentController = WKUserContentController()
+        userContentController.add(self, name: "nativeSpeech")
+        let polyfill = WKUserScript(
+            source: buildNativeSpeechPolyfillScript(),
+            injectionTime: .atDocumentStart,
+            forMainFrameOnly: false
+        )
+        userContentController.addUserScript(polyfill)
+
         let config = WKWebViewConfiguration()
+        config.userContentController = userContentController
         config.websiteDataStore = WKWebsiteDataStore.default()
         config.mediaTypesRequiringUserActionForPlayback = []
         config.preferences.setValue(true, forKey: "developerExtrasEnabled")
@@ -157,6 +251,170 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate, 
 
         window.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
+    }
+
+    // MARK: - WKScriptMessageHandler (Native Speech Bridge)
+    func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+        guard message.name == "nativeSpeech",
+              let body = message.body as? [String: Any],
+              let action = body["action"] as? String else {
+            return
+        }
+
+        switch action {
+        case "start":
+            let lang = (body["lang"] as? String) ?? "zh-CN"
+            startNativeSpeechRecognition(lang: lang)
+        case "stop", "abort":
+            stopNativeSpeechRecognition(notifyEnd: true)
+        default:
+            break
+        }
+    }
+
+    private func evalBridgeJS(_ js: String) {
+        DispatchQueue.main.async { [weak self] in
+            self?.webView?.evaluateJavaScript(js, completionHandler: nil)
+        }
+    }
+
+    private func jsEscape(_ str: String) -> String {
+        if let data = try? JSONSerialization.data(withJSONObject: [str], options: []),
+           let arrStr = String(data: data, encoding: .utf8),
+           arrStr.count >= 2 {
+            // Strip outer [ and ] to yield valid JSON-quoted JS string
+            return String(arrStr.dropFirst().dropLast())
+        }
+        return "\"\""
+    }
+
+    private func startNativeSpeechRecognition(lang: String) {
+        stopNativeSpeechRecognition(notifyEnd: false)
+
+        AVCaptureDevice.requestAccess(for: .audio) { [weak self] micGranted in
+            guard let self = self else { return }
+            if !micGranted {
+                self.evalBridgeJS("window.__nativeSpeechBridge && window.__nativeSpeechBridge._onError('not-allowed')")
+                return
+            }
+
+            SFSpeechRecognizer.requestAuthorization { [weak self] authStatus in
+                guard let self = self else { return }
+                DispatchQueue.main.async {
+                    switch authStatus {
+                    case .authorized:
+                        self.beginAudioSessionAndRecognize(lang: lang)
+                    case .denied, .restricted:
+                        self.evalBridgeJS("window.__nativeSpeechBridge && window.__nativeSpeechBridge._onError('not-allowed')")
+                    default:
+                        self.evalBridgeJS("window.__nativeSpeechBridge && window.__nativeSpeechBridge._onError('service-not-allowed')")
+                    }
+                }
+            }
+        }
+    }
+
+    private func beginAudioSessionAndRecognize(lang: String) {
+        let recognizer = SFSpeechRecognizer(locale: Locale(identifier: lang)) ?? SFSpeechRecognizer(locale: Locale(identifier: "zh-CN"))
+        guard let recognizer = recognizer, recognizer.isAvailable else {
+            evalBridgeJS("window.__nativeSpeechBridge && window.__nativeSpeechBridge._onError('service-not-allowed')")
+            return
+        }
+
+        self.speechRecognizer = recognizer
+        let engine = AVAudioEngine()
+        self.audioEngine = engine
+
+        let request = SFSpeechAudioBufferRecognitionRequest()
+        request.shouldReportPartialResults = true
+        self.recognitionRequest = request
+        self.latestTranscript = ""
+        self.sentFinalResult = false
+        self.isRecognizing = true
+
+        let inputNode = engine.inputNode
+        let recordingFormat = inputNode.outputFormat(forBus: 0)
+        guard recordingFormat.sampleRate > 0 && recordingFormat.channelCount > 0 else {
+            stopNativeSpeechRecognition(notifyEnd: false)
+            evalBridgeJS("window.__nativeSpeechBridge && window.__nativeSpeechBridge._onError('audio-capture')")
+            return
+        }
+        inputNode.removeTap(onBus: 0)
+        inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { buffer, _ in
+            request.append(buffer)
+        }
+
+        engine.prepare()
+        do {
+            try engine.start()
+        } catch {
+            stopNativeSpeechRecognition(notifyEnd: false)
+            evalBridgeJS("window.__nativeSpeechBridge && window.__nativeSpeechBridge._onError('audio-capture')")
+            return
+        }
+
+        evalBridgeJS("window.__nativeSpeechBridge && window.__nativeSpeechBridge._onStart()")
+
+        self.recognitionTask = recognizer.recognitionTask(with: request) { [weak self] result, error in
+            guard let self = self else { return }
+            if let result = result {
+                let text = result.bestTranscription.formattedString
+                self.latestTranscript = text
+                let escaped = self.jsEscape(text)
+                if result.isFinal {
+                    self.sentFinalResult = true
+                    self.evalBridgeJS("window.__nativeSpeechBridge && window.__nativeSpeechBridge._onResult(\(escaped), true)")
+                    self.stopNativeSpeechRecognition(notifyEnd: true)
+                    return
+                } else {
+                    self.evalBridgeJS("window.__nativeSpeechBridge && window.__nativeSpeechBridge._onResult(\(escaped), false)")
+                }
+            }
+
+            if let error = error as NSError? {
+                if self.isRecognizing {
+                    // If user already spoke something before timeout/cancel, deliver end cleanly
+                    if !self.latestTranscript.isEmpty {
+                        self.stopNativeSpeechRecognition(notifyEnd: true)
+                    } else if error.code == 1110 || error.code == 203 {
+                        self.stopNativeSpeechRecognition(notifyEnd: false)
+                        self.evalBridgeJS("window.__nativeSpeechBridge && window.__nativeSpeechBridge._onError('no-speech')")
+                    } else {
+                        self.stopNativeSpeechRecognition(notifyEnd: false)
+                        self.evalBridgeJS("window.__nativeSpeechBridge && window.__nativeSpeechBridge._onError('service-not-allowed')")
+                    }
+                }
+            }
+        }
+    }
+
+    private func stopNativeSpeechRecognition(notifyEnd: Bool) {
+        let wasRecognizing = isRecognizing
+        let finalText = latestTranscript
+        isRecognizing = false
+
+        if let engine = audioEngine {
+            if engine.isRunning {
+                engine.stop()
+            }
+            engine.inputNode.removeTap(onBus: 0)
+        }
+        audioEngine = nil
+
+        recognitionRequest?.endAudio()
+        recognitionRequest = nil
+
+        recognitionTask?.finish()
+        recognitionTask = nil
+
+        if notifyEnd && wasRecognizing {
+            if !finalText.isEmpty && !sentFinalResult {
+                sentFinalResult = true
+                let escaped = jsEscape(finalText)
+                evalBridgeJS("window.__nativeSpeechBridge && window.__nativeSpeechBridge._onResult(\(escaped), true)")
+            }
+            evalBridgeJS("window.__nativeSpeechBridge && window.__nativeSpeechBridge._onEnd()")
+        }
     }
 
     @objc private func reloadPage() {
@@ -219,7 +477,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate, 
         guard launchedOwnServer, let proc = serverProcess, proc.isRunning else { return }
         let pid = proc.processIdentifier
         proc.terminate()
-        // Also ensure Next.js child process on port 3000 terminates cleanly
         let cleanup = Process()
         cleanup.executableURL = URL(fileURLWithPath: "/bin/zsh")
         cleanup.arguments = ["-c", "pkill -TERM -P \(pid) 2>/dev/null; kill -TERM \(pid) 2>/dev/null || true"]

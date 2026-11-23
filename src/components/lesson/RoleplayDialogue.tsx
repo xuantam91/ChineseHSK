@@ -184,17 +184,19 @@ export function RoleplayDialogue({
       };
 
       let finalRecognized = '';
+      let latestInterim = '';
 
       recognition.onresult = (event: any) => {
         let interim = '';
         for (let i = event.resultIndex; i < event.results.length; ++i) {
           const item = event.results[i];
           if (item.isFinal) {
-            finalRecognized += item[0].transcript;
+            finalRecognized = item[0].transcript;
           } else {
             interim += item[0].transcript;
           }
         }
+        latestInterim = interim;
         setTranscript(finalRecognized || interim);
       };
 
@@ -204,7 +206,7 @@ export function RoleplayDialogue({
 
       recognition.onend = () => {
         setIsListening(false);
-        const spoken = finalRecognized.trim() || transcript.trim();
+        const spoken = finalRecognized.trim() || latestInterim.trim();
         if (spoken && currentLine) {
           const evalResult = evaluateSpeech({
             expectedHanzi: currentLine.hanzi,

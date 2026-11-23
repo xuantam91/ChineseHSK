@@ -246,7 +246,8 @@ export function SpeechPractice({
         };
 
         mediaRecorder.onstop = () => {
-          const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+          const mimeType = mediaRecorder.mimeType || 'audio/mp4';
+          const audioBlob = new Blob(audioChunksRef.current, { type: mimeType });
           if (recordedAudioUrl) {
             URL.revokeObjectURL(recordedAudioUrl);
           }
@@ -280,6 +281,7 @@ export function SpeechPractice({
       recognition.maxAlternatives = 1;
 
       let finalRecognized = '';
+      let latestInterim = '';
 
       recognition.onstart = () => {
         setIsListening(true);
@@ -290,11 +292,12 @@ export function SpeechPractice({
         for (let i = event.resultIndex; i < event.results.length; ++i) {
           const item = event.results[i];
           if (item.isFinal) {
-            finalRecognized += item[0].transcript;
+            finalRecognized = item[0].transcript;
           } else {
             interim += item[0].transcript;
           }
         }
+        latestInterim = interim;
         setInterimTranscript(interim);
         if (finalRecognized) {
           setTranscript(finalRecognized);
@@ -302,8 +305,18 @@ export function SpeechPractice({
       };
 
       recognition.onerror = (event: any) => {
+        if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
+          mediaRecorderRef.current.stop();
+        }
         if (event.error === 'not-allowed') {
-          setErrorMessage('Vui lòng cấp quyền Microphone trên trình duyệt hoặc dùng ô nhập bên dưới.');
+          setErrorMessage(
+            'Vui lòng cấp quyền Microphone trong Cài đặt Hệ thống (Quyền riêng tư -> Micro & Nhận diện giọng nói) hoặc dùng nút tự đọc bên dưới.'
+          );
+          setShowManualFallback(true);
+        } else if (event.error === 'service-not-allowed') {
+          setErrorMessage(
+            'Dịch vụ nhận diện giọng nói trên thiết bị chưa được bật (Cài đặt Mac -> Bàn phím -> Đọc chính tả, hoặc Cài đặt -> Quyền riêng tư -> Nhận diện giọng nói). Bạn vẫn có thể bấm nút "Đã tự đọc to rõ" bên dưới.'
+          );
           setShowManualFallback(true);
         } else if (event.error === 'no-speech') {
           setErrorMessage('Chưa nghe rõ giọng của bạn. Hãy nghe lại mẫu chậm rồi bấm Micro nói to, rõ từng chữ nhé.');
@@ -319,7 +332,7 @@ export function SpeechPractice({
           mediaRecorderRef.current.stop();
         }
 
-        const evaluatedText = finalRecognized.trim() || interimTranscript.trim();
+        const evaluatedText = finalRecognized.trim() || latestInterim.trim();
         if (evaluatedText) {
           setTranscript(evaluatedText);
           const result = evaluateSpeech({

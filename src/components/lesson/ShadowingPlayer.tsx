@@ -293,6 +293,7 @@ export function ShadowingPlayer({
       recognition.interimResults = true;
 
       let finalRecognized = '';
+      let latestInterim = '';
 
       recognition.onstart = () => {
         setIsRecordingStudent(true);
@@ -305,11 +306,12 @@ export function ShadowingPlayer({
         for (let i = event.resultIndex; i < event.results.length; ++i) {
           const item = event.results[i];
           if (item.isFinal) {
-            finalRecognized += item[0].transcript;
+            finalRecognized = item[0].transcript;
           } else {
             interim += item[0].transcript;
           }
         }
+        latestInterim = interim;
         setStudentTranscript(finalRecognized || interim);
       };
 
@@ -319,7 +321,7 @@ export function ShadowingPlayer({
 
       recognition.onend = () => {
         setIsRecordingStudent(false);
-        const textToEval = finalRecognized.trim() || studentTranscript.trim();
+        const textToEval = finalRecognized.trim() || latestInterim.trim();
         if (textToEval && currentSentence) {
           const evalResult = evaluateSpeech({
             expectedHanzi: currentSentence.hanzi,
