@@ -20,28 +20,136 @@ import { useTTS } from '@/lib/tts';
 
 const DEFAULT_VIDEO_BY_LEVEL: Record<string, { url: string; title: string }> = {
   HSK1: {
-    url: 'https://www.youtube.com/watch?v=xovOyxFkF3E',
-    title: 'Bài giảng HSK 1 Chuẩn Quốc tế (HSK Standard Course 1)',
+    url: 'https://www.youtube.com/watch?v=m_rDIzj6DRE',
+    title: 'Little Fox Chinese (Miễn phí • Dễ hiểu): Hello Song & Số đếm tiếng Trung',
   },
   HSK2: {
-    url: 'https://www.youtube.com/watch?v=SofFsP65jjw',
-    title: 'Bài giảng HSK 2 Chuẩn Quốc tế (HSK Standard Course 2)',
+    url: 'https://www.youtube.com/watch?v=lm7oB_D1is0',
+    title: 'Bài giảng HSK 2 Miễn phí (YAYA Mandarin): Giao tiếp & Du lịch cơ bản',
   },
   HSK3: {
-    url: 'https://www.youtube.com/watch?v=8JanOqjy8tI',
-    title: 'Bài giảng HSK 3 Chuẩn Quốc tế (HSK Standard Course 3)',
+    url: 'https://www.youtube.com/watch?v=2e8zAu2_h2w',
+    title: 'Bài giảng HSK 3 Miễn phí (YAYA Mandarin): Hội thoại & Ngữ pháp ứng dụng',
   },
   HSK4: {
-    url: 'https://www.youtube.com/watch?v=IPwxKGELhdE',
-    title: 'Bài giảng HSK 4 Chuẩn Quốc tế (HSK Standard Course 4)',
+    url: 'https://www.youtube.com/watch?v=xE3Sh1S2lWM',
+    title: 'Bài giảng HSK 4 Miễn phí (YAYA Mandarin): Đàm thoại & Đời sống xã hội',
   },
   HSK5: {
     url: 'https://www.youtube.com/watch?v=tBqHmOH2ycs',
-    title: 'Bài giảng HSK 5 Chuẩn Quốc tế (HSK Standard Course 5)',
+    title: 'Bài giảng HSK 5 Miễn phí: Tiếng Trung giao tiếp & Văn hóa chuyên sâu',
   },
   HSK6: {
+    url: 'https://www.youtube.com/watch?v=1s8FMW9wh_0',
+    title: 'Bài giảng HSK 6 Miễn phí: Luyện nghe đọc hiểu & Câu chuyện triết lý',
+  },
+};
+
+// Topic-matched 100% FREE & kid-friendly videos for base lessons (HSK1-6 Lessons 1-5)
+const LESSON_FREE_VIDEO_MAP: Record<string, { url: string; title: string }> = {
+  'hsk1-lesson-01': {
+    url: 'https://www.youtube.com/watch?v=m_rDIzj6DRE',
+    title: 'Little Fox Chinese (Thiếu nhi • Miễn phí): Bài hát Chào hỏi & Làm quen (你好歌)',
+  },
+  'hsk1-lesson-02': {
+    url: 'https://www.youtube.com/watch?v=7ZMc8JJYA94',
+    title: 'Little Fox Chinese (Thiếu nhi • Miễn phí): Hỏi tên & Quốc tịch (你叫什么名字？)',
+  },
+  'hsk1-lesson-03': {
+    url: 'https://www.youtube.com/watch?v=4TA2iKi_kPY',
+    title: 'Little Fox Chinese (Thiếu nhi • Miễn phí): Gia đình & Người thân (手指家庭)',
+  },
+  'hsk1-lesson-04': {
+    url: 'https://www.youtube.com/watch?v=WeYArTD9IHk',
+    title: 'GamesLearnChinese (Thiếu nhi • Miễn phí): Số đếm, Thời gian & Ngày tháng',
+  },
+  'hsk1-lesson-05': {
+    url: 'https://www.youtube.com/watch?v=OB5bL3Ow4-c',
+    title: 'Little Fox Chinese (Thiếu nhi • Miễn phí): Đi siêu thị & Mua sắm (在超市)',
+  },
+  'hsk2-lesson-01': {
+    url: 'https://www.youtube.com/watch?v=yjeSGzZzc-g',
+    title: 'GamesLearnChinese (Thiếu nhi • Miễn phí): Món ăn & Gọi món nhà hàng',
+  },
+  'hsk2-lesson-02': {
+    url: 'https://www.youtube.com/watch?v=umGf6u4Oj7E',
+    title: 'GamesLearnChinese (Thiếu nhi • Miễn phí): Phương tiện giao thông & Hỏi đường',
+  },
+  'hsk2-lesson-03': {
+    url: 'https://www.youtube.com/watch?v=eGnHnz9eC9s',
+    title: 'Little Fox Chinese (Thiếu nhi • Miễn phí): Thời tiết & Bốn mùa (天气怎么样？)',
+  },
+  'hsk2-lesson-04': {
+    url: 'https://www.youtube.com/watch?v=xkySrEZ4R-U',
+    title: 'Little Fox Chinese (Thiếu nhi • Miễn phí): Sở thích & Hoạt động (你喜欢什么？)',
+  },
+  'hsk2-lesson-05': {
+    url: 'https://www.youtube.com/watch?v=0vCnLciboHY',
+    title: 'Little Fox Chinese (Thiếu nhi • Miễn phí): Khám bệnh & Sức khỏe (我生病了)',
+  },
+  'hsk3-lesson-01': {
+    url: 'https://www.youtube.com/watch?v=2e8zAu2_h2w',
+    title: 'YAYA Mandarin (Miễn phí • Dễ hiểu): Kế hoạch & Đặt phòng HSK 3',
+  },
+  'hsk3-lesson-02': {
+    url: 'https://www.youtube.com/watch?v=Rq5uEhZPpgY',
+    title: 'YAYA Mandarin (Miễn phí • Dễ hiểu): Du lịch & Di chuyển HSK 3',
+  },
+  'hsk3-lesson-03': {
+    url: 'https://www.youtube.com/watch?v=ErRStua7wVs',
+    title: 'Global Chinese (Miễn phí): Hội thoại HSK 3 Chuẩn Quốc tế',
+  },
+  'hsk3-lesson-04': {
+    url: 'https://www.youtube.com/watch?v=By5ql5a6Y40',
+    title: 'Little Fox Chinese (Hoạt hình • Miễn phí): Kể chuyện sinh động bằng tiếng Trung',
+  },
+  'hsk4-01': {
+    url: 'https://www.youtube.com/watch?v=hSA7LNTvIUU',
+    title: 'Tao Laoshi (Miễn phí): Bài giảng HSK 4 Chuẩn Phần 1',
+  },
+  'hsk4-02': {
+    url: 'https://www.youtube.com/watch?v=jWsK1SaOxBg',
+    title: 'Hanyu CJD (Miễn phí): Luyện nghe & Đàm thoại công sở HSK 4',
+  },
+  'hsk4-03': {
+    url: 'https://www.youtube.com/watch?v=xE3Sh1S2lWM',
+    title: 'YAYA Mandarin (Miễn phí): Hội thoại đời sống hiện đại HSK 4',
+  },
+  'hsk4-04': {
+    url: 'https://www.youtube.com/watch?v=d0ylEcJizq8',
+    title: 'YAYA Mandarin (Miễn phí): Luyện nghe nói lưu loát HSK 4',
+  },
+  'hsk5-01': {
+    url: 'https://www.youtube.com/watch?v=tBqHmOH2ycs',
+    title: 'Wenjing-Zhiyuan (Miễn phí): Bài giảng HSK 5 Chuẩn Phần 1',
+  },
+  'hsk5-02': {
+    url: 'https://www.youtube.com/watch?v=vk3GXa1zRKs',
+    title: 'Say Ninhao (Miễn phí): Bài giảng HSK 5 Chuẩn Phần 2',
+  },
+  'hsk5-03': {
+    url: 'https://www.youtube.com/watch?v=hq5zUll0C-8',
+    title: 'Xiaolin Chinese (Miễn phí): Đọc hiểu & Phân tích văn bản HSK 5',
+  },
+  'hsk5-04': {
+    url: 'https://www.youtube.com/watch?v=zZHomlS1CrA',
+    title: 'Little Fox Chinese (Hoạt hình • Miễn phí): Tây Du Ký 1 - Văn hóa kinh điển dễ hiểu',
+  },
+  'hsk6-01': {
+    url: 'https://www.youtube.com/watch?v=1s8FMW9wh_0',
+    title: 'Bài giảng HSK 6 Miễn phí: Luyện nghe đọc hiểu Bài 1 (孩子给我们的启示)',
+  },
+  'hsk6-02': {
+    url: 'https://www.youtube.com/watch?v=P2_gHvSdid8',
+    title: 'Bài giảng HSK 6 Miễn phí: Luyện nghe đọc hiểu Bài 2 (父母之爱)',
+  },
+  'hsk6-03': {
     url: 'https://www.youtube.com/watch?v=nV8BcPH43XQ',
-    title: 'Bài giảng HSK 6 Chuẩn Quốc tế (HSK Standard Course 6)',
+    title: 'Hanyu CJD (Miễn phí): Luyện nghe chuẩn HSK Cao cấp',
+  },
+  'hsk6-04': {
+    url: 'https://www.youtube.com/watch?v=uDFCJFqo1eU',
+    title: 'Little Fox Chinese (Hoạt hình • Miễn phí): Tây Du Ký 2 - Thủy Liêm Động',
   },
 };
 
@@ -113,9 +221,11 @@ export const LessonCoverCard: React.FC<LessonCoverCardProps> = ({
   const videoInfo = hskLesson?.videoUrl
     ? {
         url: hskLesson.videoUrl,
-        title: hskLesson.videoTitleVi || `Video bài giảng chuẩn ${level} - Bài ${lessonNum}`,
+        title: hskLesson.videoTitleVi || `Video bài giảng miễn phí ${level} - Bài ${lessonNum}`,
       }
-    : DEFAULT_VIDEO_BY_LEVEL[level] || DEFAULT_VIDEO_BY_LEVEL.HSK1;
+    : (hskLesson?.id && LESSON_FREE_VIDEO_MAP[hskLesson.id]) ||
+      DEFAULT_VIDEO_BY_LEVEL[level] ||
+      DEFAULT_VIDEO_BY_LEVEL.HSK1;
 
   const embedUrl = extractYouTubeEmbedUrl(videoInfo.url);
   const vocabHighlights = (hskLesson?.vocabulary || []).slice(0, 6);
