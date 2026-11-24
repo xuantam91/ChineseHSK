@@ -5,8 +5,18 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/Card';
-import { Lock, Mail, User, ArrowRight } from 'lucide-react';
+import { Lock, Mail, User, ArrowRight, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { getStoredUserProfile, saveUserProfile } from '@/lib/student-store';
+import { createClient } from '@/lib/supabase/client';
+
+function isClientSupabaseEnabled(): boolean {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  return Boolean(
+    url &&
+      !url.includes('your-project') &&
+      process.env.NEXT_PUBLIC_USE_MOCK_SUPABASE !== 'true'
+  );
+}
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -14,23 +24,93 @@ export default function RegisterPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMsg(null);
+    setSuccessMsg(null);
     setIsLoading(true);
+
+    const normalizedEmail = email.trim().toLowerCase();
+    const displayName = fullName.trim() || normalizedEmail.split('@')[0] || 'Học viên';
     const current = getStoredUserProfile();
-    saveUserProfile({
-      ...current,
-      id: `usr_${Date.now()}`,
-      email: email.trim(),
-      displayName: fullName.trim() || 'Học viên Chính thức',
-      role: 'student',
-      isDemo: false,
-    });
-    setTimeout(() => {
+
+    try {
+      if (isClientSupabaseEnabled()) {
+        const supabase = createClient();
+        const { data, error } = await supabase.auth.signUp({
+          email: normalizedEmail,
+          password,
+          options: {
+            data: {
+              display_name: displayName,
+            },
+          },
+        });
+
+        if (error) {
+          setErrorMsg(error.message);
+          setIsLoading(false);
+          return;
+        }
+
+        if (!data.session) {
+          setSuccessMsg(
+            'Đăng ký thành công! Vui lòng kiểm tra hộp thư email để xác nhận tài khoản rồi đăng nhập.'
+          );
+          setIsLoading(false);
+          return;
+        }
+
+        const meRes = await fetch('/api/auth/me');
+        const meJson = await meRes.json();
+        const serverUser = meJson?.data?.user;
+        const resolvedRole = serverUser?.role || 'student';
+
+        saveUserProfile({
+          ...current,
+          id: serverUser?.id || data.user?.id || current.id,
+          email: normalizedEmail,
+          displayName: serverUser?.display_name || displayName,
+          role: resolvedRole,
+          isDemo: false,
+        });
+
+        setIsLoading(false);
+        router.push(
+          resolvedRole === 'admin' || resolvedRole === 'super_admin' ? '/admin' : '/onboarding'
+        );
+        return;
+      }
+
+      // Offline / Local Mac Mode
+      const res = await fetch('/api/auth/me', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: normalizedEmail, display_name: displayName }),
+      });
+      const json = await res.json();
+      const localUser = json?.data?.user;
+
+      saveUserProfile({
+        ...current,
+        id: localUser?.id || `usr_${Date.now()}`,
+        email: normalizedEmail,
+        displayName,
+        role: localUser?.role || 'student',
+        isDemo: false,
+      });
+
       setIsLoading(false);
-      router.push('/onboarding');
-    }, 500);
+      router.push(
+        localUser?.role === 'admin' || localUser?.role === 'super_admin' ? '/admin' : '/onboarding'
+      );
+    } catch (err: any) {
+      setErrorMsg(err?.message || 'Đã có lỗi xảy ra khi đăng ký.');
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -61,6 +141,20 @@ export default function RegisterPage() {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
+              {errorMsg && (
+                <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-700 flex items-start gap-2">
+                  <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-rose-600" />
+                  <span>{errorMsg}</span>
+                </div>
+              )}
+
+              {successMsg && (
+                <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-800 flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5 text-emerald-600" />
+                  <span>{successMsg}</span>
+                </div>
+              )}
+
               <div>
                 <label className="block text-xs font-bold text-gray-700 mb-1.5">
                   Họ và tên

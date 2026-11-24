@@ -67,8 +67,19 @@ class MockDataStore {
 
   seedDemoData() {
     // 1. Profiles
+    const superAdminUser: Profile = {
+      id: 'usr-superadmin-01',
+      email: 'xuantam91@gmail.com',
+      display_name: 'Xuân Tâm (Super Admin)',
+      age_group: 'adults',
+      timezone: 'Asia/Ho_Chi_Minh',
+      role: 'super_admin',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
     const adminUser: Profile = {
       id: 'usr-admin-01',
+      email: 'admin.internal@chinese-journey.edu.vn',
       display_name: 'Admin Giảng Viên',
       age_group: 'adults',
       timezone: 'Asia/Ho_Chi_Minh',
@@ -78,13 +89,15 @@ class MockDataStore {
     };
     const studentUser: Profile = {
       id: 'usr-student-01',
-      display_name: 'Học Viên Nguyễn Văn A',
+      email: 'student.demo@chinese-journey.edu.vn',
+      display_name: 'Học Viên Demo',
       age_group: 'adults',
       timezone: 'Asia/Ho_Chi_Minh',
       role: 'student',
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     };
+    this.profiles.set(superAdminUser.id, superAdminUser);
     this.profiles.set(adminUser.id, adminUser);
     this.profiles.set(studentUser.id, studentUser);
 

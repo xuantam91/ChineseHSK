@@ -25,7 +25,7 @@ export interface UserProfile {
   email: string;
   displayName: string;
   avatarUrl?: string;
-  role: 'student' | 'admin';
+  role: 'student' | 'admin' | 'super_admin' | 'guardian';
   isDemo?: boolean;
   ageGroup: AgeGroup;
   currentHskLevel?: HSKLevel; // e.g. 'HSK1' | 'HSK2' | 'HSK3' | 'HSK4' | 'HSK5' | 'HSK6' | 'HSK7-9'

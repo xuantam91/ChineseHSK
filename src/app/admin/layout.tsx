@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
@@ -13,6 +13,8 @@ import {
   ArrowLeft,
   ShieldCheck,
   GraduationCap,
+  Lock,
+  Crown,
 } from 'lucide-react';
 
 const NAV_ITEMS = [
@@ -21,11 +23,48 @@ const NAV_ITEMS = [
   { href: '/admin/assets', label: 'Quản lý Google Drive', icon: HardDrive },
   { href: '/admin/import', label: 'Import Notion', icon: FileDown },
   { href: '/admin/programs', label: 'Phiên bản chương trình', icon: GitBranch },
-  { href: '/admin/users', label: 'Học viên & Thống kê', icon: Users },
+  { href: '/admin/users', label: 'Tài khoản & Phân quyền', icon: Users },
 ];
+
+interface SessionUser {
+  id: string;
+  email: string | null;
+  display_name: string;
+  role: string;
+  is_super_admin: boolean;
+}
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const [checkingAuth, setCheckingAuth] = useState(true);
+  const [sessionMode, setSessionMode] = useState<'supabase' | 'mock'>('mock');
+  const [sessionUser, setSessionUser] = useState<SessionUser | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    fetch('/api/auth/me')
+      .then((res) => res.json())
+      .then((json) => {
+        if (!active) return;
+        setSessionMode(json?.data?.mode || 'mock');
+        setSessionUser(json?.data?.user || null);
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (active) setCheckingAuth(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [pathname]);
+
+  const hasAdminAccess =
+    sessionMode === 'mock'
+      ? !sessionUser || sessionUser.role === 'admin' || sessionUser.role === 'super_admin'
+      : Boolean(
+          sessionUser &&
+            (sessionUser.role === 'admin' || sessionUser.role === 'super_admin')
+        );
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans">
@@ -42,19 +81,34 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 <div className="flex items-center space-x-2">
                   <span className="font-bold text-lg tracking-tight">Chinese LMS</span>
                   <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                    <ShieldCheck className="w-3 h-3 mr-1" />
-                    Admin CMS
+                    {sessionUser?.role === 'super_admin' ? (
+                      <>
+                        <Crown className="w-3 h-3 mr-1 text-amber-300" />
+                        Super Admin
+                      </>
+                    ) : (
+                      <>
+                        <ShieldCheck className="w-3 h-3 mr-1" />
+                        Admin CMS
+                      </>
+                    )}
                   </span>
                 </div>
-                <p className="text-xs text-slate-400 hidden sm:block">Trung tâm quản trị nội dung & học liệu</p>
+                <p className="text-xs text-slate-400 hidden sm:block">
+                  Trung tâm quản trị nội dung & phân quyền hệ thống
+                </p>
               </div>
             </div>
 
             {/* Right Action: Return to Student App */}
             <div className="flex items-center space-x-4">
-              <div className="hidden md:flex items-center text-xs text-slate-400 border-r border-slate-700 pr-4">
+              <div className="hidden md:flex items-center text-xs text-slate-300 border-r border-slate-700 pr-4">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 mr-2 animate-pulse"></span>
-                Đăng nhập: <strong className="text-slate-200 ml-1">Admin Giảng Viên</strong>
+                <span>
+                  {sessionUser?.email
+                    ? `${sessionUser.display_name} (${sessionUser.email})`
+                    : sessionUser?.display_name || 'Super Admin (Local)'}
+                </span>
               </div>
               <Link
                 href="/dashboard"
@@ -96,7 +150,40 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
       {/* Main Content Area */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {children}
+        {checkingAuth ? (
+          <div className="py-16 text-center text-sm text-slate-500">
+            Đang xác thực quyền quản trị viên...
+          </div>
+        ) : !hasAdminAccess ? (
+          <div className="max-w-lg mx-auto mt-12 bg-white rounded-2xl border border-slate-200 shadow-sm p-8 text-center space-y-4">
+            <div className="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center mx-auto">
+              <Lock className="w-6 h-6" />
+            </div>
+            <h2 className="text-lg font-extrabold text-slate-900">
+              Cần quyền Super Admin hoặc Admin
+            </h2>
+            <p className="text-sm text-slate-600">
+              Tài khoản hiện tại không có quyền truy cập khu vực quản trị. Vui lòng đăng nhập bằng
+              tài khoản quản trị (ví dụ <span className="font-mono font-semibold">xuantam91@gmail.com</span>).
+            </p>
+            <div className="flex items-center justify-center gap-3 pt-2">
+              <Link
+                href="/login"
+                className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold transition"
+              >
+                Đăng nhập tài khoản Admin
+              </Link>
+              <Link
+                href="/dashboard"
+                className="px-4 py-2 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 text-sm font-semibold transition"
+              >
+                Về trang học tập
+              </Link>
+            </div>
+          </div>
+        ) : (
+          children
+        )}
       </main>
 
       {/* Admin Footer */}

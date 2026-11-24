@@ -48,6 +48,32 @@ export const db = {
     return profile;
   },
 
+  async deleteProfile(userId: string): Promise<boolean> {
+    const deleted = mockStore.profiles.delete(userId);
+    for (const [eid, enrollment] of mockStore.enrollments.entries()) {
+      if (enrollment.user_id === userId) {
+        mockStore.enrollments.delete(eid);
+      }
+    }
+    return deleted;
+  },
+
+  async createAuditLog(entry: {
+    actor_user_id: string | null;
+    action: string;
+    entity_type: string;
+    entity_id: string | null;
+    summary_jsonb: Record<string, any>;
+  }) {
+    const log = {
+      id: `audit-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      ...entry,
+      created_at: new Date().toISOString(),
+    };
+    mockStore.auditLogs.push(log);
+    return log;
+  },
+
   // Programs & Versions
   async getPrograms(): Promise<Program[]> {
     return Array.from(mockStore.programs.values());

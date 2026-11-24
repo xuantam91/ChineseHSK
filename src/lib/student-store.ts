@@ -14,7 +14,7 @@ export const DEMO_MAX_LESSONS = 3;
 
 export function isDemoAccount(profile?: UserProfile | null): boolean {
   if (!profile) return true;
-  if (profile.role === 'admin') return false;
+  if (profile.role === 'admin' || profile.role === 'super_admin') return false;
   if (typeof profile.isDemo === 'boolean') return profile.isDemo;
   return (
     profile.id === 'usr_demo_student_01' ||

@@ -116,16 +116,20 @@ export function Sidebar() {
           );
         })}
 
-        <div className="pt-5 px-3 pb-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-          Quản trị
-        </div>
-        <Link
-          href="/admin"
-          className="flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors"
-        >
-          <ShieldCheck className="w-4 h-4 shrink-0 text-slate-500 stroke-[1.75]" />
-          <span>Admin CMS</span>
-        </Link>
+        {(profile.role === 'admin' || profile.role === 'super_admin') && (
+          <>
+            <div className="pt-5 px-3 pb-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+              Quản trị
+            </div>
+            <Link
+              href="/admin"
+              className="flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-semibold text-emerald-700 hover:bg-emerald-50 transition-colors"
+            >
+              <ShieldCheck className="w-4 h-4 shrink-0 text-emerald-600 stroke-[1.75]" />
+              <span>{profile.role === 'super_admin' ? 'Super Admin CMS' : 'Admin CMS'}</span>
+            </Link>
+          </>
+        )}
       </div>
 
       {/* Progress Footer Card */}

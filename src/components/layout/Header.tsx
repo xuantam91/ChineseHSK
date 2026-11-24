@@ -136,20 +136,25 @@ export function Header() {
                     Cài đặt giọng đọc & Cấp độ
                   </Link>
 
-                  <Link
-                    href="/admin"
-                    onClick={() => setDropdownOpen(false)}
-                    className="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-slate-700 rounded-lg hover:bg-slate-50 transition-colors"
-                  >
-                    <ShieldCheck className="w-3.5 h-3.5 text-slate-500" />
-                    Quản trị viên (Admin)
-                  </Link>
+                  {(profile.role === 'admin' || profile.role === 'super_admin') && (
+                    <Link
+                      href="/admin"
+                      onClick={() => setDropdownOpen(false)}
+                      className="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-emerald-700 rounded-lg hover:bg-emerald-50 transition-colors"
+                    >
+                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                      {profile.role === 'super_admin' ? 'Super Admin CMS' : 'Quản trị viên (Admin)'}
+                    </Link>
+                  )}
                 </div>
 
                 <div className="pt-1 border-t border-slate-100">
                   <Link
                     href="/login"
-                    onClick={() => setDropdownOpen(false)}
+                    onClick={() => {
+                      setDropdownOpen(false);
+                      fetch('/api/auth/me', { method: 'DELETE' }).catch(() => {});
+                    }}
                     className="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-rose-600 rounded-lg hover:bg-rose-50 transition-colors"
                   >
                     <LogOut className="w-3.5 h-3.5 text-rose-500" />

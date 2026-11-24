@@ -413,24 +413,15 @@ export default function RoadmapPage() {
                   </p>
                 </div>
                 <div className="flex flex-wrap items-center gap-2.5 shrink-0">
-                  <Button
-                    variant="outline"
-                    size="md"
-                    onClick={() => {
-                      const unlocked = {
-                        ...profile,
-                        id: 'usr_vip_local',
-                        email: 'hocvien.vip@chinese-journey.edu.vn',
-                        displayName: 'Học viên Chính thức',
-                        isDemo: false,
-                      };
-                      setProfile(unlocked);
-                      saveUserProfile(unlocked);
-                    }}
-                    className="text-xs font-bold border-emerald-600 text-emerald-800 hover:bg-emerald-50"
-                  >
-                    Mở khóa Học viên Chính thức (1-chạm)
-                  </Button>
+                  <Link href="/login">
+                    <Button
+                      variant="outline"
+                      size="md"
+                      className="text-xs font-bold border-emerald-600 text-emerald-800 hover:bg-emerald-50"
+                    >
+                      Đăng nhập
+                    </Button>
+                  </Link>
                   <Link href="/register">
                     <Button
                       variant="primary"

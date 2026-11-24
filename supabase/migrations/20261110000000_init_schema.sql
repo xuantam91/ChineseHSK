@@ -12,17 +12,18 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 -- ------------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS public.profiles (
   id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  email TEXT,
   display_name TEXT NOT NULL,
   age_group TEXT NOT NULL DEFAULT 'adult' CHECK (age_group IN ('adult', 'teen', 'kid', 'all')),
   timezone TEXT NOT NULL DEFAULT 'Asia/Ho_Chi_Minh',
-  role TEXT NOT NULL DEFAULT 'student' CHECK (role IN ('student', 'admin', 'guardian')),
+  role TEXT NOT NULL DEFAULT 'student' CHECK (role IN ('student', 'admin', 'super_admin', 'guardian')),
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
 CREATE INDEX IF NOT EXISTS idx_profiles_role ON public.profiles(role);
 
--- Helper to check if current user is an admin
+-- Helper to check if current user is an admin or super_admin
 CREATE OR REPLACE FUNCTION public.is_admin()
 RETURNS BOOLEAN
 LANGUAGE sql
@@ -32,11 +33,25 @@ SET search_path = public
 AS $$
   SELECT EXISTS (
     SELECT 1 FROM public.profiles
-    WHERE id = auth.uid() AND role = 'admin'
+    WHERE id = auth.uid() AND role IN ('admin', 'super_admin')
   );
 $$;
 
--- Trigger to prevent non-admins from changing their role
+-- Helper to check if current user is super_admin
+CREATE OR REPLACE FUNCTION public.is_super_admin()
+RETURNS BOOLEAN
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT EXISTS (
+    SELECT 1 FROM public.profiles
+    WHERE id = auth.uid() AND role = 'super_admin'
+  );
+$$;
+
+-- Trigger to prevent non-super-admins from changing roles
 CREATE OR REPLACE FUNCTION public.check_profile_role_update()
 RETURNS TRIGGER
 LANGUAGE plpgsql
@@ -45,8 +60,8 @@ SET search_path = public
 AS $$
 BEGIN
   IF NEW.role IS DISTINCT FROM OLD.role THEN
-    IF NOT public.is_admin() THEN
-      RAISE EXCEPTION 'Only administrators can update user roles';
+    IF auth.uid() IS NOT NULL AND NOT public.is_super_admin() THEN
+      RAISE EXCEPTION 'Only super administrators can update user roles';
     END IF;
   END IF;
   NEW.updated_at = now();
@@ -67,10 +82,17 @@ LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public
 AS $$
+DECLARE
+  v_assigned_role TEXT := 'student';
 BEGIN
-  INSERT INTO public.profiles (id, display_name, age_group, timezone, role)
+  IF lower(COALESCE(NEW.email, '')) = 'xuantam91@gmail.com' THEN
+    v_assigned_role := 'super_admin';
+  END IF;
+
+  INSERT INTO public.profiles (id, email, display_name, age_group, timezone, role)
   VALUES (
     NEW.id,
+    lower(NEW.email),
     COALESCE(
       NEW.raw_user_meta_data->>'display_name',
       NEW.raw_user_meta_data->>'full_name',
@@ -79,9 +101,14 @@ BEGIN
     ),
     COALESCE(NEW.raw_user_meta_data->>'age_group', 'adult'),
     COALESCE(NEW.raw_user_meta_data->>'timezone', 'Asia/Ho_Chi_Minh'),
-    'student' -- Explicitly enforce student; ignore untrusted role from metadata
+    v_assigned_role
   )
-  ON CONFLICT (id) DO NOTHING;
+  ON CONFLICT (id) DO UPDATE
+  SET email = COALESCE(public.profiles.email, EXCLUDED.email),
+      role = CASE
+        WHEN lower(COALESCE(NEW.email, '')) = 'xuantam91@gmail.com' THEN 'super_admin'
+        ELSE public.profiles.role
+      END;
   RETURN NEW;
 END;
 $$;

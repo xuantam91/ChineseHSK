@@ -16,7 +16,7 @@ export type Json =
 // ------------------------------------------------------------------------------
 // Domain Enums & Literal Unions
 // ------------------------------------------------------------------------------
-export type UserRole = 'student' | 'admin' | 'guardian';
+export type UserRole = 'student' | 'admin' | 'super_admin' | 'guardian';
 
 export type AgeGroup =
   | 'adult'
@@ -313,6 +313,7 @@ export interface Database {
       profiles: {
         Row: {
           id: string;
+          email?: string | null;
           display_name: string;
           age_group: AgeGroup;
           timezone: string;
@@ -322,6 +323,7 @@ export interface Database {
         };
         Insert: {
           id: string;
+          email?: string | null;
           display_name: string;
           age_group?: AgeGroup;
           timezone?: string;
@@ -331,6 +333,7 @@ export interface Database {
         };
         Update: {
           id?: string;
+          email?: string | null;
           display_name?: string;
           age_group?: AgeGroup;
           timezone?: string;
