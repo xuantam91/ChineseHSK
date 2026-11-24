@@ -393,7 +393,7 @@ export const HSK6_ADDITIONAL_LESSONS: HSKLesson[] = [
     title: '未来商店 — Cửa hàng thông minh tương lai & Thương mại tự động',
     subtitleVi: 'Kinh tế số & Trí tuệ nhân tạo với 智能, 便捷, 颠覆 và 应运而生.',
     topicIcon: 'ShoppingBag',
-    imageUrl: '/images/lessons/hsk4_lesson03_ecommerce_shopping.jpg',
+    imageUrl: '/images/lessons/hsk4_lesson04_logistics_delivery.jpg',
     videoUrl: 'https://www.youtube.com/watch?v=uELIAHpFuMY',
     videoTitleVi: 'ShuoshuoChinese (Có CC Trung / Anh): Công nghệ & Thương mại số',
     coverCalligraphy: '智能',

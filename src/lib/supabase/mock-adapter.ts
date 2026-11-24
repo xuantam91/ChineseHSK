@@ -654,6 +654,19 @@ export class MockSupabaseClient {
     async signOut() {
       return { error: null };
     },
+    async exchangeCodeForSession(_code: string) {
+      return {
+        data: {
+          user: {
+            id: 'usr-student-demo',
+            email: 'student@demo.example.com',
+            user_metadata: { display_name: 'Học Viên Demo', role: 'student' },
+          },
+          session: { access_token: 'mock-access-token' },
+        },
+        error: null,
+      };
+    },
     async signUp({ email, options }: any) {
       const userId = `usr-${Date.now()}`;
       return {

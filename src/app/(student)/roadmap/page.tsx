@@ -266,6 +266,9 @@ export default function RoadmapPage() {
                     <img
                       src={coverImg}
                       alt={lesson.title}
+                      onError={(e) => {
+                        e.currentTarget.src = '/images/lessons/hsk1_lesson01_greeting.jpg';
+                      }}
                       className="absolute inset-0 w-full h-full object-cover object-center opacity-95 contrast-105 saturate-110 group-hover:scale-105 transition-transform duration-500"
                     />
                     {/* Subtle top/bottom scrims so the center of the cover artwork stays 100% sharp */}

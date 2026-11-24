@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   Clock,
   RotateCcw,
@@ -65,11 +66,20 @@ const INTERACTIVE_WORDS = [
 ];
 
 export default function LandingPage() {
+  const router = useRouter();
   const [activeWordIndex, setActiveWordIndex] = useState(0);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [selectedPersona, setSelectedPersona] = useState<TTSVoicePersona>('female');
   const [isTestingMic, setIsTestingMic] = useState(false);
   const [micTested, setMicTested] = useState(false);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get('code');
+    if (code) {
+      router.replace(`/auth/callback?code=${encodeURIComponent(code)}`);
+    }
+  }, [router]);
 
   const activeWord = INTERACTIVE_WORDS[activeWordIndex];
 

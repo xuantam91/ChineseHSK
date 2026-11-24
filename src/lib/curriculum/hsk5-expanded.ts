@@ -329,7 +329,7 @@ export const HSK5_ADDITIONAL_LESSONS: HSKLesson[] = [
     title: '海外用户玩儿微信 — Người dùng quốc tế với ứng dụng WeChat & Công nghệ số',
     subtitleVi: 'Truyền thông số & Đời sống hiện đại với 功能, 沟通, 随时随地.',
     topicIcon: 'MessageCircle',
-    imageUrl: '/images/lessons/hsk4_lesson03_ecommerce_shopping.jpg',
+    imageUrl: '/images/lessons/hsk4_lesson04_logistics_delivery.jpg',
     videoUrl: 'https://www.youtube.com/watch?v=uELIAHpFuMY',
     videoTitleVi: 'ShuoshuoChinese (Có CC Trung / Anh): Đời sống công nghệ hiện đại',
     coverCalligraphy: '科技',

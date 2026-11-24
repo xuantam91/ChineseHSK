@@ -40,10 +40,21 @@ export default function RegisterPage() {
     try {
       if (isClientSupabaseEnabled()) {
         const supabase = createClient();
+        const origin =
+          typeof window !== 'undefined' &&
+          !window.location.hostname.includes('localhost') &&
+          window.location.hostname !== '127.0.0.1'
+            ? window.location.origin
+            : process.env.NEXT_PUBLIC_APP_URL &&
+              !process.env.NEXT_PUBLIC_APP_URL.includes('localhost')
+            ? process.env.NEXT_PUBLIC_APP_URL.replace(/\/$/, '')
+            : 'https://hsk.globy.tech';
+
         const { data, error } = await supabase.auth.signUp({
           email: normalizedEmail,
           password,
           options: {
+            emailRedirectTo: `${origin}/auth/callback`,
             data: {
               display_name: displayName,
             },

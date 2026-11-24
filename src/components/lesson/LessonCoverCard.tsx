@@ -246,6 +246,9 @@ export const LessonCoverCard: React.FC<LessonCoverCardProps> = ({
         <img
           src={coverImage}
           alt={title}
+          onError={(e) => {
+            e.currentTarget.src = '/images/lessons/hsk1_lesson01_greeting.jpg';
+          }}
           className="absolute inset-0 h-full w-full object-cover object-center opacity-95 contrast-105 saturate-110 transition-transform duration-700"
         />
         {/* Directional Gradient Overlay: Dark on left/bottom for crisp text, clear on right so artwork shines */}
