@@ -445,7 +445,7 @@ SELECT
 FROM public.quiz_questions;
 
 -- Restrict direct column access to quiz_questions.correct_answer_jsonb
-REVOKE SELECT (correct_answer_jsonb, explanation_jsonb) ON public.quiz_questions FROM authenticated, anon;
+REVOKE SELECT ON public.quiz_questions FROM authenticated, anon;
 GRANT SELECT (id, quiz_id, type, prompt_jsonb, points, sort_order, created_at) ON public.quiz_questions TO authenticated, anon;
 
 -- Server RPC for atomic quiz submission & grading
@@ -611,40 +611,48 @@ ALTER TABLE public.source_mappings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.audit_logs ENABLE ROW LEVEL SECURITY;
 
 -- 11.1 PROFILES POLICIES
+DROP POLICY IF EXISTS "profiles_select_policy" ON public.profiles;
 CREATE POLICY "profiles_select_policy" ON public.profiles
   FOR SELECT TO authenticated
   USING (id = auth.uid() OR public.is_admin());
 
+DROP POLICY IF EXISTS "profiles_update_policy" ON public.profiles;
 CREATE POLICY "profiles_update_policy" ON public.profiles
   FOR UPDATE TO authenticated
   USING (id = auth.uid() OR public.is_admin())
   WITH CHECK (id = auth.uid() OR public.is_admin());
 
+DROP POLICY IF EXISTS "profiles_admin_all" ON public.profiles;
 CREATE POLICY "profiles_admin_all" ON public.profiles
   FOR ALL TO authenticated
   USING (public.is_admin());
 
 -- 11.2 PROGRAMS POLICIES
+DROP POLICY IF EXISTS "programs_select_published_or_admin" ON public.programs;
 CREATE POLICY "programs_select_published_or_admin" ON public.programs
   FOR SELECT TO anon, authenticated
   USING (status = 'published' OR public.is_admin());
 
+DROP POLICY IF EXISTS "programs_admin_write" ON public.programs;
 CREATE POLICY "programs_admin_write" ON public.programs
   FOR ALL TO authenticated
   USING (public.is_admin())
   WITH CHECK (public.is_admin());
 
 -- 11.3 PROGRAM VERSIONS POLICIES
+DROP POLICY IF EXISTS "program_versions_select_published_or_admin" ON public.program_versions;
 CREATE POLICY "program_versions_select_published_or_admin" ON public.program_versions
   FOR SELECT TO anon, authenticated
   USING (status = 'published' OR public.is_admin());
 
+DROP POLICY IF EXISTS "program_versions_admin_write" ON public.program_versions;
 CREATE POLICY "program_versions_admin_write" ON public.program_versions
   FOR ALL TO authenticated
   USING (public.is_admin())
   WITH CHECK (public.is_admin());
 
 -- 11.4 CURRICULUM MONTHS POLICIES
+DROP POLICY IF EXISTS "curriculum_months_select" ON public.curriculum_months;
 CREATE POLICY "curriculum_months_select" ON public.curriculum_months
   FOR SELECT TO anon, authenticated
   USING (
@@ -655,12 +663,14 @@ CREATE POLICY "curriculum_months_select" ON public.curriculum_months
     )
   );
 
+DROP POLICY IF EXISTS "curriculum_months_admin_write" ON public.curriculum_months;
 CREATE POLICY "curriculum_months_admin_write" ON public.curriculum_months
   FOR ALL TO authenticated
   USING (public.is_admin())
   WITH CHECK (public.is_admin());
 
 -- 11.5 CURRICULUM WEEKS POLICIES
+DROP POLICY IF EXISTS "curriculum_weeks_select" ON public.curriculum_weeks;
 CREATE POLICY "curriculum_weeks_select" ON public.curriculum_weeks
   FOR SELECT TO anon, authenticated
   USING (
@@ -672,12 +682,14 @@ CREATE POLICY "curriculum_weeks_select" ON public.curriculum_weeks
     )
   );
 
+DROP POLICY IF EXISTS "curriculum_weeks_admin_write" ON public.curriculum_weeks;
 CREATE POLICY "curriculum_weeks_admin_write" ON public.curriculum_weeks
   FOR ALL TO authenticated
   USING (public.is_admin())
   WITH CHECK (public.is_admin());
 
 -- 11.6 CURRICULUM DAYS POLICIES (Visible in roadmap/overview if published)
+DROP POLICY IF EXISTS "curriculum_days_select" ON public.curriculum_days;
 CREATE POLICY "curriculum_days_select" ON public.curriculum_days
   FOR SELECT TO anon, authenticated
   USING (
@@ -688,12 +700,14 @@ CREATE POLICY "curriculum_days_select" ON public.curriculum_days
     )
   );
 
+DROP POLICY IF EXISTS "curriculum_days_admin_write" ON public.curriculum_days;
 CREATE POLICY "curriculum_days_admin_write" ON public.curriculum_days
   FOR ALL TO authenticated
   USING (public.is_admin())
   WITH CHECK (public.is_admin());
 
 -- 11.7 LESSONS POLICIES
+DROP POLICY IF EXISTS "lessons_select" ON public.lessons;
 CREATE POLICY "lessons_select" ON public.lessons
   FOR SELECT TO anon, authenticated
   USING (
@@ -705,12 +719,14 @@ CREATE POLICY "lessons_select" ON public.lessons
     )
   );
 
+DROP POLICY IF EXISTS "lessons_admin_write" ON public.lessons;
 CREATE POLICY "lessons_admin_write" ON public.lessons
   FOR ALL TO authenticated
   USING (public.is_admin())
   WITH CHECK (public.is_admin());
 
 -- 11.8 LESSON BLOCKS POLICIES (Unlocked days only for students; Admin full access)
+DROP POLICY IF EXISTS "lesson_blocks_select_unlocked_or_admin" ON public.lesson_blocks;
 CREATE POLICY "lesson_blocks_select_unlocked_or_admin" ON public.lesson_blocks
   FOR SELECT TO authenticated
   USING (
@@ -729,12 +745,14 @@ CREATE POLICY "lesson_blocks_select_unlocked_or_admin" ON public.lesson_blocks
     )
   );
 
+DROP POLICY IF EXISTS "lesson_blocks_admin_write" ON public.lesson_blocks;
 CREATE POLICY "lesson_blocks_admin_write" ON public.lesson_blocks
   FOR ALL TO authenticated
   USING (public.is_admin())
   WITH CHECK (public.is_admin());
 
 -- 11.9 ASSETS & LESSON ASSETS POLICIES
+DROP POLICY IF EXISTS "assets_select_unlocked_or_admin" ON public.assets;
 CREATE POLICY "assets_select_unlocked_or_admin" ON public.assets
   FOR SELECT TO authenticated
   USING (
@@ -751,11 +769,13 @@ CREATE POLICY "assets_select_unlocked_or_admin" ON public.assets
     )
   );
 
+DROP POLICY IF EXISTS "assets_admin_write" ON public.assets;
 CREATE POLICY "assets_admin_write" ON public.assets
   FOR ALL TO authenticated
   USING (public.is_admin())
   WITH CHECK (public.is_admin());
 
+DROP POLICY IF EXISTS "lesson_assets_select_unlocked_or_admin" ON public.lesson_assets;
 CREATE POLICY "lesson_assets_select_unlocked_or_admin" ON public.lesson_assets
   FOR SELECT TO authenticated
   USING (
@@ -771,30 +791,36 @@ CREATE POLICY "lesson_assets_select_unlocked_or_admin" ON public.lesson_assets
     )
   );
 
+DROP POLICY IF EXISTS "lesson_assets_admin_write" ON public.lesson_assets;
 CREATE POLICY "lesson_assets_admin_write" ON public.lesson_assets
   FOR ALL TO authenticated
   USING (public.is_admin())
   WITH CHECK (public.is_admin());
 
 -- 11.10 ENROLLMENTS POLICIES
+DROP POLICY IF EXISTS "enrollments_select_own_or_admin" ON public.enrollments;
 CREATE POLICY "enrollments_select_own_or_admin" ON public.enrollments
   FOR SELECT TO authenticated
   USING (user_id = auth.uid() OR public.is_admin());
 
+DROP POLICY IF EXISTS "enrollments_insert_own_or_admin" ON public.enrollments;
 CREATE POLICY "enrollments_insert_own_or_admin" ON public.enrollments
   FOR INSERT TO authenticated
   WITH CHECK (user_id = auth.uid() OR public.is_admin());
 
+DROP POLICY IF EXISTS "enrollments_update_own_or_admin" ON public.enrollments;
 CREATE POLICY "enrollments_update_own_or_admin" ON public.enrollments
   FOR UPDATE TO authenticated
   USING (user_id = auth.uid() OR public.is_admin())
   WITH CHECK (user_id = auth.uid() OR public.is_admin());
 
+DROP POLICY IF EXISTS "enrollments_admin_delete" ON public.enrollments;
 CREATE POLICY "enrollments_admin_delete" ON public.enrollments
   FOR DELETE TO authenticated
   USING (public.is_admin());
 
 -- 11.11 ENROLLMENT SCHEDULE ADJUSTMENTS
+DROP POLICY IF EXISTS "enrollment_adjustments_select_own_or_admin" ON public.enrollment_schedule_adjustments;
 CREATE POLICY "enrollment_adjustments_select_own_or_admin" ON public.enrollment_schedule_adjustments
   FOR SELECT TO authenticated
   USING (
@@ -805,6 +831,7 @@ CREATE POLICY "enrollment_adjustments_select_own_or_admin" ON public.enrollment_
     )
   );
 
+DROP POLICY IF EXISTS "enrollment_adjustments_insert_own_or_admin" ON public.enrollment_schedule_adjustments;
 CREATE POLICY "enrollment_adjustments_insert_own_or_admin" ON public.enrollment_schedule_adjustments
   FOR INSERT TO authenticated
   WITH CHECK (
@@ -815,12 +842,14 @@ CREATE POLICY "enrollment_adjustments_insert_own_or_admin" ON public.enrollment_
     )
   );
 
+DROP POLICY IF EXISTS "enrollment_adjustments_admin_modify" ON public.enrollment_schedule_adjustments;
 CREATE POLICY "enrollment_adjustments_admin_modify" ON public.enrollment_schedule_adjustments
   FOR ALL TO authenticated
   USING (public.is_admin())
   WITH CHECK (public.is_admin());
 
 -- 11.12 LESSON PROGRESS & BLOCK PROGRESS
+DROP POLICY IF EXISTS "lesson_progress_select_own_or_admin" ON public.lesson_progress;
 CREATE POLICY "lesson_progress_select_own_or_admin" ON public.lesson_progress
   FOR SELECT TO authenticated
   USING (
@@ -831,6 +860,7 @@ CREATE POLICY "lesson_progress_select_own_or_admin" ON public.lesson_progress
     )
   );
 
+DROP POLICY IF EXISTS "lesson_progress_upsert_own_or_admin" ON public.lesson_progress;
 CREATE POLICY "lesson_progress_upsert_own_or_admin" ON public.lesson_progress
   FOR ALL TO authenticated
   USING (
@@ -848,6 +878,7 @@ CREATE POLICY "lesson_progress_upsert_own_or_admin" ON public.lesson_progress
     )
   );
 
+DROP POLICY IF EXISTS "block_progress_select_own_or_admin" ON public.block_progress;
 CREATE POLICY "block_progress_select_own_or_admin" ON public.block_progress
   FOR SELECT TO authenticated
   USING (
@@ -858,6 +889,7 @@ CREATE POLICY "block_progress_select_own_or_admin" ON public.block_progress
     )
   );
 
+DROP POLICY IF EXISTS "block_progress_upsert_own_or_admin" ON public.block_progress;
 CREATE POLICY "block_progress_upsert_own_or_admin" ON public.block_progress
   FOR ALL TO authenticated
   USING (
@@ -876,6 +908,7 @@ CREATE POLICY "block_progress_upsert_own_or_admin" ON public.block_progress
   );
 
 -- 11.13 QUIZZES POLICIES
+DROP POLICY IF EXISTS "quizzes_select_unlocked_or_admin" ON public.quizzes;
 CREATE POLICY "quizzes_select_unlocked_or_admin" ON public.quizzes
   FOR SELECT TO authenticated
   USING (
@@ -889,12 +922,14 @@ CREATE POLICY "quizzes_select_unlocked_or_admin" ON public.quizzes
     )
   );
 
+DROP POLICY IF EXISTS "quizzes_admin_write" ON public.quizzes;
 CREATE POLICY "quizzes_admin_write" ON public.quizzes
   FOR ALL TO authenticated
   USING (public.is_admin())
   WITH CHECK (public.is_admin());
 
 -- 11.14 QUIZ QUESTIONS POLICIES
+DROP POLICY IF EXISTS "quiz_questions_select_unlocked_or_admin" ON public.quiz_questions;
 CREATE POLICY "quiz_questions_select_unlocked_or_admin" ON public.quiz_questions
   FOR SELECT TO authenticated
   USING (
@@ -908,12 +943,14 @@ CREATE POLICY "quiz_questions_select_unlocked_or_admin" ON public.quiz_questions
     )
   );
 
+DROP POLICY IF EXISTS "quiz_questions_admin_write" ON public.quiz_questions;
 CREATE POLICY "quiz_questions_admin_write" ON public.quiz_questions
   FOR ALL TO authenticated
   USING (public.is_admin())
   WITH CHECK (public.is_admin());
 
 -- 11.15 QUIZ ATTEMPTS POLICIES
+DROP POLICY IF EXISTS "quiz_attempts_select_own_or_admin" ON public.quiz_attempts;
 CREATE POLICY "quiz_attempts_select_own_or_admin" ON public.quiz_attempts
   FOR SELECT TO authenticated
   USING (
@@ -924,6 +961,7 @@ CREATE POLICY "quiz_attempts_select_own_or_admin" ON public.quiz_attempts
     )
   );
 
+DROP POLICY IF EXISTS "quiz_attempts_insert_own_or_admin" ON public.quiz_attempts;
 CREATE POLICY "quiz_attempts_insert_own_or_admin" ON public.quiz_attempts
   FOR INSERT TO authenticated
   WITH CHECK (
@@ -934,16 +972,19 @@ CREATE POLICY "quiz_attempts_insert_own_or_admin" ON public.quiz_attempts
     )
   );
 
+DROP POLICY IF EXISTS "quiz_attempts_admin_modify" ON public.quiz_attempts;
 CREATE POLICY "quiz_attempts_admin_modify" ON public.quiz_attempts
   FOR UPDATE TO authenticated
   USING (public.is_admin())
   WITH CHECK (public.is_admin());
 
+DROP POLICY IF EXISTS "quiz_attempts_admin_delete" ON public.quiz_attempts;
 CREATE POLICY "quiz_attempts_admin_delete" ON public.quiz_attempts
   FOR DELETE TO authenticated
   USING (public.is_admin());
 
 -- 11.16 QUIZ ANSWERS POLICIES
+DROP POLICY IF EXISTS "quiz_answers_select_own_or_admin" ON public.quiz_answers;
 CREATE POLICY "quiz_answers_select_own_or_admin" ON public.quiz_answers
   FOR SELECT TO authenticated
   USING (
@@ -955,6 +996,7 @@ CREATE POLICY "quiz_answers_select_own_or_admin" ON public.quiz_answers
     )
   );
 
+DROP POLICY IF EXISTS "quiz_answers_insert_own_or_admin" ON public.quiz_answers;
 CREATE POLICY "quiz_answers_insert_own_or_admin" ON public.quiz_answers
   FOR INSERT TO authenticated
   WITH CHECK (
@@ -966,35 +1008,42 @@ CREATE POLICY "quiz_answers_insert_own_or_admin" ON public.quiz_answers
     )
   );
 
+DROP POLICY IF EXISTS "quiz_answers_admin_modify" ON public.quiz_answers;
 CREATE POLICY "quiz_answers_admin_modify" ON public.quiz_answers
   FOR ALL TO authenticated
   USING (public.is_admin())
   WITH CHECK (public.is_admin());
 
 -- 11.17 IMPORT JOBS, SOURCE MAPPINGS & AUDIT LOGS POLICIES
+DROP POLICY IF EXISTS "import_jobs_admin_only" ON public.import_jobs;
 CREATE POLICY "import_jobs_admin_only" ON public.import_jobs
   FOR ALL TO authenticated
   USING (public.is_admin())
   WITH CHECK (public.is_admin());
 
+DROP POLICY IF EXISTS "source_mappings_admin_only" ON public.source_mappings;
 CREATE POLICY "source_mappings_admin_only" ON public.source_mappings
   FOR ALL TO authenticated
   USING (public.is_admin())
   WITH CHECK (public.is_admin());
 
+DROP POLICY IF EXISTS "audit_logs_select_admin" ON public.audit_logs;
 CREATE POLICY "audit_logs_select_admin" ON public.audit_logs
   FOR SELECT TO authenticated
   USING (public.is_admin());
 
+DROP POLICY IF EXISTS "audit_logs_insert_authenticated" ON public.audit_logs;
 CREATE POLICY "audit_logs_insert_authenticated" ON public.audit_logs
   FOR INSERT TO authenticated
   WITH CHECK (auth.uid() IS NOT NULL);
 
+DROP POLICY IF EXISTS "audit_logs_admin_modify" ON public.audit_logs;
 CREATE POLICY "audit_logs_admin_modify" ON public.audit_logs
   FOR UPDATE TO authenticated
   USING (public.is_admin())
   WITH CHECK (public.is_admin());
 
+DROP POLICY IF EXISTS "audit_logs_admin_delete" ON public.audit_logs;
 CREATE POLICY "audit_logs_admin_delete" ON public.audit_logs
   FOR DELETE TO authenticated
   USING (public.is_admin());

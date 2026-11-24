@@ -612,7 +612,7 @@ INSERT INTO public.quiz_questions (
   sort_order,
   created_at
 ) VALUES (
-  '00000000-0000-0000-0000-0000000q0001',
+  '00000000-0000-0000-0000-0000000e0001',
   '00000000-0000-0000-0000-0000000c0001',
   'single_choice',
   '{
@@ -645,7 +645,7 @@ INSERT INTO public.quiz_questions (
   sort_order,
   created_at
 ) VALUES (
-  '00000000-0000-0000-0000-0000000q0002',
+  '00000000-0000-0000-0000-0000000e0002',
   '00000000-0000-0000-0000-0000000c0001',
   'multiple_choice',
   '{
@@ -678,7 +678,7 @@ INSERT INTO public.quiz_questions (
   sort_order,
   created_at
 ) VALUES (
-  '00000000-0000-0000-0000-0000000q0003',
+  '00000000-0000-0000-0000-0000000e0003',
   '00000000-0000-0000-0000-0000000c0001',
   'fill_blank',
   '{
@@ -726,11 +726,11 @@ INSERT INTO public.quiz_questions (
   sort_order,
   created_at
 ) VALUES (
-  '00000000-0000-0000-0000-0000000q0021',
+  '00000000-0000-0000-0000-0000000e0021',
   '00000000-0000-0000-0000-0000000c0002',
   'single_choice',
   '{
-    "question": "Khi ai đó nói '谢谢' (xièxie) với bạn, câu đáp lại lịch sự và phổ biến nhất là:",
+    "question": "Khi ai đó nói ''谢谢'' (xièxie) với bạn, câu đáp lại lịch sự và phổ biến nhất là:",
     "options": [
       { "id": "bu_keqi", "text": "不客气 (Bú kèqi - Đừng khách sáo / Không có gì)" },
       { "id": "zai_jian", "text": "再见 (Zàijiàn - Tạm biệt)" },

@@ -303,7 +303,7 @@ const DEMO_SEED: { [K in TableName]?: any[] } = {
   ],
   quiz_questions: [
     {
-      id: '00000000-0000-0000-0000-0000000q0001',
+      id: '00000000-0000-0000-0000-0000000e0001',
       quiz_id: '00000000-0000-0000-0000-0000000c0001',
       type: 'single_choice',
       prompt_jsonb: {
@@ -322,7 +322,7 @@ const DEMO_SEED: { [K in TableName]?: any[] } = {
       created_at: '2026-01-01T00:00:00.000Z',
     },
     {
-      id: '00000000-0000-0000-0000-0000000q0002',
+      id: '00000000-0000-0000-0000-0000000e0002',
       quiz_id: '00000000-0000-0000-0000-0000000c0001',
       type: 'multiple_choice',
       prompt_jsonb: {
@@ -340,7 +340,7 @@ const DEMO_SEED: { [K in TableName]?: any[] } = {
       created_at: '2026-01-01T00:00:00.000Z',
     },
     {
-      id: '00000000-0000-0000-0000-0000000q0003',
+      id: '00000000-0000-0000-0000-0000000e0003',
       quiz_id: '00000000-0000-0000-0000-0000000c0001',
       type: 'fill_blank',
       prompt_jsonb: {
