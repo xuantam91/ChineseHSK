@@ -9,25 +9,20 @@ import {
   Mic,
   BookOpen,
   ArrowRight,
-  Check,
   Star,
   ChevronRight,
   Volume2,
-  Calendar,
-  Layers,
-  Award,
   Sparkles,
   Headphones,
   Film,
-  FolderGit2,
   CheckCircle2,
-  TrendingUp,
-  ShieldCheck,
-  Play,
-  Square,
+  Menu,
+  X,
+  HelpCircle,
+  Compass,
+  FolderGit2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
-import { DEMO_MONTHS_OVERVIEW } from '@/lib/mock-data';
 import { speakChinese, TTSVoicePersona, TTS_PERSONAS } from '@/lib/tts';
 
 const INTERACTIVE_WORDS = [
@@ -35,7 +30,7 @@ const INTERACTIVE_WORDS = [
     hanzi: '你好',
     pinyin: 'nǐ hǎo',
     meaning: 'Xin chào bạn (Chào hỏi thông dụng)',
-    tip: 'Biến điệu: 2 thanh 3 đi liền nhau, chữ "你" đổi thành thanh 2 (ní hǎo).',
+    tip: 'Biến điệu 3+3: âm đầu "你" đọc thành thanh 2 (ní hǎo).',
     example: '你好！很高兴认识你。',
     exampleVi: 'Chào bạn! Rất vui được làm quen với bạn.',
   },
@@ -43,7 +38,7 @@ const INTERACTIVE_WORDS = [
     hanzi: '谢谢',
     pinyin: 'xiè xie',
     meaning: 'Cảm ơn bạn (Lời cảm ơn chân thành)',
-    tip: 'Thanh 4 rơi dốc gắt từ cao xuống thấp, âm thứ 2 đọc khinh thanh nhẹ.',
+    tip: 'Thanh 4 rơi dốc gắt, âm thứ hai đọc khinh thanh nhẹ.',
     example: '太谢谢你了！',
     exampleVi: 'Cảm ơn bạn rất nhiều!',
   },
@@ -51,7 +46,7 @@ const INTERACTIVE_WORDS = [
     hanzi: '加油',
     pinyin: 'jiā yóu',
     meaning: 'Cố lên! Nỗ lực lên! (Khích lệ)',
-    tip: 'Thanh 1 ngân dài đều đặn, thanh 2 vuốt dốc lên cao như dấu sắc.',
+    tip: 'Thanh 1 ngân ngang đều, thanh 2 vuốt dốc lên cao.',
     example: '明天考试，加油！',
     exampleVi: 'Ngày mai thi rồi, cố lên nhé!',
   },
@@ -59,9 +54,36 @@ const INTERACTIVE_WORDS = [
     hanzi: '中国',
     pinyin: 'zhōng guó',
     meaning: 'Trung Quốc (Tên quốc gia)',
-    tip: 'Âm cong lưỡi "zh" tròn vành rõ chữ, kết hợp thanh 1 và thanh 2.',
+    tip: 'Âm cong lưỡi "zh" tròn vành rõ chữ, kết hợp thanh 1 + 2.',
     example: '我想去中国旅游。',
     exampleVi: 'Tôi muốn đi du lịch Trung Quốc.',
+  },
+];
+
+const NAV_LINKS = [
+  { href: '#phuong-phap', label: 'Phương pháp' },
+  { href: '#lo-trinh', label: 'Lộ trình HSK' },
+  { href: '#hoc-lieu', label: 'Kho tài liệu' },
+  { href: '#hoc-vien', label: 'Học viên' },
+  { href: '#faq', label: 'Hỏi đáp' },
+];
+
+const FAQS = [
+  {
+    q: 'Chưa biết gì (mất gốc hoặc bắt đầu từ số 0) có học được không?',
+    a: 'Có. Lộ trình HSK 1 khởi đầu từ bảng phiên âm Pinyin chuẩn Bắc Kinh (21 thanh mẫu, 36 vận mẫu, 4 thanh điệu), có hướng dẫn khẩu hình và nghe lặp lại trước khi ghép câu.',
+  },
+  {
+    q: 'Tài khoản Học viên Demo được trải nghiệm những gì?',
+    a: 'Bạn được học thử miễn phí 3 bài đầu tiên ở mỗi cấp độ (từ HSK 1 đến HSK 6), đầy đủ flashcard, luyện nói chấm mic AI, mini-quiz và video bài giảng có phụ đề.',
+  },
+  {
+    q: 'Tính năng mở bài lúc 00:00 theo giờ Việt Nam hoạt động thế nào?',
+    a: 'Hệ thống tính ngày mở khóa theo múi giờ Asia/Ho_Chi_Minh, mỗi ngày 1 bài ~25 phút để giữ nhịp bền bỉ và gom bài bận vào mục học bù cuối tuần.',
+  },
+  {
+    q: 'Tôi có thể học trên cả MacBook và điện thoại / trình duyệt web không?',
+    a: 'Có. Tài khoản đăng ký đồng bộ trên trình duyệt web (hsk.globy.tech) và ứng dụng desktop, hỗ trợ tốt micro luyện nói và phát âm thanh chuẩn trên các trình duyệt hiện đại.',
   },
 ];
 
@@ -72,6 +94,7 @@ export default function LandingPage() {
   const [selectedPersona, setSelectedPersona] = useState<TTSVoicePersona>('female');
   const [isTestingMic, setIsTestingMic] = useState(false);
   const [micTested, setMicTested] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -98,7 +121,7 @@ export default function LandingPage() {
     setTimeout(() => {
       setIsTestingMic(false);
       setMicTested(true);
-    }, 1200);
+    }, 1000);
   };
 
   const featurePillars = [
@@ -107,56 +130,56 @@ export default function LandingPage() {
       badgeColor: 'bg-emerald-50 text-emerald-800 border-emerald-200',
       icon: <Mic className="w-5 h-5 text-emerald-700 stroke-[2]" />,
       title: 'Luyện Phát Âm & Chấm Mic AI',
-      desc: 'Công nghệ phân tích âm thanh nhận diện 4 thanh điệu chuẩn giọng Bắc Kinh. Sửa lỗi dính âm, biến điệu 3+3 ngay từ bài đầu tiên.',
+      desc: 'Phân tích 4 thanh điệu chuẩn giọng Bắc Kinh, phát hiện lỗi dính âm và biến điệu 3+3 ngay từ bài học đầu tiên.',
     },
     {
       badge: 'Nhịp học sinh học',
       badgeColor: 'bg-teal-50 text-teal-800 border-teal-200',
       icon: <Clock className="w-5 h-5 text-teal-700 stroke-[2]" />,
-      title: 'Vòng Lặp 25 Phút Pomodoro',
-      desc: 'Mở khóa bài học mới đúng 0h00 theo giờ Việt Nam. Học đúng 25 phút mỗi ngày giúp não bộ tiếp thu sâu, tuyệt đối không bị quá tải.',
+      title: 'Vòng Lặp 25 Phút Mỗi Ngày',
+      desc: 'Mở khóa bài mới lúc 00:00 giờ Việt Nam. Thời lượng 25 phút cô đọng giúp ghi nhớ sâu mà không bị quá tải.',
     },
     {
       badge: 'Chống nản bền bỉ',
       badgeColor: 'bg-amber-50 text-amber-900 border-amber-200',
       icon: <RotateCcw className="w-5 h-5 text-amber-600 stroke-[2]" />,
       title: 'Học Bù Tồn Đọng (Backlog)',
-      desc: 'Bận rộn ngày trong tuần? Hệ thống gom bài chưa học vào danh sách học bù cuối tuần, giữ trọn vẹn chuỗi học tập không bị ngắt quãng.',
+      desc: 'Ngày bận rộn? Hệ thống tự gom bài còn thiếu vào danh sách học bù cuối tuần để duy trì chuỗi tiến độ.',
     },
     {
       badge: 'Chuẩn học thuật BLCUP',
-      badgeColor: 'bg-blue-50 text-blue-800 border-blue-200',
-      icon: <BookOpen className="w-5 h-5 text-blue-700 stroke-[2]" />,
+      badgeColor: 'bg-slate-100 text-slate-800 border-slate-200',
+      icon: <BookOpen className="w-5 h-5 text-emerald-800 stroke-[2]" />,
       title: 'Giáo Trình Chuẩn HSK 3.0',
-      desc: 'Toàn diện 12 tháng từ vựng, ngữ pháp, mẫu câu thi đỗ chứng chỉ HSK 1 đến HSK 6 do Đại học Ngôn ngữ Bắc Kinh biên soạn chính thức.',
+      desc: '120 bài học phân cấp từ HSK 1 đến HSK 6 cùng khung nâng cao HSK 7–9 bám sát tiêu chuẩn Hán ngữ mới.',
     },
   ];
 
   const roadStages = [
     {
       stage: 'Giai đoạn 1',
-      hsk: 'HSK 1 • 0 - 3 Tháng',
+      hsk: 'HSK 1 • Tháng 1–3',
       vocab: '500 từ cốt lõi',
       target: 'Làm chủ 21 thanh mẫu, 36 vận mẫu, 4 thanh điệu và đối thoại chào hỏi, mua sắm căn bản.',
       highlight: 'Xây móng ngữ âm vững chắc',
     },
     {
       stage: 'Giai đoạn 2',
-      hsk: 'HSK 2 • 4 - 6 Tháng',
+      hsk: 'HSK 2 • Tháng 4–6',
       vocab: '1.272 từ vựng',
       target: 'Phản xạ giao tiếp đời sống tự nhiên: gọi món, hỏi đường, thời tiết, đi lại và sinh hoạt.',
       highlight: 'Tự tin du lịch & giao tiếp',
     },
     {
       stage: 'Giai đoạn 3',
-      hsk: 'HSK 3 - 4 • 7 - 9 Tháng',
-      vocab: '2.245 - 3.245 từ',
-      target: 'Làm chủ câu chữ 把, chữ 被, đàm thoại công sở, phỏng vấn xin việc và xem phim có phụ đề.',
+      hsk: 'HSK 3–4 • Tháng 7–9',
+      vocab: '2.245–3.245 từ',
+      target: 'Làm chủ câu chữ 把, chữ 被, đàm thoại công sở, phỏng vấn và xem phim có phụ đề.',
       highlight: 'Ứng dụng công việc & du học',
     },
     {
       stage: 'Giai đoạn 4',
-      hsk: 'HSK 5 - 6 • 10 - 12 Tháng',
+      hsk: 'HSK 5–6 • Tháng 10–12',
       vocab: '5.000+ từ vựng',
       target: 'Đọc hiểu báo chí, diễn thuyết lưu loát, làm việc trực tiếp với đối tác Trung Quốc bản xứ.',
       highlight: 'Thành thạo chuyên sâu học thuật',
@@ -168,7 +191,7 @@ export default function LandingPage() {
       name: 'Nguyễn Hải Đăng',
       role: 'Kỹ sư phần mềm • Bắt đầu từ số 0',
       comment:
-        'Phương pháp 25 phút mỗi ngày cực kỳ phù hợp với người đi làm bận rộn như tôi. Trình chấm mic phát âm giúp tôi tự tin phân biệt rành rọt thanh 3 và thanh 4 mà không còn sợ nói sai.',
+        'Nhịp 25 phút mỗi ngày rất hợp với người đi làm bận rộn. Trình chấm mic phát âm giúp tôi phân biệt rành rọt thanh 3 và thanh 4 mà không còn sợ nói sai.',
       hsk: 'Đang chinh phục HSK 2',
       rating: 5,
     },
@@ -176,7 +199,7 @@ export default function LandingPage() {
       name: 'Trần Phương Linh',
       role: 'Sinh viên Ngoại thương • Thi chứng chỉ',
       comment:
-        'Lộ trình 12 tháng được phân bổ chi tiết theo chuẩn HSK 3.0 mới nhất. Đặc biệt kho sách PDF và video khẩu hình trong thư viện giúp tôi tiết kiệm hàng triệu đồng mua giáo trình ngoài.',
+        'Lộ trình 12 tháng phân bổ chi tiết theo chuẩn HSK 3.0. Kho sách PDF và video khẩu hình trong thư viện giúp tôi tự ôn thi rất tiết kiệm và chủ động.',
       hsk: 'Đạt HSK 3 sau 5 tháng',
       rating: 5,
     },
@@ -184,53 +207,69 @@ export default function LandingPage() {
       name: 'Chị Mai Lan & Bé Bảo Nam',
       role: 'Phụ huynh đồng hành cùng con',
       comment:
-        'Bé nhà mình rất thích các video bài hát thiếu nhi và flashcard tương tác trên web. Hình ảnh trực quan, phát âm bản xứ chuẩn xác giúp con học tiếng Trung tự nhiên như tiếng mẹ đẻ.',
-      hsk: 'Tự tin đàm thoại YCT 2',
+        'Bé rất thích các video bài hát thiếu nhi và flashcard tương tác trên web. Hình ảnh trực quan, phát âm bản xứ rõ chữ giúp con tiếp thu rất tự nhiên.',
+      hsk: 'Tự tin đàm thoại cơ bản',
       rating: 5,
     },
   ];
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col text-slate-900 font-sans">
-      {/* Top Header */}
-      <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur-md">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-3">
-            <Link href="/" className="flex items-center gap-3 group">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-600 to-teal-700 text-white font-bold text-xl shadow-xs group-hover:scale-105 transition-transform">
-                <span className="font-chinese">汉</span>
-              </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="text-base font-bold tracking-tight text-slate-900">
-                    Chinese Journey
-                  </span>
-                  <span className="text-xs font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                    HSK 3.0
-                  </span>
-                </div>
-                <span className="block text-xs text-slate-500 font-medium">
-                  Hệ thống tự học tiếng Trung bài bản
+      {/* Top Sticky Navigation Bar */}
+      <header className="sticky top-0 z-50 border-b border-slate-200/90 bg-white/95 backdrop-blur-md">
+        <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8 gap-4">
+          {/* Brand */}
+          <Link href="/" className="flex items-center gap-2.5 group shrink-0">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-600 to-teal-700 text-white font-bold text-lg shadow-xs group-hover:scale-105 transition-transform">
+              <span className="font-chinese">汉</span>
+            </div>
+            <div>
+              <div className="flex items-center gap-1.5">
+                <span className="text-sm sm:text-base font-extrabold tracking-tight text-slate-900">
+                  Chinese Journey
+                </span>
+                <span className="text-[11px] font-bold text-emerald-800 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
+                  HSK 3.0
                 </span>
               </div>
-            </Link>
-          </div>
+              <span className="hidden sm:block text-[11px] text-slate-500 font-medium leading-none mt-0.5">
+                Tự học tiếng Trung bài bản
+              </span>
+            </div>
+          </Link>
 
-          <div className="flex items-center gap-3">
+          {/* Center In-page + App Menus (Desktop) */}
+          <nav aria-label="Điều hướng chính" className="hidden lg:flex items-center gap-1">
+            {NAV_LINKS.map((item) => (
+              <a
+                key={item.href}
+                href={item.href}
+                className="px-3 py-1.5 rounded-lg text-[13px] font-semibold text-slate-600 hover:text-emerald-800 hover:bg-emerald-50/70 transition-colors whitespace-nowrap"
+              >
+                {item.label}
+              </a>
+            ))}
+            <span className="h-4 w-px bg-slate-200 mx-1.5" aria-hidden="true" />
             <Link
               href="/roadmap"
-              className="hidden md:inline-flex items-center text-sm font-semibold text-slate-600 hover:text-slate-900 px-3 py-2 rounded-lg hover:bg-slate-100 transition-colors"
+              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[13px] font-semibold text-slate-700 hover:text-emerald-800 hover:bg-slate-100 transition-colors whitespace-nowrap"
             >
-              Lộ trình 12 tháng
+              <Compass className="w-3.5 h-3.5 text-emerald-700" />
+              <span>Bảng 120 bài</span>
             </Link>
             <Link
               href="/library"
-              className="hidden md:inline-flex items-center text-sm font-semibold text-slate-600 hover:text-slate-900 px-3 py-2 rounded-lg hover:bg-slate-100 transition-colors"
+              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[13px] font-semibold text-slate-700 hover:text-emerald-800 hover:bg-slate-100 transition-colors whitespace-nowrap"
             >
-              Thư viện tài liệu
+              <FolderGit2 className="w-3.5 h-3.5 text-emerald-700" />
+              <span>Thư viện</span>
             </Link>
-            <Link href="/login">
-              <Button variant="ghost" size="sm" className="text-sm font-semibold text-slate-700">
+          </nav>
+
+          {/* Right Auth & CTA */}
+          <div className="flex items-center gap-2 shrink-0">
+            <Link href="/login" className="hidden sm:inline-flex">
+              <Button variant="ghost" size="sm" className="text-[13px] font-semibold text-slate-700 px-3">
                 Đăng nhập
               </Button>
             </Link>
@@ -238,504 +277,634 @@ export default function LandingPage() {
               <Button
                 variant="primary"
                 size="sm"
-                className="bg-emerald-700 hover:bg-emerald-800 text-white text-sm font-bold shadow-xs px-4"
-                rightIcon={<ArrowRight className="w-4 h-4" />}
+                className="bg-emerald-700 hover:bg-emerald-800 text-white text-[13px] font-bold shadow-xs px-3.5"
+                rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
               >
                 Vào học ngay
               </Button>
             </Link>
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen((v) => !v)}
+              aria-label="Mở menu điều hướng"
+              aria-expanded={mobileMenuOpen}
+              className="lg:hidden inline-flex items-center justify-center w-9 h-9 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-100 transition-colors"
+            >
+              {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+            </button>
           </div>
         </div>
+
+        {/* Mobile Navigation Drawer */}
+        {mobileMenuOpen && (
+          <div className="lg:hidden border-t border-slate-200 bg-white px-4 py-3 space-y-1 shadow-md">
+            <div className="grid grid-cols-2 gap-1.5 pb-2">
+              {NAV_LINKS.map((item) => (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="px-3 py-2 rounded-lg text-xs font-semibold text-slate-700 hover:bg-emerald-50 hover:text-emerald-800"
+                >
+                  {item.label}
+                </a>
+              ))}
+              <Link
+                href="/roadmap"
+                onClick={() => setMobileMenuOpen(false)}
+                className="px-3 py-2 rounded-lg text-xs font-semibold text-emerald-800 bg-emerald-50/70"
+              >
+                Bảng lộ trình 120 bài
+              </Link>
+              <Link
+                href="/library"
+                onClick={() => setMobileMenuOpen(false)}
+                className="px-3 py-2 rounded-lg text-xs font-semibold text-emerald-800 bg-emerald-50/70"
+              >
+                Thư viện Drive
+              </Link>
+            </div>
+            <div className="pt-2 border-t border-slate-100 flex items-center gap-2">
+              <Link href="/login" className="flex-1" onClick={() => setMobileMenuOpen(false)}>
+                <Button variant="outline" size="sm" className="w-full text-xs font-bold">
+                  Đăng nhập
+                </Button>
+              </Link>
+              <Link href="/register" className="flex-1" onClick={() => setMobileMenuOpen(false)}>
+                <Button variant="primary" size="sm" className="w-full text-xs font-bold bg-emerald-700">
+                  Đăng ký
+                </Button>
+              </Link>
+            </div>
+          </div>
+        )}
       </header>
 
-      {/* Hero Section */}
-      <section className="relative overflow-hidden pt-12 pb-16 lg:pt-20 lg:pb-24 border-b border-slate-200 bg-white">
-        {/* Soft background ambient glow */}
-        <div className="absolute top-0 right-1/4 w-96 h-96 rounded-full bg-emerald-50 blur-3xl pointer-events-none" />
-        <div className="absolute top-1/3 left-10 w-72 h-72 rounded-full bg-teal-50 blur-3xl pointer-events-none" />
+      <main className="flex-1">
+        {/* Hero Section — Sized cleanly to fit laptop & desktop viewports above the fold */}
+        <section className="relative overflow-hidden border-b border-slate-200 bg-white lg:min-h-[calc(100dvh-3.5rem)] flex items-center py-6 sm:py-8 lg:py-6">
+          {/* Subtle architectural dot pattern + ambient emerald wash */}
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:24px_24px] opacity-35 pointer-events-none"
+          />
+          <div
+            aria-hidden="true"
+            className="absolute -top-24 right-0 w-[34rem] h-[34rem] rounded-full bg-emerald-100/45 blur-3xl pointer-events-none"
+          />
+          <div
+            aria-hidden="true"
+            className="absolute bottom-0 left-0 w-80 h-80 rounded-full bg-teal-50/70 blur-3xl pointer-events-none"
+          />
 
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid lg:grid-cols-12 gap-12 items-center">
-            {/* Left Column: Value Prop */}
-            <div className="lg:col-span-7 text-center lg:text-left space-y-5">
-              <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50/80 px-3.5 py-1.5 text-xs font-bold text-emerald-900 shadow-2xs">
-                <Sparkles className="w-4 h-4 text-emerald-600 fill-emerald-600" />
-                <span>Khung chuẩn HSK 3.0 • 25 phút mỗi ngày cùng AI</span>
-              </div>
+          <div className="mx-auto max-w-7xl w-full px-4 sm:px-6 lg:px-8 relative z-10">
+            <div className="grid lg:grid-cols-12 gap-8 xl:gap-10 items-center">
+              {/* Left Column: Value Proposition */}
+              <div className="lg:col-span-6 xl:col-span-7 text-center lg:text-left space-y-4">
+                <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50/90 px-3 py-1 text-xs font-bold text-emerald-900 shadow-2xs">
+                  <Sparkles className="w-3.5 h-3.5 text-emerald-600 fill-emerald-600" />
+                  <span>Khung chuẩn HSK 3.0 • 25 phút mỗi ngày cùng AI</span>
+                </div>
 
-              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight leading-[1.15]">
-                Chinh Phục Tiếng Trung <br className="hidden sm:inline" />
-                <span className="bg-gradient-to-r from-emerald-700 via-teal-700 to-emerald-800 bg-clip-text text-transparent">
-                  Chuẩn Bản Xứ Bắc Kinh
-                </span>
-              </h1>
-
-              <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-2xl mx-auto lg:mx-0">
-                Không học vẹt, không nản chí. Tự học bài bản từ con số 0 với <strong className="text-slate-900">luyện nói chấm mic AI</strong>, vòng lặp 25 phút mở bài theo múi giờ Việt Nam và kho học liệu video & giáo trình BLCUP chính thống.
-              </p>
-
-              {/* Action Buttons */}
-              <div className="pt-2 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3.5">
-                <Link href="/dashboard" className="w-full sm:w-auto">
-                  <Button
-                    size="lg"
-                    className="w-full sm:w-auto bg-amber-400 hover:bg-amber-300 text-emerald-950 font-extrabold text-base px-8 py-3.5 rounded-xl shadow-md transition-all hover:scale-[1.02]"
-                    rightIcon={<ArrowRight className="w-5 h-5 text-emerald-950 stroke-[2.5]" />}
-                  >
-                    Bắt đầu học thử miễn phí
-                  </Button>
-                </Link>
-                <Link href="/roadmap" className="w-full sm:w-auto">
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    className="w-full sm:w-auto border-slate-300 bg-white hover:bg-slate-50 text-slate-800 text-base font-bold px-6 py-3.5 rounded-xl shadow-2xs"
-                  >
-                    Xem toàn bộ lộ trình
-                  </Button>
-                </Link>
-              </div>
-
-              {/* Trust Metrics */}
-              <div className="pt-6 border-t border-slate-100 flex flex-wrap items-center justify-center lg:justify-start gap-6 text-sm text-slate-600 font-semibold">
-                <span className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                  Mở bài theo giờ Việt Nam
-                </span>
-                <span className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                  Chấm điểm phát âm mic AI
-                </span>
-                <span className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                  100% Khung HSK 3.0 Mới
-                </span>
-              </div>
-            </div>
-
-            {/* Right Column: Interactive Pronunciation & Vocab Card */}
-            <div className="lg:col-span-5">
-              <div className="rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-50/40 via-white to-teal-50/30 p-6 shadow-md shadow-emerald-900/5 space-y-5">
-                {/* Header of widget */}
-                <div className="flex items-center justify-between pb-3.5 border-b border-emerald-100">
-                  <div className="flex items-center gap-2">
-                    <span className="flex h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse" />
-                    <span className="text-sm font-bold text-slate-900">Thử phát âm trực tiếp</span>
-                  </div>
-                  <span className="text-xs font-bold text-emerald-800 bg-emerald-100/70 px-2.5 py-1 rounded-md">
-                    Âm thanh chuẩn bản xứ
+                <h1 className="text-3xl sm:text-4xl lg:text-[42px] xl:text-[50px] font-extrabold text-slate-900 tracking-tight leading-[1.12] text-balance">
+                  Chinh Phục Tiếng Trung{' '}
+                  <span className="block bg-gradient-to-r from-emerald-700 via-teal-700 to-emerald-800 bg-clip-text text-transparent mt-1">
+                    Chuẩn Bản Xứ Bắc Kinh
                   </span>
-                </div>
+                </h1>
 
-                {/* Word selector tabs */}
-                <div className="grid grid-cols-4 gap-1.5 p-1 rounded-xl bg-slate-100/80 border border-slate-200">
-                  {INTERACTIVE_WORDS.map((item, idx) => (
-                    <button
-                      key={item.hanzi}
-                      onClick={() => setActiveWordIndex(idx)}
-                      className={`py-1.5 text-xs font-bold rounded-lg transition-all ${
-                        idx === activeWordIndex
-                          ? 'bg-emerald-700 text-white shadow-2xs'
-                          : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
-                      }`}
+                <p className="text-sm sm:text-base text-slate-600 leading-relaxed max-w-xl mx-auto lg:mx-0">
+                  Không học vẹt, không nản chí. Tự học bài bản từ con số 0 với{' '}
+                  <strong className="text-slate-900">luyện nói chấm mic AI</strong>, mở bài lúc 00:00 theo giờ Việt Nam cùng kho video bài giảng có phụ đề và giáo trình BLCUP chính thống.
+                </p>
+
+                {/* Primary CTAs */}
+                <div className="pt-1 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3">
+                  <Link href="/dashboard" className="w-full sm:w-auto">
+                    <Button
+                      size="lg"
+                      className="w-full sm:w-auto bg-amber-400 hover:bg-amber-300 active:scale-[0.98] text-emerald-950 font-extrabold text-sm sm:text-base px-6 py-3 rounded-xl shadow-md shadow-amber-500/15 transition-all"
+                      rightIcon={<ArrowRight className="w-4 h-4 text-emerald-950 stroke-[2.5]" />}
                     >
-                      {item.hanzi}
-                    </button>
-                  ))}
+                      Bắt đầu học thử miễn phí
+                    </Button>
+                  </Link>
+                  <Link href="/roadmap" className="w-full sm:w-auto">
+                    <Button
+                      variant="outline"
+                      size="lg"
+                      className="w-full sm:w-auto border-slate-300 bg-white hover:bg-slate-50 active:scale-[0.98] text-slate-800 text-sm sm:text-base font-bold px-5 py-3 rounded-xl shadow-2xs transition-all"
+                    >
+                      Xem lộ trình 120 bài
+                    </Button>
+                  </Link>
                 </div>
 
-                {/* 4 Voice Persona Selector */}
-                <div>
-                  <div className="flex items-center justify-between text-xs text-slate-500 mb-1.5 font-semibold">
-                    <span>Chọn giọng đọc bản ngữ:</span>
-                    <span className="text-emerald-700 font-bold">{TTS_PERSONAS[selectedPersona].nameVi}</span>
+                {/* Compact Structured Trust Bar */}
+                <div className="pt-4 border-t border-slate-200/80 grid grid-cols-3 gap-3 max-w-lg mx-auto lg:mx-0 text-left">
+                  <div className="rounded-xl bg-slate-50/90 border border-slate-200/80 px-3 py-2">
+                    <div className="text-sm sm:text-base font-extrabold text-emerald-800 tabular-nums">
+                      120 bài
+                    </div>
+                    <div className="text-[11px] font-medium text-slate-600 leading-tight">
+                      Chuẩn HSK 1–6 mới
+                    </div>
                   </div>
-                  <div className="grid grid-cols-4 gap-1 p-1 rounded-xl bg-slate-100 border border-slate-200">
-                    {[
-                      { key: 'female', label: '👩 Nữ' },
-                      { key: 'male', label: '👨 Nam' },
-                      { key: 'adult', label: '🧑‍🏫 Người lớn' },
-                      { key: 'child', label: '🧒 Trẻ em' },
-                    ].map((item) => (
+                  <div className="rounded-xl bg-slate-50/90 border border-slate-200/80 px-3 py-2">
+                    <div className="text-sm sm:text-base font-extrabold text-emerald-800 tabular-nums">
+                      25 phút
+                    </div>
+                    <div className="text-[11px] font-medium text-slate-600 leading-tight">
+                      Mở bài 00:00 giờ VN
+                    </div>
+                  </div>
+                  <div className="rounded-xl bg-slate-50/90 border border-slate-200/80 px-3 py-2">
+                    <div className="text-sm sm:text-base font-extrabold text-emerald-800">
+                      Mic AI
+                    </div>
+                    <div className="text-[11px] font-medium text-slate-600 leading-tight">
+                      Chấm 4 thanh điệu
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Column: Compact Interactive Pronunciation & Mic AI Studio Card */}
+              <div className="lg:col-span-6 xl:col-span-5">
+                <div className="rounded-2xl border border-emerald-200/90 bg-gradient-to-br from-emerald-50/50 via-white to-teal-50/35 p-4 sm:p-5 shadow-lg shadow-emerald-950/5 space-y-3">
+                  {/* Card Header */}
+                  <div className="flex items-center justify-between pb-2.5 border-b border-emerald-100">
+                    <div className="flex items-center gap-2">
+                      <span className="flex h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse" />
+                      <span className="text-xs sm:text-sm font-bold text-slate-900">
+                        Thử phát âm trực tiếp
+                      </span>
+                    </div>
+                    <span className="text-[11px] font-bold text-emerald-800 bg-emerald-100/80 px-2 py-0.5 rounded-md">
+                      Âm thanh bản xứ
+                    </span>
+                  </div>
+
+                  {/* Word Selector Tabs */}
+                  <div className="grid grid-cols-4 gap-1 p-1 rounded-xl bg-slate-100/90 border border-slate-200">
+                    {INTERACTIVE_WORDS.map((item, idx) => (
                       <button
-                        key={item.key}
+                        key={item.hanzi}
                         type="button"
-                        onClick={() => setSelectedPersona(item.key as TTSVoicePersona)}
-                        className={`py-1.5 text-xs font-bold rounded-lg transition-all ${
-                          selectedPersona === item.key
-                            ? 'bg-white text-emerald-800 shadow-2xs border border-slate-200'
-                            : 'text-slate-600 hover:text-slate-900'
+                        onClick={() => setActiveWordIndex(idx)}
+                        className={`py-1 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+                          idx === activeWordIndex
+                            ? 'bg-emerald-700 text-white shadow-2xs'
+                            : 'text-slate-600 hover:text-slate-900 hover:bg-white/70'
                         }`}
                       >
-                        {item.label}
+                        {item.hanzi}
                       </button>
                     ))}
                   </div>
-                </div>
 
-                {/* Active Interactive Card */}
-                <div className="rounded-2xl border border-emerald-100 bg-white p-6 text-center shadow-xs space-y-3">
-                  <div className="flex items-center justify-between text-xs text-slate-400">
-                    <span>Mẫu từ vựng #{activeWordIndex + 1}</span>
-                    <span className="text-emerald-700 font-semibold">{TTS_PERSONAS[selectedPersona].subtitleVi}</span>
-                  </div>
-
-                  {/* Hanzi Large Typography */}
-                  <div className="font-chinese text-6xl font-extrabold text-slate-900 tracking-wide drop-shadow-2xs">
-                    {activeWord.hanzi}
-                  </div>
-
-                  {/* Pinyin */}
-                  <div className="text-lg font-bold text-emerald-700 font-mono">
-                    {activeWord.pinyin}
-                  </div>
-
-                  {/* Meaning */}
-                  <div className="text-sm text-slate-700 font-medium">
-                    {activeWord.meaning}
-                  </div>
-
-                  {/* Phonetic Tip Box */}
-                  <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-600 text-left space-y-1">
-                    <div className="font-bold text-slate-800 flex items-center gap-1.5">
-                      <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-                      <span>Mẹo ngữ âm:</span>
+                  {/* Compact Voice Persona Selector */}
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-[11px] font-semibold text-slate-500 shrink-0">
+                      Giọng đọc:
+                    </span>
+                    <div className="grid grid-cols-4 gap-1 p-0.5 rounded-lg bg-slate-100 border border-slate-200 flex-1">
+                      {[
+                        { key: 'female', label: 'Nữ' },
+                        { key: 'male', label: 'Nam' },
+                        { key: 'adult', label: 'Thầy/Cô' },
+                        { key: 'child', label: 'Trẻ em' },
+                      ].map((item) => (
+                        <button
+                          key={item.key}
+                          type="button"
+                          onClick={() => setSelectedPersona(item.key as TTSVoicePersona)}
+                          className={`py-1 text-[11px] font-bold rounded-md transition-all cursor-pointer ${
+                            selectedPersona === item.key
+                              ? 'bg-white text-emerald-800 shadow-2xs border border-slate-200'
+                              : 'text-slate-600 hover:text-slate-900'
+                          }`}
+                        >
+                          {item.label}
+                        </button>
+                      ))}
                     </div>
-                    <p className="leading-relaxed">{activeWord.tip}</p>
                   </div>
 
-                  {/* Pronunciation audio trigger buttons */}
-                  <div className="space-y-2.5 pt-1">
-                    <button
-                      type="button"
-                      onClick={() => handlePlayAudio(activeWord.hanzi)}
-                      className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-sm font-bold shadow-xs active:scale-98 transition-all"
-                    >
-                      <Volume2 className={`w-4 h-4 ${isPlayingAudio ? 'animate-bounce' : ''}`} />
-                      <span>{isPlayingAudio ? 'Đang phát âm...' : `Nghe phát âm (${TTS_PERSONAS[selectedPersona].nameVi.split(' ')[1] || 'chuẩn'})`}</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => handlePlayAudio(activeWord.example)}
-                      className="w-full p-2.5 rounded-xl border border-slate-200 hover:border-emerald-300 bg-slate-50/70 hover:bg-emerald-50/40 text-left transition-all flex items-center justify-between gap-2"
-                    >
-                      <div>
-                        <div className="text-xs font-bold text-slate-900 font-chinese">
-                          Ví dụ: &ldquo;{activeWord.example}&rdquo;
-                        </div>
-                        <div className="text-xs text-slate-500 mt-0.5">
-                          {activeWord.exampleVi}
-                        </div>
-                      </div>
-                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-xs font-bold text-emerald-700 shrink-0">
-                        <Volume2 className="w-3.5 h-3.5" />
-                        <span>Nghe câu</span>
+                  {/* Active Word Panel */}
+                  <div className="rounded-xl border border-emerald-100 bg-white p-3.5 sm:p-4 text-center shadow-2xs space-y-2.5">
+                    <div className="flex items-center justify-between text-[11px] text-slate-400">
+                      <span className="tabular-nums">Mẫu #{activeWordIndex + 1}/4</span>
+                      <span className="text-emerald-700 font-semibold truncate max-w-[180px]">
+                        {TTS_PERSONAS[selectedPersona].subtitleVi}
                       </span>
-                    </button>
-                  </div>
-                </div>
+                    </div>
 
-                {/* Interactive AI Speech Score Demo */}
-                <div className="rounded-xl border border-slate-200 bg-white p-4 flex items-center justify-between shadow-2xs gap-3">
-                  <div className="flex items-center gap-3">
+                    <div className="flex items-baseline justify-center gap-3">
+                      <span className="font-chinese text-4xl sm:text-5xl font-extrabold text-slate-900 tracking-wide">
+                        {activeWord.hanzi}
+                      </span>
+                      <span className="text-base sm:text-lg font-bold text-emerald-700 font-mono">
+                        {activeWord.pinyin}
+                      </span>
+                    </div>
+
+                    <div className="text-xs sm:text-[13px] text-slate-700 font-medium">
+                      {activeWord.meaning}
+                    </div>
+
+                    {/* Compact Phonetic Tip */}
+                    <div className="px-3 py-2 rounded-lg bg-slate-50 border border-slate-200/80 text-[11px] text-slate-600 text-left flex items-start gap-1.5">
+                      <Sparkles className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                      <span className="leading-snug">
+                        <strong className="text-slate-800">Mẹo:</strong> {activeWord.tip}
+                      </span>
+                    </div>
+
+                    {/* Side-by-side Audio Controls */}
+                    <div className="grid grid-cols-2 gap-2 pt-0.5">
+                      <button
+                        type="button"
+                        onClick={() => handlePlayAudio(activeWord.hanzi)}
+                        className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg bg-emerald-700 hover:bg-emerald-800 active:scale-[0.98] text-white text-xs font-bold shadow-xs transition-all cursor-pointer"
+                      >
+                        <Volume2 className={`w-3.5 h-3.5 ${isPlayingAudio ? 'animate-bounce' : ''}`} />
+                        <span>{isPlayingAudio ? 'Đang phát...' : 'Nghe từ chuẩn'}</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => handlePlayAudio(activeWord.example)}
+                        className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg border border-slate-200 hover:border-emerald-300 bg-slate-50 hover:bg-emerald-50/50 active:scale-[0.98] text-emerald-800 text-xs font-bold transition-all cursor-pointer"
+                      >
+                        <Volume2 className="w-3.5 h-3.5" />
+                        <span>Nghe câu ví dụ</span>
+                      </button>
+                    </div>
+
+                    <div className="text-[11px] text-slate-500 pt-0.5 truncate">
+                      <span className="font-chinese font-semibold text-slate-700">
+                        “{activeWord.example}”
+                      </span>{' '}
+                      — {activeWord.exampleVi}
+                    </div>
+                  </div>
+
+                  {/* Interactive AI Speech Score Bar */}
+                  <div className="rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 flex items-center justify-between shadow-2xs gap-2.5">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <button
+                        type="button"
+                        onClick={handleTestMicDemo}
+                        className={`w-9 h-9 rounded-lg flex items-center justify-center border shrink-0 transition-all cursor-pointer ${
+                          isTestingMic
+                            ? 'bg-rose-600 text-white border-rose-600 animate-pulse'
+                            : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-200'
+                        }`}
+                        title="Bấm để thử chấm điểm phát âm AI"
+                      >
+                        <Mic className="w-4 h-4" />
+                      </button>
+                      <div className="min-w-0">
+                        <span className="text-xs font-bold text-slate-900 block leading-tight truncate">
+                          {isTestingMic
+                            ? 'Đang phân tích thanh điệu...'
+                            : micTested
+                            ? `Chấm âm "${activeWord.hanzi}": 98% chính xác`
+                            : 'Chấm điểm phát âm Micro AI'}
+                        </span>
+                        <span className="text-[11px] text-emerald-700 font-medium block truncate">
+                          {isTestingMic
+                            ? 'Hãy đọc to từ ở trên...'
+                            : 'Phản hồi lỗi thanh điệu tức thì'}
+                        </span>
+                      </div>
+                    </div>
                     <button
                       type="button"
                       onClick={handleTestMicDemo}
-                      className={`w-11 h-11 rounded-xl flex items-center justify-center border shrink-0 transition-all ${
-                        isTestingMic
-                          ? 'bg-rose-600 text-white border-rose-600 animate-pulse'
-                          : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-200'
-                      }`}
-                      title="Bấm để thử chấm điểm phát âm AI"
+                      className="text-[11px] font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 px-2.5 py-1.5 rounded-lg border border-emerald-200 shrink-0 transition-colors cursor-pointer tabular-nums"
                     >
-                      <Mic className="w-5 h-5" />
+                      {micTested ? '98% Tốt' : 'Thử nói'}
                     </button>
-                    <div>
-                      <span className="text-sm font-bold text-slate-900 block leading-tight">
-                        {isTestingMic
-                          ? 'Đang phân tích thanh điệu...'
-                          : micTested
-                          ? `Đã chấm âm "${activeWord.hanzi}": 98%`
-                          : 'Thử chấm điểm Micro AI'}
-                      </span>
-                      <span className="text-xs text-emerald-700 font-semibold">
-                        {isTestingMic
-                          ? 'Hãy đọc to từ trên...'
-                          : 'Nhận diện chuẩn xác 4 thanh điệu Bắc Kinh'}
-                      </span>
-                    </div>
                   </div>
-                  <button
-                    type="button"
-                    onClick={handleTestMicDemo}
-                    className="text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 px-3 py-1.5 rounded-lg border border-emerald-200 shrink-0 transition-colors"
-                  >
-                    {micTested ? '98% Xuất sắc' : 'Thử nói'}
-                  </button>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* 4 Feature Highlights Grid */}
-      <section className="py-16 sm:py-24 bg-slate-50 border-b border-slate-200">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-14 space-y-2">
-            <span className="text-xs font-extrabold uppercase tracking-wider text-emerald-800 bg-emerald-50 px-3 py-1 rounded-md border border-emerald-200 inline-block">
-              Phương pháp độc quyền
-            </span>
-            <h2 className="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
-              Giải Pháp Khoa Học Xóa Bỏ Nỗi Sợ Bỏ Cuộc
-            </h2>
-            <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
-              Giải quyết triệt để 3 nguyên nhân thất bại phổ biến: nói ngọng không ai sửa, dồn bài quá tải và tài liệu trôi nổi thiếu hệ thống.
-            </p>
-          </div>
-
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {featurePillars.map((feat, idx) => (
-              <div
-                key={idx}
-                className="rounded-2xl border border-slate-200 bg-white p-6 shadow-2xs hover:border-emerald-300 hover:shadow-md transition-all flex flex-col justify-between space-y-4"
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="w-11 h-11 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center">
-                      {feat.icon}
-                    </div>
-                    <span className={`text-xs font-bold px-2 py-0.5 rounded border ${feat.badgeColor}`}>
-                      {feat.badge}
-                    </span>
-                  </div>
-                  <h3 className="font-bold text-slate-900 text-lg mb-2">{feat.title}</h3>
-                  <p className="text-sm text-slate-600 leading-relaxed">{feat.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 4-Stage Roadmap Overview */}
-      <section className="py-16 sm:py-24 bg-white border-b border-slate-200">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between mb-12 gap-4">
-            <div>
-              <span className="text-xs font-extrabold uppercase tracking-wider text-emerald-800 bg-emerald-50 px-3 py-1 rounded-md border border-emerald-200 inline-block mb-2">
-                Hành trình chinh phục
+        {/* Section 1: 4 Feature Pillars */}
+        <section id="phuong-phap" className="py-14 sm:py-20 bg-slate-50 border-b border-slate-200">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="text-center max-w-2xl mx-auto mb-12 space-y-2">
+              <span className="text-xs font-extrabold uppercase tracking-wider text-emerald-800 bg-emerald-50 px-3 py-1 rounded-md border border-emerald-200 inline-block">
+                Phương pháp khoa học
               </span>
-              <h2 className="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
-                4 Chặng Đường Vươn Tới Đỉnh Cao HSK
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 tracking-tight text-balance">
+                Giải Pháp Xóa Bỏ Nỗi Sợ Bỏ Cuộc Khi Tự Học
               </h2>
-            </div>
-            <Link href="/roadmap">
-              <Button
-                variant="outline"
-                size="sm"
-                className="text-sm font-bold border-slate-300 text-slate-700 hover:bg-slate-50 px-4 py-2"
-                rightIcon={<ChevronRight className="w-4 h-4" />}
-              >
-                Xem chi tiết 12 tháng
-              </Button>
-            </Link>
-          </div>
-
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {roadStages.map((stage, idx) => (
-              <Link
-                key={idx}
-                href="/roadmap"
-                className="group rounded-2xl border border-slate-200 bg-slate-50/50 p-6 shadow-2xs hover:bg-white hover:border-emerald-400 hover:shadow-md transition-all flex flex-col justify-between space-y-4"
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-xs font-bold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200">
-                      {stage.stage}
-                    </span>
-                    <span className="text-xs font-semibold text-slate-500">{stage.vocab}</span>
-                  </div>
-                  <h3 className="font-extrabold text-slate-900 group-hover:text-emerald-700 transition-colors text-lg mb-1">
-                    {stage.hsk}
-                  </h3>
-                  <div className="text-xs font-bold text-amber-700 mb-3">{stage.highlight}</div>
-                  <p className="text-sm text-slate-600 leading-relaxed">{stage.target}</p>
-                </div>
-
-                <div className="pt-3 border-t border-slate-200 flex items-center justify-between">
-                  <span className="text-xs font-bold text-emerald-700">Khám phá bài học</span>
-                  <ArrowRight className="w-4 h-4 text-emerald-600 group-hover:translate-x-1 transition-transform" />
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Official Media & Textbook Showcase */}
-      <section className="py-16 sm:py-24 bg-slate-50 border-b border-slate-200">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-14 space-y-2">
-            <span className="text-xs font-extrabold uppercase tracking-wider text-emerald-800 bg-emerald-50 px-3 py-1 rounded-md border border-emerald-200 inline-block">
-              Học liệu chính ngạch
-            </span>
-            <h2 className="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
-              Kho Tài Nguyên Sách PDF, Video & MP3 Chuẩn BLCUP
-            </h2>
-            <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
-              Tích hợp trực tiếp 10 kho tài nguyên Google Drive và hàng trăm video bài giảng, bài hát từ các nhà xuất bản ngôn ngữ uy tín thế giới.
-            </p>
-          </div>
-
-          <div className="grid gap-6 md:grid-cols-3 max-w-6xl mx-auto">
-            {/* Textbook Card */}
-            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-2xs hover:shadow-md transition-all space-y-4">
-              <div className="w-12 h-12 rounded-xl bg-red-50 text-red-600 border border-red-100 flex items-center justify-center">
-                <BookOpen className="w-6 h-6" />
-              </div>
-              <h3 className="text-lg font-bold text-slate-900">Giáo Trình Chuẩn HSK 1 - 6</h3>
-              <p className="text-sm text-slate-600 leading-relaxed">
-                Trọn bộ sách bài học, sách bài tập và tài liệu ngữ pháp chính thức của Đại học Ngôn ngữ Bắc Kinh (BLCUP).
+              <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
+                Khắc phục triệt để 3 rào cản lớn nhất: phát âm sai không người sửa, dồn bài quá tải và tài liệu trôi nổi thiếu hệ thống.
               </p>
-              <Link href="/library" className="inline-flex items-center gap-1.5 text-sm font-bold text-emerald-700 hover:text-emerald-800 pt-2">
-                <span>Khám phá kho sách PDF</span>
-                <ChevronRight className="w-4 h-4" />
-              </Link>
             </div>
 
-            {/* Video & Pronunciation Card */}
-            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-2xs hover:shadow-md transition-all space-y-4">
-              <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-100 flex items-center justify-center">
-                <Film className="w-6 h-6" />
-              </div>
-              <h3 className="text-lg font-bold text-slate-900">Video Khẩu Hình & Hoạt Hình</h3>
-              <p className="text-sm text-slate-600 leading-relaxed">
-                Giảng viên bản ngữ hướng dẫn đặt vị trí môi, luồng hơi Pinyin kết hợp phim hoạt hình Peppa Pig, Super JoJo sinh động.
-              </p>
-              <Link href="/library" className="inline-flex items-center gap-1.5 text-sm font-bold text-emerald-700 hover:text-emerald-800 pt-2">
-                <span>Xem kho video bài giảng</span>
-                <ChevronRight className="w-4 h-4" />
-              </Link>
-            </div>
-
-            {/* Passive Audio & Loa Craven */}
-            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-2xs hover:shadow-md transition-all space-y-4">
-              <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-700 border border-blue-100 flex items-center justify-center">
-                <Headphones className="w-6 h-6" />
-              </div>
-              <h3 className="text-lg font-bold text-slate-900">File Nghe Thụ Động (Loa Craven)</h3>
-              <p className="text-sm text-slate-600 leading-relaxed">
-                Kho âm thanh MP3 nạp phản xạ ngữ điệu tự nhiên cho người mới bắt đầu và trẻ em, học mọi lúc mọi nơi.
-              </p>
-              <Link href="/library" className="inline-flex items-center gap-1.5 text-sm font-bold text-emerald-700 hover:text-emerald-800 pt-2">
-                <span>Tải trọn bộ file MP3</span>
-                <ChevronRight className="w-4 h-4" />
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials */}
-      <section className="py-16 sm:py-24 bg-white border-b border-slate-200">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-xl mx-auto mb-14 space-y-2">
-            <span className="text-xs font-extrabold uppercase tracking-wider text-emerald-800 bg-emerald-50 px-3 py-1 rounded-md border border-emerald-200 inline-block">
-              Học viên nói gì
-            </span>
-            <h2 className="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
-              Câu Chuyện Thành Công Của Học Viên
-            </h2>
-          </div>
-
-          <div className="grid gap-6 sm:grid-cols-3 max-w-6xl mx-auto">
-            {testimonials.map((t, idx) => (
-              <div
-                key={idx}
-                className="rounded-2xl border border-slate-200 bg-slate-50/50 p-6 shadow-2xs hover:bg-white hover:border-emerald-300 hover:shadow-md transition-all flex flex-col justify-between"
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-0.5 text-amber-500">
-                      {[...Array(t.rating)].map((_, i) => (
-                        <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
-                      ))}
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+              {featurePillars.map((feat, idx) => (
+                <article
+                  key={idx}
+                  className="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-2xs hover:border-emerald-300 hover:shadow-md transition-all flex flex-col justify-between"
+                >
+                  <div>
+                    <div className="flex items-center justify-between gap-2 mb-4">
+                      <div className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center shrink-0">
+                        {feat.icon}
+                      </div>
+                      <span className={`text-[11px] font-bold px-2 py-0.5 rounded border ${feat.badgeColor}`}>
+                        {feat.badge}
+                      </span>
                     </div>
-                    <span className="text-xs font-bold text-slate-700 bg-white px-2.5 py-1 rounded-md border border-slate-200">
-                      {t.hsk}
-                    </span>
+                    <h3 className="font-bold text-slate-900 text-base sm:text-lg mb-2">{feat.title}</h3>
+                    <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">{feat.desc}</p>
                   </div>
-                  <p className="text-sm text-slate-700 leading-relaxed mb-4">
-                    &ldquo;{t.comment}&rdquo;
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Section 2: 4-Stage Roadmap Overview */}
+        <section id="lo-trinh" className="py-14 sm:py-20 bg-white border-b border-slate-200">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between mb-10 gap-4">
+              <div>
+                <span className="text-xs font-extrabold uppercase tracking-wider text-emerald-800 bg-emerald-50 px-3 py-1 rounded-md border border-emerald-200 inline-block mb-2">
+                  Lộ trình 12 tháng
+                </span>
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 tracking-tight">
+                  4 Chặng Đường Chinh Phục HSK 1–6
+                </h2>
+              </div>
+              <Link href="/roadmap">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="text-xs sm:text-sm font-bold border-slate-300 text-slate-700 hover:bg-slate-50 px-4 py-2"
+                  rightIcon={<ChevronRight className="w-4 h-4" />}
+                >
+                  Mở bản đồ 120 bài học
+                </Button>
+              </Link>
+            </div>
+
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+              {roadStages.map((stage, idx) => (
+                <Link
+                  key={idx}
+                  href="/roadmap"
+                  className="group rounded-2xl border border-slate-200 bg-slate-50/60 p-5 sm:p-6 shadow-2xs hover:bg-white hover:border-emerald-400 hover:shadow-md transition-all flex flex-col justify-between space-y-4"
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-xs font-bold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200">
+                        {stage.stage}
+                      </span>
+                      <span className="text-xs font-semibold text-slate-500 tabular-nums">
+                        {stage.vocab}
+                      </span>
+                    </div>
+                    <h3 className="font-extrabold text-slate-900 group-hover:text-emerald-700 transition-colors text-base sm:text-lg mb-1">
+                      {stage.hsk}
+                    </h3>
+                    <div className="text-xs font-bold text-amber-700 mb-2.5">{stage.highlight}</div>
+                    <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">{stage.target}</p>
+                  </div>
+
+                  <div className="pt-3 border-t border-slate-200 flex items-center justify-between">
+                    <span className="text-xs font-bold text-emerald-700">Khám phá bài học</span>
+                    <ArrowRight className="w-4 h-4 text-emerald-600 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Section 3: Official Media & Textbook Showcase */}
+        <section id="hoc-lieu" className="py-14 sm:py-20 bg-slate-50 border-b border-slate-200">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="text-center max-w-3xl mx-auto mb-12 space-y-2">
+              <span className="text-xs font-extrabold uppercase tracking-wider text-emerald-800 bg-emerald-50 px-3 py-1 rounded-md border border-emerald-200 inline-block">
+                Học liệu chính thống
+              </span>
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 tracking-tight">
+                Kho Sách PDF, Video Phụ Đề & Audio Chuẩn BLCUP
+              </h2>
+              <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
+                Tích hợp kho tài nguyên Google Drive, video giảng dạy miễn phí có phụ đề CC và file nghe thụ động theo từng chủ đề.
+              </p>
+            </div>
+
+            <div className="grid gap-5 md:grid-cols-3">
+              <article className="rounded-2xl border border-slate-200 bg-white p-6 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between space-y-4">
+                <div className="space-y-3">
+                  <div className="w-11 h-11 rounded-xl bg-amber-50 text-amber-700 border border-amber-200 flex items-center justify-center">
+                    <BookOpen className="w-5 h-5" />
+                  </div>
+                  <h3 className="text-lg font-bold text-slate-900">Giáo Trình Chuẩn HSK 1–6</h3>
+                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                    Trọn bộ sách bài học, bài tập và giải thích ngữ pháp tiếng Việt chi tiết theo giáo trình Đại học Ngôn ngữ Bắc Kinh.
                   </p>
                 </div>
-                <div className="pt-3 border-t border-slate-200">
-                  <h4 className="font-bold text-slate-900 text-sm">{t.name}</h4>
-                  <p className="text-xs text-slate-500 font-medium">{t.role}</p>
+                <Link href="/library" className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-emerald-700 hover:text-emerald-800 pt-2">
+                  <span>Khám phá kho sách PDF</span>
+                  <ChevronRight className="w-4 h-4" />
+                </Link>
+              </article>
+
+              <article className="rounded-2xl border border-slate-200 bg-white p-6 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between space-y-4">
+                <div className="space-y-3">
+                  <div className="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center justify-center">
+                    <Film className="w-5 h-5" />
+                  </div>
+                  <h3 className="text-lg font-bold text-slate-900">Video Miễn Phí Có Phụ Đề CC</h3>
+                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                    Toàn bộ video khẩu hình Pinyin, hội thoại thực tế và hoạt hình thiếu nhi đều miễn phí, nhúng trực tiếp và hỗ trợ phụ đề.
+                  </p>
                 </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+                <Link href="/library" className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-emerald-700 hover:text-emerald-800 pt-2">
+                  <span>Xem kho video bài giảng</span>
+                  <ChevronRight className="w-4 h-4" />
+                </Link>
+              </article>
 
-      {/* Bottom CTA Fresh Banner */}
-      <section className="relative overflow-hidden py-16 sm:py-24 bg-gradient-to-br from-emerald-700 via-teal-700 to-emerald-900 text-white text-center">
-        {/* Subtle decorative glow */}
-        <div className="absolute -left-20 -top-20 w-80 h-80 rounded-full bg-white/10 blur-3xl pointer-events-none" />
-        <div className="absolute -right-20 -bottom-20 w-80 h-80 rounded-full bg-teal-400/10 blur-3xl pointer-events-none" />
-
-        <div className="relative z-10 mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/15 backdrop-blur-xs border border-white/20 text-amber-300 text-xs font-bold uppercase tracking-wider mb-4">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>Sẵn sàng chinh phục tiếng Trung 2026</span>
-          </div>
-          <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight drop-shadow-2xs">
-            Bắt đầu hành trình làm chủ Hán ngữ ngay hôm nay
-          </h2>
-          <p className="mt-4 text-emerald-100 text-base sm:text-lg max-w-xl mx-auto leading-relaxed">
-            25 phút mỗi ngày với lộ trình khoa học, hướng dẫn khẩu hình Pinyin chi tiết và phản xạ giao tiếp tự nhiên chuẩn HSK 3.0.
-          </p>
-          <div className="mt-8 flex flex-col sm:flex-row justify-center items-center gap-3.5">
-            <Link href="/dashboard" className="w-full sm:w-auto">
-              <Button
-                size="lg"
-                className="w-full sm:w-auto bg-amber-400 hover:bg-amber-300 text-emerald-950 font-extrabold text-base px-8 py-4 rounded-xl shadow-md transition-all hover:scale-[1.02]"
-              >
-                Vào học ngay miễn phí
-              </Button>
-            </Link>
-            <Link href="/roadmap" className="w-full sm:w-auto">
-              <Button
-                variant="outline"
-                size="lg"
-                className="w-full sm:w-auto bg-white/15 hover:bg-white/25 border-white/25 text-white backdrop-blur-xs text-base font-bold px-6 py-4 rounded-xl transition-all"
-              >
-                Xem chi tiết lộ trình 12 tháng
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="border-t border-slate-200 bg-white py-8 text-center text-xs text-slate-500">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <div className="flex h-6 w-6 items-center justify-center rounded-md bg-emerald-700 text-white font-bold text-xs">
-              <span className="font-chinese">汉</span>
+              <article className="rounded-2xl border border-slate-200 bg-white p-6 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between space-y-4">
+                <div className="space-y-3">
+                  <div className="w-11 h-11 rounded-xl bg-teal-50 text-teal-700 border border-teal-200 flex items-center justify-center">
+                    <Headphones className="w-5 h-5" />
+                  </div>
+                  <h3 className="text-lg font-bold text-slate-900">File Nghe Thụ Động MP3</h3>
+                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                    Kho âm thanh MP3 nạp phản xạ ngữ điệu tự nhiên kèm bộ đọc TTS 4 chất giọng (Nữ, Nam, Người lớn, Trẻ em) ngay trong từng bài.
+                  </p>
+                </div>
+                <Link href="/library" className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-emerald-700 hover:text-emerald-800 pt-2">
+                  <span>Mở thư viện âm thanh</span>
+                  <ChevronRight className="w-4 h-4" />
+                </Link>
+              </article>
             </div>
-            <span className="font-bold text-slate-800 text-sm">Chinese Journey HSK 3.0</span>
           </div>
-          <p className="text-xs text-slate-500">
-            Hệ thống học tiếng Trung toàn diện theo chuẩn BLCUP & Bộ Giáo Dục Trung Quốc.
-          </p>
-          <div className="flex gap-4 text-xs font-semibold text-slate-600">
-            <Link href="/roadmap" className="hover:text-slate-900">Lộ trình</Link>
-            <Link href="/library" className="hover:text-slate-900">Học liệu</Link>
-            <Link href="/settings" className="hover:text-slate-900">Cài đặt</Link>
+        </section>
+
+        {/* Section 4: Testimonials */}
+        <section id="hoc-vien" className="py-14 sm:py-20 bg-white border-b border-slate-200">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="text-center max-w-xl mx-auto mb-12 space-y-2">
+              <span className="text-xs font-extrabold uppercase tracking-wider text-emerald-800 bg-emerald-50 px-3 py-1 rounded-md border border-emerald-200 inline-block">
+                Trải nghiệm thực tế
+              </span>
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 tracking-tight">
+                Phản Hồi Từ Học Viên & Phụ Huynh
+              </h2>
+            </div>
+
+            <div className="grid gap-5 sm:grid-cols-3">
+              {testimonials.map((t, idx) => (
+                <article
+                  key={idx}
+                  className="rounded-2xl border border-slate-200 bg-slate-50/50 p-6 shadow-2xs hover:bg-white hover:border-emerald-300 hover:shadow-md transition-all flex flex-col justify-between"
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-0.5 text-amber-500">
+                        {[...Array(t.rating)].map((_, i) => (
+                          <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
+                        ))}
+                      </div>
+                      <span className="text-[11px] font-bold text-slate-700 bg-white px-2.5 py-0.5 rounded-md border border-slate-200">
+                        {t.hsk}
+                      </span>
+                    </div>
+                    <p className="text-xs sm:text-sm text-slate-700 leading-relaxed mb-4">
+                      &ldquo;{t.comment}&rdquo;
+                    </p>
+                  </div>
+                  <div className="pt-3 border-t border-slate-200">
+                    <h3 className="font-bold text-slate-900 text-sm">{t.name}</h3>
+                    <p className="text-xs text-slate-500 font-medium">{t.role}</p>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Section 5: FAQ (Side-by-side layout) */}
+        <section id="faq" className="py-14 sm:py-20 bg-slate-50 border-b border-slate-200">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="text-center max-w-2xl mx-auto mb-12 space-y-2">
+              <span className="text-xs font-extrabold uppercase tracking-wider text-emerald-800 bg-emerald-50 px-3 py-1 rounded-md border border-emerald-200 inline-block">
+                Câu hỏi thường gặp
+              </span>
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 tracking-tight">
+                Giải Đáp Nhanh Trước Khi Bắt Đầu
+              </h2>
+            </div>
+
+            <div className="grid gap-5 md:grid-cols-2">
+              {FAQS.map((item, idx) => (
+                <div
+                  key={idx}
+                  className="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-2xs space-y-2"
+                >
+                  <div className="flex items-start gap-2.5">
+                    <HelpCircle className="w-5 h-5 text-emerald-700 shrink-0 mt-0.5" />
+                    <h3 className="font-bold text-slate-900 text-sm sm:text-base">{item.q}</h3>
+                  </div>
+                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed pl-7">{item.a}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Bottom CTA */}
+        <section className="relative overflow-hidden py-14 sm:py-20 bg-gradient-to-br from-emerald-800 via-teal-800 to-emerald-950 text-white text-center">
+          <div className="absolute -left-20 -top-20 w-80 h-80 rounded-full bg-white/10 blur-3xl pointer-events-none" />
+          <div className="absolute -right-20 -bottom-20 w-80 h-80 rounded-full bg-teal-400/10 blur-3xl pointer-events-none" />
+
+          <div className="relative z-10 mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 backdrop-blur-xs border border-white/20 text-amber-300 text-xs font-bold uppercase tracking-wider mb-4">
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Học thử miễn phí ngay hôm nay</span>
+            </div>
+            <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-balance">
+              Bắt đầu hành trình làm chủ Hán ngữ bài bản
+            </h2>
+            <p className="mt-3 text-emerald-100 text-sm sm:text-base max-w-xl mx-auto leading-relaxed">
+              25 phút mỗi ngày với lộ trình rõ ràng, hướng dẫn phát âm chuẩn Bắc Kinh và hệ thống bài tập phản xạ tự nhiên.
+            </p>
+            <div className="mt-7 flex flex-col sm:flex-row justify-center items-center gap-3">
+              <Link href="/dashboard" className="w-full sm:w-auto">
+                <Button
+                  size="lg"
+                  className="w-full sm:w-auto bg-amber-400 hover:bg-amber-300 active:scale-[0.98] text-emerald-950 font-extrabold text-sm sm:text-base px-7 py-3.5 rounded-xl shadow-md transition-all"
+                >
+                  Vào học thử miễn phí
+                </Button>
+              </Link>
+              <Link href="/register" className="w-full sm:w-auto">
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="w-full sm:w-auto bg-white/15 hover:bg-white/25 active:scale-[0.98] border-white/30 text-white backdrop-blur-xs text-sm sm:text-base font-bold px-6 py-3.5 rounded-xl transition-all"
+                >
+                  Đăng ký tài khoản chính thức
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      {/* Structured Footer */}
+      <footer className="border-t border-slate-200 bg-white py-10 text-xs text-slate-600">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid gap-8 md:grid-cols-4">
+          <div className="md:col-span-2 space-y-2.5">
+            <div className="flex items-center gap-2">
+              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-700 text-white font-bold text-xs">
+                <span className="font-chinese">汉</span>
+              </div>
+              <span className="font-bold text-slate-900 text-sm">Chinese Journey HSK 3.0</span>
+            </div>
+            <p className="text-xs text-slate-500 max-w-md leading-relaxed">
+              Hệ thống tự học tiếng Trung toàn diện theo chuẩn BLCUP & khung HSK mới, tích hợp luyện nói AI, mở bài theo múi giờ Việt Nam và kho tài liệu chính thống.
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <div className="font-bold text-slate-900 uppercase tracking-wider text-[11px]">
+              Khám phá
+            </div>
+            <ul className="space-y-1.5 font-medium">
+              <li><a href="#phuong-phap" className="hover:text-emerald-700">Phương pháp 25 phút</a></li>
+              <li><a href="#lo-trinh" className="hover:text-emerald-700">Lộ trình HSK 1–6</a></li>
+              <li><a href="#hoc-lieu" className="hover:text-emerald-700">Kho tài liệu BLCUP</a></li>
+              <li><a href="#faq" className="hover:text-emerald-700">Câu hỏi thường gặp</a></li>
+            </ul>
+          </div>
+
+          <div className="space-y-2">
+            <div className="font-bold text-slate-900 uppercase tracking-wider text-[11px]">
+              Ứng dụng học tập
+            </div>
+            <ul className="space-y-1.5 font-medium">
+              <li><Link href="/dashboard" className="hover:text-emerald-700">Vào học ngay (Demo)</Link></li>
+              <li><Link href="/roadmap" className="hover:text-emerald-700">Bảng lộ trình 120 bài</Link></li>
+              <li><Link href="/library" className="hover:text-emerald-700">Thư viện Google Drive</Link></li>
+              <li><Link href="/login" className="hover:text-emerald-700">Đăng nhập / Đăng ký</Link></li>
+            </ul>
           </div>
         </div>
       </footer>
