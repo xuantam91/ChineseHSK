@@ -15,12 +15,9 @@ import {
   Sparkles,
   Headphones,
   Film,
-  CheckCircle2,
   Menu,
   X,
   HelpCircle,
-  Compass,
-  FolderGit2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { speakChinese, TTSVoicePersona, TTS_PERSONAS } from '@/lib/tts';
@@ -60,11 +57,11 @@ const INTERACTIVE_WORDS = [
   },
 ];
 
+// Streamlined top-level navigation (4 concise items)
 const NAV_LINKS = [
   { href: '#phuong-phap', label: 'Phương pháp' },
-  { href: '#lo-trinh', label: 'Lộ trình HSK' },
-  { href: '#hoc-lieu', label: 'Kho tài liệu' },
-  { href: '#hoc-vien', label: 'Học viên' },
+  { href: '/roadmap', label: 'Lộ trình 120 bài' },
+  { href: '/library', label: 'Thư viện' },
   { href: '#faq', label: 'Hỏi đáp' },
 ];
 
@@ -214,62 +211,57 @@ export default function LandingPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col text-slate-900 font-sans">
-      {/* Top Sticky Navigation Bar */}
-      <header className="sticky top-0 z-50 border-b border-slate-200/90 bg-white/95 backdrop-blur-md">
-        <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8 gap-4">
+    <div className="min-h-screen w-full overflow-x-hidden bg-slate-50 flex flex-col text-slate-900 font-sans">
+      {/* Clean Sticky Navigation Bar (4 concise links) */}
+      <header className="sticky top-0 z-50 w-full border-b border-slate-200/90 bg-white/95 backdrop-blur-md">
+        <div className="mx-auto flex h-14 sm:h-16 max-w-[1400px] items-center justify-between px-4 sm:px-8 lg:px-12 gap-3">
           {/* Brand */}
-          <Link href="/" className="flex items-center gap-2.5 group shrink-0">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-600 to-teal-700 text-white font-bold text-lg shadow-xs group-hover:scale-105 transition-transform">
+          <Link href="/" className="flex items-center gap-2.5 group min-w-0 shrink-0">
+            <div className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-600 to-teal-700 text-white font-bold text-base sm:text-lg shadow-xs group-hover:scale-105 transition-transform shrink-0">
               <span className="font-chinese">汉</span>
             </div>
-            <div>
+            <div className="min-w-0">
               <div className="flex items-center gap-1.5">
-                <span className="text-sm sm:text-base font-extrabold tracking-tight text-slate-900">
+                <span className="text-sm sm:text-base font-extrabold tracking-tight text-slate-900 whitespace-nowrap">
                   Chinese Journey
                 </span>
-                <span className="text-[11px] font-bold text-emerald-800 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
+                <span className="hidden sm:inline-block text-[11px] font-bold text-emerald-800 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
                   HSK 3.0
                 </span>
               </div>
-              <span className="hidden sm:block text-[11px] text-slate-500 font-medium leading-none mt-0.5">
+              <span className="hidden md:block text-[11px] text-slate-500 font-medium leading-none mt-0.5">
                 Tự học tiếng Trung bài bản
               </span>
             </div>
           </Link>
 
-          {/* Center In-page + App Menus (Desktop) */}
-          <nav aria-label="Điều hướng chính" className="hidden lg:flex items-center gap-1">
-            {NAV_LINKS.map((item) => (
-              <a
-                key={item.href}
-                href={item.href}
-                className="px-3 py-1.5 rounded-lg text-[13px] font-semibold text-slate-600 hover:text-emerald-800 hover:bg-emerald-50/70 transition-colors whitespace-nowrap"
-              >
-                {item.label}
-              </a>
-            ))}
-            <span className="h-4 w-px bg-slate-200 mx-1.5" aria-hidden="true" />
-            <Link
-              href="/roadmap"
-              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[13px] font-semibold text-slate-700 hover:text-emerald-800 hover:bg-slate-100 transition-colors whitespace-nowrap"
-            >
-              <Compass className="w-3.5 h-3.5 text-emerald-700" />
-              <span>Bảng 120 bài</span>
-            </Link>
-            <Link
-              href="/library"
-              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[13px] font-semibold text-slate-700 hover:text-emerald-800 hover:bg-slate-100 transition-colors whitespace-nowrap"
-            >
-              <FolderGit2 className="w-3.5 h-3.5 text-emerald-700" />
-              <span>Thư viện</span>
-            </Link>
+          {/* Center Desktop Nav — Simplified to 4 clean items */}
+          <nav aria-label="Điều hướng chính" className="hidden lg:flex items-center gap-2">
+            {NAV_LINKS.map((item) =>
+              item.href.startsWith('#') ? (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  className="px-3.5 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:text-emerald-800 hover:bg-emerald-50/70 transition-colors whitespace-nowrap"
+                >
+                  {item.label}
+                </a>
+              ) : (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="px-3.5 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:text-emerald-800 hover:bg-emerald-50/70 transition-colors whitespace-nowrap"
+                >
+                  {item.label}
+                </Link>
+              )
+            )}
           </nav>
 
           {/* Right Auth & CTA */}
           <div className="flex items-center gap-2 shrink-0">
             <Link href="/login" className="hidden sm:inline-flex">
-              <Button variant="ghost" size="sm" className="text-[13px] font-semibold text-slate-700 px-3">
+              <Button variant="ghost" size="sm" className="text-sm font-semibold text-slate-700 px-3">
                 Đăng nhập
               </Button>
             </Link>
@@ -277,7 +269,7 @@ export default function LandingPage() {
               <Button
                 variant="primary"
                 size="sm"
-                className="bg-emerald-700 hover:bg-emerald-800 text-white text-[13px] font-bold shadow-xs px-3.5"
+                className="bg-emerald-700 hover:bg-emerald-800 text-white text-xs sm:text-sm font-bold shadow-xs px-3 sm:px-4 whitespace-nowrap"
                 rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
               >
                 Vào học ngay
@@ -286,43 +278,40 @@ export default function LandingPage() {
             <button
               type="button"
               onClick={() => setMobileMenuOpen((v) => !v)}
-              aria-label="Mở menu điều hướng"
+              aria-label="Mở menu"
               aria-expanded={mobileMenuOpen}
-              className="lg:hidden inline-flex items-center justify-center w-9 h-9 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-100 transition-colors"
+              className="lg:hidden inline-flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-100 transition-colors shrink-0"
             >
               {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
             </button>
           </div>
         </div>
 
-        {/* Mobile Navigation Drawer */}
+        {/* Mobile Menu Drawer */}
         {mobileMenuOpen && (
-          <div className="lg:hidden border-t border-slate-200 bg-white px-4 py-3 space-y-1 shadow-md">
-            <div className="grid grid-cols-2 gap-1.5 pb-2">
-              {NAV_LINKS.map((item) => (
-                <a
-                  key={item.href}
-                  href={item.href}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="px-3 py-2 rounded-lg text-xs font-semibold text-slate-700 hover:bg-emerald-50 hover:text-emerald-800"
-                >
-                  {item.label}
-                </a>
-              ))}
-              <Link
-                href="/roadmap"
-                onClick={() => setMobileMenuOpen(false)}
-                className="px-3 py-2 rounded-lg text-xs font-semibold text-emerald-800 bg-emerald-50/70"
-              >
-                Bảng lộ trình 120 bài
-              </Link>
-              <Link
-                href="/library"
-                onClick={() => setMobileMenuOpen(false)}
-                className="px-3 py-2 rounded-lg text-xs font-semibold text-emerald-800 bg-emerald-50/70"
-              >
-                Thư viện Drive
-              </Link>
+          <div className="lg:hidden border-t border-slate-200 bg-white px-4 py-3 space-y-2 shadow-lg">
+            <div className="grid grid-cols-2 gap-1.5">
+              {NAV_LINKS.map((item) =>
+                item.href.startsWith('#') ? (
+                  <a
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="px-3 py-2 rounded-lg text-xs font-semibold text-slate-700 bg-slate-50 hover:bg-emerald-50 hover:text-emerald-800"
+                  >
+                    {item.label}
+                  </a>
+                ) : (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="px-3 py-2 rounded-lg text-xs font-semibold text-slate-700 bg-slate-50 hover:bg-emerald-50 hover:text-emerald-800"
+                  >
+                    {item.label}
+                  </Link>
+                )
+              )}
             </div>
             <div className="pt-2 border-t border-slate-100 flex items-center gap-2">
               <Link href="/login" className="flex-1" onClick={() => setMobileMenuOpen(false)}>
@@ -340,50 +329,49 @@ export default function LandingPage() {
         )}
       </header>
 
-      <main className="flex-1">
-        {/* Hero Section — Sized cleanly to fit laptop & desktop viewports above the fold */}
-        <section className="relative overflow-hidden border-b border-slate-200 bg-white lg:min-h-[calc(100dvh-3.5rem)] flex items-center py-6 sm:py-8 lg:py-6">
-          {/* Subtle architectural dot pattern + ambient emerald wash */}
+      <main className="flex-1 w-full">
+        {/* Hero Section — Wide, airy, laptop-fitted, zero horizontal overflow on mobile */}
+        <section className="relative overflow-hidden border-b border-slate-200 bg-white lg:min-h-[calc(100dvh-4rem)] flex items-center py-6 sm:py-10 lg:py-8">
           <div
             aria-hidden="true"
-            className="absolute inset-0 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:24px_24px] opacity-35 pointer-events-none"
+            className="absolute inset-0 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:28px_28px] opacity-30 pointer-events-none"
           />
           <div
             aria-hidden="true"
-            className="absolute -top-24 right-0 w-[34rem] h-[34rem] rounded-full bg-emerald-100/45 blur-3xl pointer-events-none"
+            className="hidden sm:block absolute -top-24 right-0 w-[34rem] h-[34rem] rounded-full bg-emerald-100/45 blur-3xl pointer-events-none"
           />
           <div
             aria-hidden="true"
-            className="absolute bottom-0 left-0 w-80 h-80 rounded-full bg-teal-50/70 blur-3xl pointer-events-none"
+            className="hidden sm:block absolute bottom-0 left-0 w-80 h-80 rounded-full bg-teal-50/70 blur-3xl pointer-events-none"
           />
 
-          <div className="mx-auto max-w-7xl w-full px-4 sm:px-6 lg:px-8 relative z-10">
-            <div className="grid lg:grid-cols-12 gap-8 xl:gap-10 items-center">
-              {/* Left Column: Value Proposition */}
-              <div className="lg:col-span-6 xl:col-span-7 text-center lg:text-left space-y-4">
-                <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50/90 px-3 py-1 text-xs font-bold text-emerald-900 shadow-2xs">
-                  <Sparkles className="w-3.5 h-3.5 text-emerald-600 fill-emerald-600" />
-                  <span>Khung chuẩn HSK 3.0 • 25 phút mỗi ngày cùng AI</span>
+          <div className="mx-auto max-w-[1400px] w-full px-4 sm:px-8 lg:px-12 relative z-10">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 xl:gap-16 items-center">
+              {/* Left Column: Value Proposition (Spacious & Wide) */}
+              <div className="lg:col-span-6 xl:col-span-7 min-w-0 text-center lg:text-left space-y-4 sm:space-y-5">
+                <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50/90 px-3 py-1 text-[11px] sm:text-xs font-bold text-emerald-900 shadow-2xs max-w-full">
+                  <Sparkles className="w-3.5 h-3.5 text-emerald-600 fill-emerald-600 shrink-0" />
+                  <span className="truncate">Khung chuẩn HSK 3.0 • 25 phút mỗi ngày cùng AI</span>
                 </div>
 
-                <h1 className="text-3xl sm:text-4xl lg:text-[42px] xl:text-[50px] font-extrabold text-slate-900 tracking-tight leading-[1.12] text-balance">
+                <h1 className="text-[28px] sm:text-4xl lg:text-5xl xl:text-[56px] font-extrabold text-slate-900 tracking-tight leading-[1.12] text-balance">
                   Chinh Phục Tiếng Trung{' '}
                   <span className="block bg-gradient-to-r from-emerald-700 via-teal-700 to-emerald-800 bg-clip-text text-transparent mt-1">
                     Chuẩn Bản Xứ Bắc Kinh
                   </span>
                 </h1>
 
-                <p className="text-sm sm:text-base text-slate-600 leading-relaxed max-w-xl mx-auto lg:mx-0">
+                <p className="text-sm sm:text-base xl:text-[17px] text-slate-600 leading-relaxed max-w-2xl mx-auto lg:mx-0">
                   Không học vẹt, không nản chí. Tự học bài bản từ con số 0 với{' '}
-                  <strong className="text-slate-900">luyện nói chấm mic AI</strong>, mở bài lúc 00:00 theo giờ Việt Nam cùng kho video bài giảng có phụ đề và giáo trình BLCUP chính thống.
+                  <strong className="text-slate-900">luyện nói chấm mic AI</strong>, mở bài lúc 00:00 theo giờ Việt Nam cùng kho video có phụ đề và giáo trình BLCUP chính thống.
                 </p>
 
                 {/* Primary CTAs */}
-                <div className="pt-1 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3">
+                <div className="pt-1 flex flex-col sm:flex-row items-stretch sm:items-center justify-center lg:justify-start gap-3">
                   <Link href="/dashboard" className="w-full sm:w-auto">
                     <Button
                       size="lg"
-                      className="w-full sm:w-auto bg-amber-400 hover:bg-amber-300 active:scale-[0.98] text-emerald-950 font-extrabold text-sm sm:text-base px-6 py-3 rounded-xl shadow-md shadow-amber-500/15 transition-all"
+                      className="w-full sm:w-auto bg-amber-400 hover:bg-amber-300 active:scale-[0.98] text-emerald-950 font-extrabold text-sm sm:text-base px-6 xl:px-7 py-3.5 rounded-xl shadow-md shadow-amber-500/15 transition-all"
                       rightIcon={<ArrowRight className="w-4 h-4 text-emerald-950 stroke-[2.5]" />}
                     >
                       Bắt đầu học thử miễn phí
@@ -393,55 +381,55 @@ export default function LandingPage() {
                     <Button
                       variant="outline"
                       size="lg"
-                      className="w-full sm:w-auto border-slate-300 bg-white hover:bg-slate-50 active:scale-[0.98] text-slate-800 text-sm sm:text-base font-bold px-5 py-3 rounded-xl shadow-2xs transition-all"
+                      className="w-full sm:w-auto border-slate-300 bg-white hover:bg-slate-50 active:scale-[0.98] text-slate-800 text-sm sm:text-base font-bold px-5 xl:px-6 py-3.5 rounded-xl shadow-2xs transition-all"
                     >
                       Xem lộ trình 120 bài
                     </Button>
                   </Link>
                 </div>
 
-                {/* Compact Structured Trust Bar */}
-                <div className="pt-4 border-t border-slate-200/80 grid grid-cols-3 gap-3 max-w-lg mx-auto lg:mx-0 text-left">
-                  <div className="rounded-xl bg-slate-50/90 border border-slate-200/80 px-3 py-2">
-                    <div className="text-sm sm:text-base font-extrabold text-emerald-800 tabular-nums">
+                {/* Compact Structured Trust Metrics (Mobile-safe grid) */}
+                <div className="pt-4 border-t border-slate-200/80 grid grid-cols-3 gap-2 sm:gap-4 max-w-xl mx-auto lg:mx-0 text-left">
+                  <div className="rounded-xl bg-slate-50/90 border border-slate-200/80 px-2.5 sm:px-3.5 py-2 sm:py-2.5 min-w-0">
+                    <div className="text-xs sm:text-base font-extrabold text-emerald-800 tabular-nums">
                       120 bài
                     </div>
-                    <div className="text-[11px] font-medium text-slate-600 leading-tight">
-                      Chuẩn HSK 1–6 mới
+                    <div className="text-[10px] sm:text-xs font-medium text-slate-600 leading-tight mt-0.5">
+                      Chuẩn HSK 1–6
                     </div>
                   </div>
-                  <div className="rounded-xl bg-slate-50/90 border border-slate-200/80 px-3 py-2">
-                    <div className="text-sm sm:text-base font-extrabold text-emerald-800 tabular-nums">
+                  <div className="rounded-xl bg-slate-50/90 border border-slate-200/80 px-2.5 sm:px-3.5 py-2 sm:py-2.5 min-w-0">
+                    <div className="text-xs sm:text-base font-extrabold text-emerald-800 tabular-nums">
                       25 phút
                     </div>
-                    <div className="text-[11px] font-medium text-slate-600 leading-tight">
-                      Mở bài 00:00 giờ VN
+                    <div className="text-[10px] sm:text-xs font-medium text-slate-600 leading-tight mt-0.5">
+                      Mở bài 00:00 VN
                     </div>
                   </div>
-                  <div className="rounded-xl bg-slate-50/90 border border-slate-200/80 px-3 py-2">
-                    <div className="text-sm sm:text-base font-extrabold text-emerald-800">
+                  <div className="rounded-xl bg-slate-50/90 border border-slate-200/80 px-2.5 sm:px-3.5 py-2 sm:py-2.5 min-w-0">
+                    <div className="text-xs sm:text-base font-extrabold text-emerald-800">
                       Mic AI
                     </div>
-                    <div className="text-[11px] font-medium text-slate-600 leading-tight">
-                      Chấm 4 thanh điệu
+                    <div className="text-[10px] sm:text-xs font-medium text-slate-600 leading-tight mt-0.5">
+                      Chấm thanh điệu
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Right Column: Compact Interactive Pronunciation & Mic AI Studio Card */}
-              <div className="lg:col-span-6 xl:col-span-5">
-                <div className="rounded-2xl border border-emerald-200/90 bg-gradient-to-br from-emerald-50/50 via-white to-teal-50/35 p-4 sm:p-5 shadow-lg shadow-emerald-950/5 space-y-3">
+              {/* Right Column: Interactive Pronunciation Studio Card (Fits laptop viewport cleanly & zero mobile overflow) */}
+              <div className="lg:col-span-6 xl:col-span-5 min-w-0 w-full">
+                <div className="rounded-2xl border border-emerald-200/90 bg-gradient-to-br from-emerald-50/50 via-white to-teal-50/35 p-3.5 sm:p-5 shadow-lg shadow-emerald-950/5 space-y-3">
                   {/* Card Header */}
-                  <div className="flex items-center justify-between pb-2.5 border-b border-emerald-100">
-                    <div className="flex items-center gap-2">
-                      <span className="flex h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse" />
-                      <span className="text-xs sm:text-sm font-bold text-slate-900">
+                  <div className="flex items-center justify-between gap-2 pb-2.5 border-b border-emerald-100">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="flex h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+                      <span className="text-xs sm:text-sm font-bold text-slate-900 truncate">
                         Thử phát âm trực tiếp
                       </span>
                     </div>
-                    <span className="text-[11px] font-bold text-emerald-800 bg-emerald-100/80 px-2 py-0.5 rounded-md">
-                      Âm thanh bản xứ
+                    <span className="text-[10px] sm:text-[11px] font-bold text-emerald-800 bg-emerald-100/80 px-2 py-0.5 rounded-md shrink-0">
+                      Bản xứ Bắc Kinh
                     </span>
                   </div>
 
@@ -452,7 +440,7 @@ export default function LandingPage() {
                         key={item.hanzi}
                         type="button"
                         onClick={() => setActiveWordIndex(idx)}
-                        className={`py-1 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+                        className={`py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
                           idx === activeWordIndex
                             ? 'bg-emerald-700 text-white shadow-2xs'
                             : 'text-slate-600 hover:text-slate-900 hover:bg-white/70'
@@ -463,10 +451,10 @@ export default function LandingPage() {
                     ))}
                   </div>
 
-                  {/* Compact Voice Persona Selector */}
-                  <div className="flex items-center justify-between gap-2">
+                  {/* Voice Persona Selector (Stacked cleanly on tiny screens, inline on sm+) */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-2">
                     <span className="text-[11px] font-semibold text-slate-500 shrink-0">
-                      Giọng đọc:
+                      Giọng đọc bản ngữ:
                     </span>
                     <div className="grid grid-cols-4 gap-1 p-0.5 rounded-lg bg-slate-100 border border-slate-200 flex-1">
                       {[
@@ -479,7 +467,7 @@ export default function LandingPage() {
                           key={item.key}
                           type="button"
                           onClick={() => setSelectedPersona(item.key as TTSVoicePersona)}
-                          className={`py-1 text-[11px] font-bold rounded-md transition-all cursor-pointer ${
+                          className={`py-1 px-1 text-[11px] font-bold rounded-md transition-all cursor-pointer truncate ${
                             selectedPersona === item.key
                               ? 'bg-white text-emerald-800 shadow-2xs border border-slate-200'
                               : 'text-slate-600 hover:text-slate-900'
@@ -491,16 +479,16 @@ export default function LandingPage() {
                     </div>
                   </div>
 
-                  {/* Active Word Panel */}
+                  {/* Active Word Display Panel */}
                   <div className="rounded-xl border border-emerald-100 bg-white p-3.5 sm:p-4 text-center shadow-2xs space-y-2.5">
-                    <div className="flex items-center justify-between text-[11px] text-slate-400">
-                      <span className="tabular-nums">Mẫu #{activeWordIndex + 1}/4</span>
-                      <span className="text-emerald-700 font-semibold truncate max-w-[180px]">
+                    <div className="flex items-center justify-between gap-2 text-[11px] text-slate-400">
+                      <span className="tabular-nums shrink-0">Mẫu #{activeWordIndex + 1}/4</span>
+                      <span className="text-emerald-700 font-semibold truncate">
                         {TTS_PERSONAS[selectedPersona].subtitleVi}
                       </span>
                     </div>
 
-                    <div className="flex items-baseline justify-center gap-3">
+                    <div className="flex items-baseline justify-center gap-2.5 sm:gap-3 flex-wrap">
                       <span className="font-chinese text-4xl sm:text-5xl font-extrabold text-slate-900 tracking-wide">
                         {activeWord.hanzi}
                       </span>
@@ -526,32 +514,32 @@ export default function LandingPage() {
                       <button
                         type="button"
                         onClick={() => handlePlayAudio(activeWord.hanzi)}
-                        className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg bg-emerald-700 hover:bg-emerald-800 active:scale-[0.98] text-white text-xs font-bold shadow-xs transition-all cursor-pointer"
+                        className="flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 active:scale-[0.98] text-white text-xs font-bold shadow-xs transition-all cursor-pointer"
                       >
-                        <Volume2 className={`w-3.5 h-3.5 ${isPlayingAudio ? 'animate-bounce' : ''}`} />
+                        <Volume2 className={`w-3.5 h-3.5 shrink-0 ${isPlayingAudio ? 'animate-bounce' : ''}`} />
                         <span>{isPlayingAudio ? 'Đang phát...' : 'Nghe từ chuẩn'}</span>
                       </button>
 
                       <button
                         type="button"
                         onClick={() => handlePlayAudio(activeWord.example)}
-                        className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg border border-slate-200 hover:border-emerald-300 bg-slate-50 hover:bg-emerald-50/50 active:scale-[0.98] text-emerald-800 text-xs font-bold transition-all cursor-pointer"
+                        className="flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-lg border border-slate-200 hover:border-emerald-300 bg-slate-50 hover:bg-emerald-50/50 active:scale-[0.98] text-emerald-800 text-xs font-bold transition-all cursor-pointer"
                       >
-                        <Volume2 className="w-3.5 h-3.5" />
+                        <Volume2 className="w-3.5 h-3.5 shrink-0" />
                         <span>Nghe câu ví dụ</span>
                       </button>
                     </div>
 
-                    <div className="text-[11px] text-slate-500 pt-0.5 truncate">
+                    <p className="text-[11px] text-slate-500 pt-0.5 leading-snug break-words">
                       <span className="font-chinese font-semibold text-slate-700">
                         “{activeWord.example}”
                       </span>{' '}
                       — {activeWord.exampleVi}
-                    </div>
+                    </p>
                   </div>
 
                   {/* Interactive AI Speech Score Bar */}
-                  <div className="rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 flex items-center justify-between shadow-2xs gap-2.5">
+                  <div className="rounded-xl border border-slate-200 bg-white px-3 sm:px-3.5 py-2.5 flex items-center justify-between shadow-2xs gap-2">
                     <div className="flex items-center gap-2.5 min-w-0">
                       <button
                         type="button"
@@ -595,9 +583,9 @@ export default function LandingPage() {
         </section>
 
         {/* Section 1: 4 Feature Pillars */}
-        <section id="phuong-phap" className="py-14 sm:py-20 bg-slate-50 border-b border-slate-200">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="text-center max-w-2xl mx-auto mb-12 space-y-2">
+        <section id="phuong-phap" className="py-14 sm:py-20 lg:py-24 bg-slate-50 border-b border-slate-200">
+          <div className="mx-auto max-w-[1400px] px-4 sm:px-8 lg:px-12">
+            <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-14 space-y-2.5">
               <span className="text-xs font-extrabold uppercase tracking-wider text-emerald-800 bg-emerald-50 px-3 py-1 rounded-md border border-emerald-200 inline-block">
                 Phương pháp khoa học
               </span>
@@ -609,7 +597,7 @@ export default function LandingPage() {
               </p>
             </div>
 
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-5 sm:gap-6 sm:grid-cols-2 lg:grid-cols-4">
               {featurePillars.map((feat, idx) => (
                 <article
                   key={idx}
@@ -634,8 +622,8 @@ export default function LandingPage() {
         </section>
 
         {/* Section 2: 4-Stage Roadmap Overview */}
-        <section id="lo-trinh" className="py-14 sm:py-20 bg-white border-b border-slate-200">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <section id="lo-trinh" className="py-14 sm:py-20 lg:py-24 bg-white border-b border-slate-200">
+          <div className="mx-auto max-w-[1400px] px-4 sm:px-8 lg:px-12">
             <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between mb-10 gap-4">
               <div>
                 <span className="text-xs font-extrabold uppercase tracking-wider text-emerald-800 bg-emerald-50 px-3 py-1 rounded-md border border-emerald-200 inline-block mb-2">
@@ -657,7 +645,7 @@ export default function LandingPage() {
               </Link>
             </div>
 
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-5 sm:gap-6 sm:grid-cols-2 lg:grid-cols-4">
               {roadStages.map((stage, idx) => (
                 <Link
                   key={idx}
@@ -691,9 +679,9 @@ export default function LandingPage() {
         </section>
 
         {/* Section 3: Official Media & Textbook Showcase */}
-        <section id="hoc-lieu" className="py-14 sm:py-20 bg-slate-50 border-b border-slate-200">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="text-center max-w-3xl mx-auto mb-12 space-y-2">
+        <section id="hoc-lieu" className="py-14 sm:py-20 lg:py-24 bg-slate-50 border-b border-slate-200">
+          <div className="mx-auto max-w-[1400px] px-4 sm:px-8 lg:px-12">
+            <div className="text-center max-w-3xl mx-auto mb-12 space-y-2.5">
               <span className="text-xs font-extrabold uppercase tracking-wider text-emerald-800 bg-emerald-50 px-3 py-1 rounded-md border border-emerald-200 inline-block">
                 Học liệu chính thống
               </span>
@@ -705,7 +693,7 @@ export default function LandingPage() {
               </p>
             </div>
 
-            <div className="grid gap-5 md:grid-cols-3">
+            <div className="grid gap-5 sm:gap-6 md:grid-cols-3">
               <article className="rounded-2xl border border-slate-200 bg-white p-6 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between space-y-4">
                 <div className="space-y-3">
                   <div className="w-11 h-11 rounded-xl bg-amber-50 text-amber-700 border border-amber-200 flex items-center justify-center">
@@ -758,9 +746,9 @@ export default function LandingPage() {
         </section>
 
         {/* Section 4: Testimonials */}
-        <section id="hoc-vien" className="py-14 sm:py-20 bg-white border-b border-slate-200">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="text-center max-w-xl mx-auto mb-12 space-y-2">
+        <section id="hoc-vien" className="py-14 sm:py-20 lg:py-24 bg-white border-b border-slate-200">
+          <div className="mx-auto max-w-[1400px] px-4 sm:px-8 lg:px-12">
+            <div className="text-center max-w-xl mx-auto mb-12 space-y-2.5">
               <span className="text-xs font-extrabold uppercase tracking-wider text-emerald-800 bg-emerald-50 px-3 py-1 rounded-md border border-emerald-200 inline-block">
                 Trải nghiệm thực tế
               </span>
@@ -769,14 +757,14 @@ export default function LandingPage() {
               </h2>
             </div>
 
-            <div className="grid gap-5 sm:grid-cols-3">
+            <div className="grid gap-5 sm:gap-6 md:grid-cols-3">
               {testimonials.map((t, idx) => (
                 <article
                   key={idx}
                   className="rounded-2xl border border-slate-200 bg-slate-50/50 p-6 shadow-2xs hover:bg-white hover:border-emerald-300 hover:shadow-md transition-all flex flex-col justify-between"
                 >
                   <div>
-                    <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center justify-between gap-2 mb-3">
                       <div className="flex items-center gap-0.5 text-amber-500">
                         {[...Array(t.rating)].map((_, i) => (
                           <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
@@ -800,10 +788,10 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Section 5: FAQ (Side-by-side layout) */}
-        <section id="faq" className="py-14 sm:py-20 bg-slate-50 border-b border-slate-200">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="text-center max-w-2xl mx-auto mb-12 space-y-2">
+        {/* Section 5: FAQ */}
+        <section id="faq" className="py-14 sm:py-20 lg:py-24 bg-slate-50 border-b border-slate-200">
+          <div className="mx-auto max-w-[1400px] px-4 sm:px-8 lg:px-12">
+            <div className="text-center max-w-2xl mx-auto mb-12 space-y-2.5">
               <span className="text-xs font-extrabold uppercase tracking-wider text-emerald-800 bg-emerald-50 px-3 py-1 rounded-md border border-emerald-200 inline-block">
                 Câu hỏi thường gặp
               </span>
@@ -812,7 +800,7 @@ export default function LandingPage() {
               </h2>
             </div>
 
-            <div className="grid gap-5 md:grid-cols-2">
+            <div className="grid gap-5 sm:gap-6 md:grid-cols-2">
               {FAQS.map((item, idx) => (
                 <div
                   key={idx}
@@ -831,10 +819,7 @@ export default function LandingPage() {
 
         {/* Bottom CTA */}
         <section className="relative overflow-hidden py-14 sm:py-20 bg-gradient-to-br from-emerald-800 via-teal-800 to-emerald-950 text-white text-center">
-          <div className="absolute -left-20 -top-20 w-80 h-80 rounded-full bg-white/10 blur-3xl pointer-events-none" />
-          <div className="absolute -right-20 -bottom-20 w-80 h-80 rounded-full bg-teal-400/10 blur-3xl pointer-events-none" />
-
-          <div className="relative z-10 mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+          <div className="relative z-10 mx-auto max-w-3xl px-4 sm:px-8">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 backdrop-blur-xs border border-white/20 text-amber-300 text-xs font-bold uppercase tracking-wider mb-4">
               <Sparkles className="w-3.5 h-3.5" />
               <span>Học thử miễn phí ngay hôm nay</span>
@@ -845,7 +830,7 @@ export default function LandingPage() {
             <p className="mt-3 text-emerald-100 text-sm sm:text-base max-w-xl mx-auto leading-relaxed">
               25 phút mỗi ngày với lộ trình rõ ràng, hướng dẫn phát âm chuẩn Bắc Kinh và hệ thống bài tập phản xạ tự nhiên.
             </p>
-            <div className="mt-7 flex flex-col sm:flex-row justify-center items-center gap-3">
+            <div className="mt-7 flex flex-col sm:flex-row justify-center items-stretch sm:items-center gap-3">
               <Link href="/dashboard" className="w-full sm:w-auto">
                 <Button
                   size="lg"
@@ -870,7 +855,7 @@ export default function LandingPage() {
 
       {/* Structured Footer */}
       <footer className="border-t border-slate-200 bg-white py-10 text-xs text-slate-600">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid gap-8 md:grid-cols-4">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-8 lg:px-12 grid gap-8 md:grid-cols-4">
           <div className="md:col-span-2 space-y-2.5">
             <div className="flex items-center gap-2">
               <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-700 text-white font-bold text-xs">
