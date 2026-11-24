@@ -13,10 +13,12 @@ import {
   FolderGit2,
   BarChart3,
   Home,
+  Download,
 } from 'lucide-react';
 import { DEMO_USER_PROFILE } from '@/lib/mock-data';
 import { getStoredUserProfile } from '@/lib/student-store';
 import { TTSVoiceSelector } from '@/components/common/TTSVoiceSelector';
+import { triggerInstallPromptModal } from '@/components/common/PWAInstallManager';
 
 export function Header() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -135,6 +137,18 @@ export function Header() {
                     <Settings className="w-3.5 h-3.5 text-slate-500" />
                     Cài đặt giọng đọc & Cấp độ
                   </Link>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setDropdownOpen(false);
+                      triggerInstallPromptModal();
+                    }}
+                    className="w-full flex items-center gap-2 px-3 py-2 text-xs font-semibold text-slate-700 rounded-lg hover:bg-slate-50 transition-colors cursor-pointer text-left"
+                  >
+                    <Download className="w-3.5 h-3.5 text-emerald-600" />
+                    Cài shortcut App về máy
+                  </button>
 
                   {(profile.role === 'admin' || profile.role === 'super_admin') && (
                     <Link

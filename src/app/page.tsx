@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { speakChinese, TTSVoicePersona, TTS_PERSONAS } from '@/lib/tts';
+import { triggerInstallPromptModal } from '@/components/common/PWAInstallManager';
 
 const INTERACTIVE_WORDS = [
   {
@@ -889,6 +890,15 @@ export default function LandingPage() {
               <li><Link href="/roadmap" className="hover:text-emerald-700">Bảng lộ trình 120 bài</Link></li>
               <li><Link href="/library" className="hover:text-emerald-700">Thư viện Google Drive</Link></li>
               <li><Link href="/login" className="hover:text-emerald-700">Đăng nhập / Đăng ký</Link></li>
+              <li>
+                <button
+                  type="button"
+                  onClick={triggerInstallPromptModal}
+                  className="hover:text-emerald-700 font-semibold text-emerald-700 cursor-pointer"
+                >
+                  Cài shortcut App (Mac / Windows)
+                </button>
+              </li>
             </ul>
           </div>
         </div>

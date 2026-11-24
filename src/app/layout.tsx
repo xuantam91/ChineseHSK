@@ -1,10 +1,17 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import { PWAInstallManager } from "@/components/common/PWAInstallManager";
 
 export const metadata: Metadata = {
   title: "Chinese Learning Journey — Lộ trình tự học tiếng Trung HSK 1-9",
   description:
     "Webapp LMS tự học tiếng Trung chuẩn quốc tế HSK 1–9: 120 bài học bài bản, phát âm 4 giọng bản xứ, luyện nói, nhại âm và bài kiểm tra tương tác.",
+  applicationName: "Chinese HSK",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Chinese HSK",
+  },
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "any" },
@@ -13,6 +20,12 @@ export const metadata: Metadata = {
     ],
     apple: [{ url: "/apple-icon.png", sizes: "180x180", type: "image/png" }],
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#047857",
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({
@@ -24,6 +37,7 @@ export default function RootLayout({
     <html lang="vi">
       <body className="min-h-screen bg-slate-50 text-slate-900 antialiased font-sans">
         {children}
+        <PWAInstallManager />
       </body>
     </html>
   );
