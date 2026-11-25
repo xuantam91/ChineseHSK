@@ -11,7 +11,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
-import { speakChinese } from '@/lib/tts';
+import { speakChinese, useTTS } from '@/lib/tts';
 
 export interface QuizBlockProps {
   data: QuizBlockData;
@@ -33,6 +33,8 @@ function getCorrectOptionIndex(q: QuizQuestionClient): number {
 }
 
 export function QuizBlock({ data, onCompleted }: QuizBlockProps) {
+  const { settings } = useTTS();
+  const showPinyin = settings.showPinyin;
   const [selectedAnswers, setSelectedAnswers] = useState<Record<string, number>>({});
 
   // Extract Chinese characters from an option string if any, to play audio on click
@@ -225,7 +227,7 @@ export function QuizBlock({ data, onCompleted }: QuizBlockProps) {
                     <h4 className="text-sm md:text-base font-bold text-slate-900 leading-snug">
                       {question.question}
                     </h4>
-                    {question.pinyin && (
+                    {showPinyin && question.pinyin && (
                       <p className="text-xs text-emerald-700 font-semibold mt-0.5">
                         {question.pinyin}
                       </p>

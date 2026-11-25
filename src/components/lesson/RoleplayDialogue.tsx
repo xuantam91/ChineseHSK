@@ -19,7 +19,7 @@ import {
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { evaluateSpeech, EvaluationResult } from '@/lib/speech/evaluator';
-import { speakChinese, stopChineseSpeech } from '@/lib/tts';
+import { speakChinese, stopChineseSpeech, useTTS } from '@/lib/tts';
 import { TTSVoiceSelector } from '@/components/common/TTSVoiceSelector';
 
 export interface DialogueCharacter {
@@ -72,8 +72,9 @@ export function RoleplayDialogue({
   const [completedLineIds, setCompletedLineIds] = useState<Record<string, number>>({});
   const [isDialogueFinished, setIsDialogueFinished] = useState(false);
 
-  // Visibility toggles
-  const [showPinyin, setShowPinyin] = useState(true);
+  // Visibility toggles (synced with global Pinyin toggle)
+  const { settings } = useTTS();
+  const showPinyin = settings.showPinyin;
   const [showMeaning, setShowMeaning] = useState(true);
 
   // Refs
@@ -489,9 +490,11 @@ export function RoleplayDialogue({
 
               {/* Target Line Display */}
               <div className="text-center py-2">
-                <p className="text-sm sm:text-base font-semibold text-emerald-700 mb-1">
-                  {currentLine.pinyin}
-                </p>
+                {showPinyin && (
+                  <p className="text-sm sm:text-base font-semibold text-emerald-700 mb-1">
+                    {currentLine.pinyin}
+                  </p>
+                )}
                 <h3 className="font-chinese text-2xl sm:text-3xl font-extrabold text-gray-900">
                   {currentLine.hanzi}
                 </h3>

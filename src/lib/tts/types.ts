@@ -19,6 +19,7 @@ export interface TTSSettings {
   persona: TTSVoicePersona;
   speedRate: number; // e.g. 0.75 (chậm), 0.88 (chuẩn), 1.0 (nhanh)
   volume: number; // 0.0 - 1.0
+  showPinyin: boolean;
   preferredVoiceURI?: string;
 }
 
@@ -43,9 +44,9 @@ export const TTS_PERSONAS: Record<TTSVoicePersona, TTSPersonaConfig> = {
     subtitleVi: 'Thầy giáo thân thiện',
     gender: 'male',
     ageType: 'adult',
-    badge: 'Ấm áp & Thân thiện',
-    descriptionVi: 'Âm sắc nam ấm áp, gần gũi, rõ từng thanh điệu, phù hợp luyện phản xạ hội thoại thực tế.',
-    defaultPitch: 0.86,
+    badge: 'Ấm áp & Nam tính',
+    descriptionVi: 'Âm sắc nam giới rõ ràng, trầm ấm và thân thiện, phù hợp luyện phản xạ hội thoại thực tế.',
+    defaultPitch: 0.55,
     defaultRate: 0.90,
     sampleSentenceZh: '你好！每天坚持练习口语，汉语水平一定会突飞猛进！',
     sampleSentencePinyin: 'Nǐ hǎo! Měitiān jiānchí liànxí kǒuyǔ, hànyǔ shuǐpíng yídìng huì tūfēiměngjìn!',
@@ -59,7 +60,7 @@ export const TTS_PERSONAS: Record<TTSVoicePersona, TTSPersonaConfig> = {
     ageType: 'adult',
     badge: 'Ôn hòa & Dễ nghe',
     descriptionVi: 'Giọng ôn hòa, nhẹ nhàng, nhấn nhá rõ ràng 4 thanh điệu và quy tắc biến điệu thanh 3, phù hợp người mới học.',
-    defaultPitch: 0.94,
+    defaultPitch: 0.74,
     defaultRate: 0.87,
     sampleSentenceZh: '请注意听准声调和发音，掌握正确的舌位和口型。',
     sampleSentencePinyin: 'Qǐng zhùyì tīng zhǔn shēngdiào hé fāyīn, zhǎngwò zhèngquè de shéwèi hé kǒuxíng.',
@@ -73,7 +74,7 @@ export const TTS_PERSONAS: Record<TTSVoicePersona, TTSPersonaConfig> = {
     ageType: 'child',
     badge: 'Vui vẻ & Đáng yêu',
     descriptionVi: 'Âm sắc lảnh lót, vui tươi, hồn nhiên, rất thích hợp cho học viên nhí, học qua bài hát và hội thoại gia đình.',
-    defaultPitch: 1.24,
+    defaultPitch: 1.26,
     defaultRate: 0.92,
     sampleSentenceZh: '小朋友你好！我们一起快乐地学中文吧，加油！',
     sampleSentencePinyin: 'Xiǎopéngyǒu nǐ hǎo! Wǒmen yìqǐ kuàilè de xué zhōngwén ba, jiāyóu!',
@@ -85,4 +86,5 @@ export const DEFAULT_TTS_SETTINGS: TTSSettings = {
   persona: 'female',
   speedRate: 0.88,
   volume: 1.0,
+  showPinyin: true,
 };

@@ -11,6 +11,8 @@ import {
   Sparkles,
   ChevronDown,
   Settings2,
+  Eye,
+  EyeOff,
 } from 'lucide-react';
 import { useTTS } from '@/lib/tts/useTTS';
 import { TTSVoicePersona, TTS_PERSONAS } from '@/lib/tts/types';
@@ -19,12 +21,14 @@ interface TTSVoiceSelectorProps {
   variant?: 'compact' | 'full' | 'dropdown';
   className?: string;
   showSpeedControl?: boolean;
+  showPinyinToggle?: boolean;
 }
 
 export function TTSVoiceSelector({
   variant = 'compact',
   className = '',
   showSpeedControl = true,
+  showPinyinToggle = true,
 }: TTSVoiceSelectorProps) {
   const {
     settings,
@@ -32,6 +36,7 @@ export function TTSVoiceSelector({
     isSpeaking,
     updatePersona,
     updateSpeedRate,
+    toggleShowPinyin,
     speak,
     stop,
     availableVoices,
@@ -60,36 +65,59 @@ export function TTSVoiceSelector({
   // 1. DROPDOWN COMPACT VARIANT (Great for floating / toolbars in lessons)
   if (variant === 'dropdown') {
     return (
-      <div className={`relative inline-block ${className}`}>
-        <button
-          type="button"
-          onClick={() => setIsOpen(!isOpen)}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-800 text-xs font-semibold shadow-2xs transition-colors"
-          title="Chọn giọng đọc tiếng Trung"
-        >
-          <Volume2 className="w-3.5 h-3.5 text-emerald-700" />
-          <span>
-            {settings.persona === 'female'
-              ? 'Nữ'
-              : settings.persona === 'male'
-              ? 'Nam'
-              : settings.persona === 'adult'
-              ? 'Người lớn'
-              : 'Trẻ em'}
-          </span>
-          <span className="text-[10px] text-slate-400 font-mono">
-            {settings.speedRate === 0.75 ? '0.75x' : settings.speedRate === 1.0 ? '1.0x' : '0.88x'}
-          </span>
-          <ChevronDown className={`w-3 h-3 text-slate-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
-        </button>
+      <div className={`inline-flex items-center gap-1.5 ${className}`}>
+        {showPinyinToggle && (
+          <button
+            type="button"
+            onClick={toggleShowPinyin}
+            title={settings.showPinyin ? 'Đang bật Pinyin — Bấm để ẩn Pinyin' : 'Đang ẩn Pinyin — Bấm để hiện Pinyin'}
+            aria-label={settings.showPinyin ? 'Ẩn Pinyin' : 'Hiện Pinyin'}
+            aria-pressed={settings.showPinyin}
+            className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border text-xs font-bold shadow-2xs transition-colors ${
+              settings.showPinyin
+                ? 'border-emerald-200 bg-emerald-50 text-emerald-800 hover:bg-emerald-100'
+                : 'border-slate-200 bg-white text-slate-500 hover:bg-slate-50 hover:text-slate-800'
+            }`}
+          >
+            {settings.showPinyin ? (
+              <Eye className="w-3.5 h-3.5 text-emerald-700" />
+            ) : (
+              <EyeOff className="w-3.5 h-3.5 text-slate-400" />
+            )}
+            <span>Pinyin</span>
+          </button>
+        )}
 
-        {isOpen && (
-          <>
-            <div
-              className="fixed inset-0 z-40"
-              onClick={() => setIsOpen(false)}
-            />
-            <div className="absolute right-0 mt-1.5 w-72 rounded-xl bg-white border border-slate-200 shadow-lg p-3 z-50 space-y-3">
+        <div className="relative inline-block">
+          <button
+            type="button"
+            onClick={() => setIsOpen(!isOpen)}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-800 text-xs font-semibold shadow-2xs transition-colors"
+            title="Chọn giọng đọc tiếng Trung"
+          >
+            <Volume2 className="w-3.5 h-3.5 text-emerald-700" />
+            <span>
+              {settings.persona === 'female'
+                ? 'Nữ'
+                : settings.persona === 'male'
+                ? 'Nam'
+                : settings.persona === 'adult'
+                ? 'Người lớn'
+                : 'Trẻ em'}
+            </span>
+            <span className="text-[10px] text-slate-400 font-mono">
+              {settings.speedRate === 0.75 ? '0.75x' : settings.speedRate === 1.0 ? '1.0x' : '0.88x'}
+            </span>
+            <ChevronDown className={`w-3 h-3 text-slate-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+          </button>
+
+          {isOpen && (
+            <>
+              <div
+                className="fixed inset-0 z-40"
+                onClick={() => setIsOpen(false)}
+              />
+              <div className="absolute right-0 mt-1.5 w-72 rounded-xl bg-white border border-slate-200 shadow-lg p-3 z-50 space-y-3">
               <div className="flex items-center justify-between pb-2 border-b border-slate-100">
                 <span className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
                   <Settings2 className="w-3.5 h-3.5 text-emerald-700" />
@@ -193,6 +221,7 @@ export function TTSVoiceSelector({
             </div>
           </>
         )}
+        </div>
       </div>
     );
   }

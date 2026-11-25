@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { VocabVisualIcon } from '@/components/ui/VocabVisualIcon';
-import { speakChinese, speakVietnamese, stopChineseSpeech } from '@/lib/tts';
+import { speakChinese, speakVietnamese, stopChineseSpeech, useTTS } from '@/lib/tts';
 import { TTSVoiceSelector } from '@/components/common/TTSVoiceSelector';
 
 export interface VocabBlockProps {
@@ -56,6 +56,8 @@ function getPhaseLabelVi(phase: SeqPhase): string {
 }
 
 export function VocabBlock({ data }: VocabBlockProps) {
+  const { settings } = useTTS();
+  const showPinyin = settings.showPinyin;
   const [playingId, setPlayingId] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [writingItem, setWritingItem] = useState<VocabItem | null>(null);
@@ -397,7 +399,8 @@ export function VocabBlock({ data }: VocabBlockProps) {
                 Đang phát Từ {seqItemIndex + 1}/{data.items.length}:
               </span>
               <span className="font-chinese text-base font-extrabold bg-white px-2 py-0.5 rounded border border-emerald-200">
-                {currentSeqItem.hanzi} ({currentSeqItem.pinyin})
+                {currentSeqItem.hanzi}
+                {showPinyin && currentSeqItem.pinyin ? ` (${currentSeqItem.pinyin})` : ''}
               </span>
               {seqPhase && (
                 <span className="px-2.5 py-0.5 rounded-full bg-amber-400 text-emerald-950 text-xs font-extrabold animate-pulse">
@@ -520,9 +523,11 @@ export function VocabBlock({ data }: VocabBlockProps) {
                         <span className="font-chinese text-2xl md:text-3xl font-extrabold text-slate-900 group-hover/word:text-emerald-700 transition-colors tracking-tight">
                           {item.hanzi}
                         </span>
-                        <span className="text-sm md:text-base font-bold text-emerald-700 tracking-wide">
-                          {item.pinyin}
-                        </span>
+                        {showPinyin && (
+                          <span className="text-sm md:text-base font-bold text-emerald-700 tracking-wide">
+                            {item.pinyin}
+                          </span>
+                        )}
                       </div>
 
                       <div
@@ -599,7 +604,7 @@ export function VocabBlock({ data }: VocabBlockProps) {
                     <div className="font-chinese text-sm font-bold text-slate-900 mb-0.5">
                       {item.exampleSentence}
                     </div>
-                    {item.examplePinyin && (
+                    {showPinyin && item.examplePinyin && (
                       <div className="text-xs font-semibold text-emerald-700 mb-0.5 tracking-wide">
                         {item.examplePinyin}
                       </div>
@@ -667,7 +672,7 @@ export function VocabBlock({ data }: VocabBlockProps) {
                       }`}
                     >
                       <span className="font-chinese text-xl font-bold leading-none">{ch}</span>
-                      {charPy && (
+                      {showPinyin && charPy && (
                         <span className="text-[11px] font-semibold text-emerald-700 mt-1 leading-none">
                           {charPy}
                         </span>

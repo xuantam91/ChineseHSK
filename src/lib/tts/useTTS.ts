@@ -64,6 +64,17 @@ export function useTTS() {
     setSettings(updated);
   }, []);
 
+  const updateShowPinyin = useCallback((showPinyin: boolean) => {
+    const updated = saveTTSSettings({ showPinyin });
+    setSettings(updated);
+  }, []);
+
+  const toggleShowPinyin = useCallback(() => {
+    const current = getStoredTTSSettings();
+    const updated = saveTTSSettings({ showPinyin: !current.showPinyin });
+    setSettings(updated);
+  }, []);
+
   const speak = useCallback(
     (text: string, options: SpeakOptions = {}) => {
       setIsSpeaking(true);
@@ -104,6 +115,8 @@ export function useTTS() {
     updatePersona,
     updateSpeedRate,
     updatePreferredVoice,
+    updateShowPinyin,
+    toggleShowPinyin,
     speak,
     stop,
   };

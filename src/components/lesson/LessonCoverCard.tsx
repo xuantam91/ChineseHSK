@@ -211,7 +211,8 @@ export const LessonCoverCard: React.FC<LessonCoverCardProps> = ({
   estimatedMinutes = 30,
   totalLessonsInLevel = 20,
 }) => {
-  const { speak } = useTTS();
+  const { speak, settings } = useTTS();
+  const showPinyin = settings.showPinyin;
   const [showVideoPlayer, setShowVideoPlayer] = useState(true);
   const [isCoverExpanded, setIsCoverExpanded] = useState(true);
 
@@ -406,9 +407,11 @@ export const LessonCoverCard: React.FC<LessonCoverCardProps> = ({
                       <span className="text-base font-black text-slate-900 group-hover:text-emerald-800">
                         {v.hanzi}
                       </span>
-                      <span className="text-xs font-semibold text-emerald-700">
-                        {v.pinyin}
-                      </span>
+                      {showPinyin && (
+                        <span className="text-xs font-semibold text-emerald-700">
+                          {v.pinyin}
+                        </span>
+                      )}
                       <span className="text-xs text-slate-600 border-l border-slate-200 pl-2">
                         {v.meaningVi}
                       </span>

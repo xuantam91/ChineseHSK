@@ -191,6 +191,7 @@ export function getStoredTTSSettings(): TTSSettings {
       persona: parsed.persona || DEFAULT_TTS_SETTINGS.persona,
       speedRate: typeof parsed.speedRate === 'number' ? parsed.speedRate : DEFAULT_TTS_SETTINGS.speedRate,
       volume: typeof parsed.volume === 'number' ? parsed.volume : DEFAULT_TTS_SETTINGS.volume,
+      showPinyin: typeof parsed.showPinyin === 'boolean' ? parsed.showPinyin : DEFAULT_TTS_SETTINGS.showPinyin,
       preferredVoiceURI: parsed.preferredVoiceURI,
     };
   } catch {
@@ -529,7 +530,7 @@ async function playUniversalNeuralTTS(params: {
         if (!playBuffer) {
           const decoded = await ctx.decodeAudioData(rawBytes.slice(0));
           if (token !== activePlaybackToken) return;
-          playBuffer = createPersonaShiftedBuffer(ctx, decoded, profile.pitchFactor);
+          playBuffer = createPersonaShiftedBuffer(ctx, decoded, profile);
           setBoundedCache(shiftedAudioBufferCache, shiftedCacheKey, playBuffer);
         }
 
@@ -537,7 +538,7 @@ async function playUniversalNeuralTTS(params: {
 
         const source = ctx.createBufferSource();
         source.buffer = playBuffer;
-        source.playbackRate.value = Math.max(0.55, Math.min(1.65, profile.pitchFactor * playbackRate));
+        source.playbackRate.value = Math.max(0.65, Math.min(1.4, playbackRate));
 
         const lowShelf = ctx.createBiquadFilter();
         lowShelf.type = 'lowshelf';

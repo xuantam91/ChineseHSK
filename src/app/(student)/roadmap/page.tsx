@@ -36,7 +36,7 @@ import {
   HSK7_TO_9_FRAMEWORK,
   HSK4_TO_9_OVERVIEWS,
 } from '@/lib/curriculum/hsk4-9-data';
-import { speakChinese } from '@/lib/tts';
+import { speakChinese, useTTS } from '@/lib/tts';
 
 export type HSKViewLevel = 'HSK1' | 'HSK2' | 'HSK3' | 'HSK4' | 'HSK5' | 'HSK6' | 'HSK7-9' | 'ALL';
 
@@ -52,6 +52,8 @@ const LEVEL_TABS: { id: HSKViewLevel; label: string; tier: string; vocab: string
 ];
 
 export default function RoadmapPage() {
+  const { settings } = useTTS();
+  const showPinyin = settings.showPinyin;
   const [activeLevel, setActiveLevel] = useState<HSKViewLevel>('HSK1');
   const [completedLessons, setCompletedLessons] = useState<string[]>([]);
   const [profile, setProfile] = useState(DEMO_USER_PROFILE);
@@ -373,9 +375,11 @@ export default function RoadmapPage() {
                               <span className="font-chinese font-bold text-slate-900">
                                 {v.hanzi}
                               </span>
-                              <span className="font-semibold text-emerald-700">
-                                {v.pinyin}
-                              </span>
+                              {showPinyin && (
+                                <span className="font-semibold text-emerald-700">
+                                  {v.pinyin}
+                                </span>
+                              )}
                               <span className="text-slate-500">{v.meaningVi}</span>
                             </button>
                           ))}

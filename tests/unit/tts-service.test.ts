@@ -18,7 +18,7 @@ import {
 import { splitTextIntoTTSChunks } from '@/lib/tts/chunker';
 import {
   PERSONA_ACOUSTIC_PROFILES,
-  timeStretchFloat32,
+  transformVoiceTDPSOLA,
 } from '@/lib/tts/pitch-shifter';
 
 describe('TTS Engine & Voice Personas', () => {
@@ -119,30 +119,52 @@ describe('TTS Engine & Voice Personas', () => {
     expect(cleanChineseTextForTTS('我们一起学习汉语。')).toBe('我们一起学习汉语。');
   });
 
-  it('defines distinct acoustic pitch profiles for female, male, adult, and child voices', () => {
-    expect(PERSONA_ACOUSTIC_PROFILES.male.pitchFactor).toBeLessThan(0.88);
-    expect(PERSONA_ACOUSTIC_PROFILES.adult.pitchFactor).toBeGreaterThan(
-      PERSONA_ACOUSTIC_PROFILES.male.pitchFactor
+  it('defines distinct acoustic pitch and formant profiles for female, male, adult, and child voices', () => {
+    expect(PERSONA_ACOUSTIC_PROFILES.male.pitchRatio).toBeLessThan(0.6);
+    expect(PERSONA_ACOUSTIC_PROFILES.male.formantRatio).toBeGreaterThan(0.8);
+    expect(PERSONA_ACOUSTIC_PROFILES.adult.pitchRatio).toBeGreaterThan(
+      PERSONA_ACOUSTIC_PROFILES.male.pitchRatio
     );
-    expect(PERSONA_ACOUSTIC_PROFILES.adult.pitchFactor).toBeLessThan(
-      PERSONA_ACOUSTIC_PROFILES.female.pitchFactor
+    expect(PERSONA_ACOUSTIC_PROFILES.adult.pitchRatio).toBeLessThan(
+      PERSONA_ACOUSTIC_PROFILES.female.pitchRatio
     );
-    expect(PERSONA_ACOUSTIC_PROFILES.child.pitchFactor).toBeGreaterThan(1.2);
+    expect(PERSONA_ACOUSTIC_PROFILES.child.pitchRatio).toBeGreaterThan(1.2);
   });
 
-  it('time-stretches audio cleanly via WSOLA without NaN or zeroed output', () => {
+  it('defaults showPinyin to true and preserves toggle changes cleanly', () => {
+    const defaults = getStoredTTSSettings();
+    expect(defaults.showPinyin).toBe(true);
+    const hidden = saveTTSSettings({ showPinyin: false });
+    expect(hidden.showPinyin).toBe(false);
+    const restored = saveTTSSettings({ showPinyin: true });
+    expect(restored.showPinyin).toBe(true);
+  });
+
+  it('transforms pitch & formants via TD-PSOLA while preserving duration and non-zero energy', () => {
     const sampleRate = 24000;
-    const len = 12000; // 0.5s sine wave at 220Hz
+    const len = 12000; // 0.5s periodic harmonic speech-like wave (~240Hz)
     const input = new Float32Array(len);
     for (let i = 0; i < len; i++) {
-      input[i] = Math.sin((2 * Math.PI * 220 * i) / sampleRate) * 0.5;
+      input[i] =
+        0.5 * Math.sin((2 * Math.PI * 240 * i) / sampleRate) +
+        0.25 * Math.sin((2 * Math.PI * 480 * i) / sampleRate);
     }
 
-    const maleBuf = timeStretchFloat32(input, sampleRate, PERSONA_ACOUSTIC_PROFILES.male.pitchFactor);
-    const childBuf = timeStretchFloat32(input, sampleRate, PERSONA_ACOUSTIC_PROFILES.child.pitchFactor);
+    const maleBuf = transformVoiceTDPSOLA(
+      input,
+      sampleRate,
+      PERSONA_ACOUSTIC_PROFILES.male.pitchRatio,
+      PERSONA_ACOUSTIC_PROFILES.male.formantRatio
+    );
+    const childBuf = transformVoiceTDPSOLA(
+      input,
+      sampleRate,
+      PERSONA_ACOUSTIC_PROFILES.child.pitchRatio,
+      PERSONA_ACOUSTIC_PROFILES.child.formantRatio
+    );
 
-    expect(maleBuf.length).toBeLessThan(input.length);
-    expect(childBuf.length).toBeGreaterThan(input.length);
+    expect(maleBuf.length).toBe(input.length);
+    expect(childBuf.length).toBe(input.length);
 
     let maleEnergy = 0;
     for (let i = 0; i < maleBuf.length; i++) {

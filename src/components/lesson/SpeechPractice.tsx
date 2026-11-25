@@ -18,7 +18,7 @@ import {
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { evaluateSpeech, EvaluationResult } from '@/lib/speech/evaluator';
-import { speakChinese, speakChineseCharByChar, stopChineseSpeech } from '@/lib/tts';
+import { speakChinese, speakChineseCharByChar, stopChineseSpeech, useTTS } from '@/lib/tts';
 import { TTSVoiceSelector } from '@/components/common/TTSVoiceSelector';
 
 export interface SpeechDrillItem {
@@ -79,6 +79,8 @@ export function SpeechPractice({
           },
         ];
 
+  const { settings } = useTTS();
+  const showPinyin = settings.showPinyin;
   const [currentIndex, setCurrentIndex] = useState(0);
   const [passedIds, setPassedIds] = useState<Record<string, number>>({});
 
@@ -545,19 +547,21 @@ export function SpeechPractice({
                     : 'bg-rose-50 border-rose-300 text-rose-900 shadow-2xs'
                 }`}
               >
-                <span
-                  className={`text-sm sm:text-base font-bold tracking-wide ${
-                    isHighlighted
-                      ? 'text-amber-900'
-                      : !hasEvaluated
-                      ? 'text-emerald-700'
-                      : isMatched
-                      ? 'text-emerald-800'
-                      : 'text-rose-700'
-                  }`}
-                >
-                  {charPinyin}
-                </span>
+                {showPinyin && (
+                  <span
+                    className={`text-sm sm:text-base font-bold tracking-wide ${
+                      isHighlighted
+                        ? 'text-amber-900'
+                        : !hasEvaluated
+                        ? 'text-emerald-700'
+                        : isMatched
+                        ? 'text-emerald-800'
+                        : 'text-rose-700'
+                    }`}
+                  >
+                    {charPinyin}
+                  </span>
+                )}
 
                 <span className="font-chinese text-3xl sm:text-4xl font-extrabold tracking-tight my-1">
                   {char}

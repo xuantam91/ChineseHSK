@@ -22,7 +22,7 @@ import {
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { evaluateSpeech, EvaluationResult } from '@/lib/speech/evaluator';
-import { speakChinese, speakChineseCharByChar, stopChineseSpeech } from '@/lib/tts';
+import { speakChinese, speakChineseCharByChar, stopChineseSpeech, useTTS } from '@/lib/tts';
 import { TTSVoiceSelector } from '@/components/common/TTSVoiceSelector';
 
 export interface ShadowingSentence {
@@ -76,8 +76,9 @@ export function ShadowingPlayer({
   const [completedIds, setCompletedIds] = useState<Record<string, boolean>>({});
   const [readyToRepeat, setReadyToRepeat] = useState(false);
 
-  // Visibility toggles
-  const [showPinyin, setShowPinyin] = useState(true);
+  // Visibility toggles (synced with global Pinyin toggle)
+  const { settings, toggleShowPinyin } = useTTS();
+  const showPinyin = settings.showPinyin;
   const [showMeaning, setShowMeaning] = useState(true);
 
   // Countdown timer state (only when autoAdvance is explicitly turned ON)
@@ -389,7 +390,7 @@ export function ShadowingPlayer({
             type="button"
             variant="outline"
             size="sm"
-            onClick={() => setShowPinyin(!showPinyin)}
+            onClick={toggleShowPinyin}
             leftIcon={showPinyin ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
             className="text-xs"
           >

@@ -5,7 +5,7 @@ import { FlashcardBlockData, FlashcardItem } from '@/types';
 import { RotateCw, ChevronLeft, ChevronRight, CheckCircle2, Shuffle, Volume2 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { VocabVisualIcon } from '@/components/ui/VocabVisualIcon';
-import { speakChinese } from '@/lib/tts';
+import { speakChinese, useTTS } from '@/lib/tts';
 import { TTSVoiceSelector } from '@/components/common/TTSVoiceSelector';
 
 export interface FlashcardBlockProps {
@@ -13,6 +13,8 @@ export interface FlashcardBlockProps {
 }
 
 export function FlashcardBlock({ data }: FlashcardBlockProps) {
+  const { settings } = useTTS();
+  const showPinyin = settings.showPinyin;
   const [cards, setCards] = useState<FlashcardItem[]>(data.cards);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
@@ -150,9 +152,11 @@ export function FlashcardBlock({ data }: FlashcardBlockProps) {
               <span className="font-chinese text-4xl sm:text-5xl font-black text-gray-900 mb-2 tracking-wide">
                 {currentCard.front}
               </span>
-              <span className="text-lg sm:text-xl font-bold text-emerald-700 tracking-wider">
-                {currentCard.pinyin}
-              </span>
+              {showPinyin && (
+                <span className="text-lg sm:text-xl font-bold text-emerald-700 tracking-wider">
+                  {currentCard.pinyin}
+                </span>
+              )}
               <p className="text-[11px] text-gray-400 mt-4 flex items-center gap-1">
                 <RotateCw className="w-3 h-3" /> Chạm để lật xem nghĩa
               </p>
@@ -172,7 +176,7 @@ export function FlashcardBlock({ data }: FlashcardBlockProps) {
                   <p className="font-chinese text-sm font-semibold mb-0.5 text-white">
                     {currentCard.example}
                   </p>
-                  {currentCard.examplePinyin && (
+                  {showPinyin && currentCard.examplePinyin && (
                     <p className="text-emerald-200 font-semibold mb-0.5 tracking-wide">
                       {currentCard.examplePinyin}
                     </p>

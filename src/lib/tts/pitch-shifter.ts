@@ -1,41 +1,49 @@
 import { TTSVoicePersona } from './types';
 
 export interface PersonaAcousticProfile {
-  /** Pitch multiplier (< 1.0 deeper, > 1.0 brighter, 1.0 = pristine studio original) */
-  pitchFactor: number;
-  /** Low-shelf gain in dB at ~150Hz (gentle chest warmth vs thinning) */
+  /** Fundamental frequency F0 ratio (< 1.0 deeper, > 1.0 higher, 1.0 = original) */
+  pitchRatio: number;
+  /** Vocal tract formant scale (< 1.0 longer male vocal tract, > 1.0 shorter child tract) */
+  formantRatio: number;
+  /** Low-shelf gain in dB at ~160Hz (gentle chest warmth) */
   lowShelfDb: number;
-  /** Mid/presence peaking gain in dB (keeps voice friendly, warm & articulate) */
+  /** Mid/presence peaking gain in dB (keeps voice friendly & articulate) */
   midPeakFreq: number;
   midPeakDb: number;
-  /** High-shelf gain in dB at ~3400Hz (preserves consonant clarity & smile) */
+  /** High-shelf gain in dB at ~3200Hz */
   highShelfDb: number;
 }
 
 export const PERSONA_ACOUSTIC_PROFILES: Record<TTSVoicePersona, PersonaAcousticProfile> = {
   female: {
-    pitchFactor: 1.0,
+    pitchRatio: 1.0,
+    formantRatio: 1.0,
     lowShelfDb: 0,
     midPeakFreq: 2400,
     midPeakDb: 1.0,
     highShelfDb: 1.0,
   },
   male: {
-    pitchFactor: 0.84,
-    lowShelfDb: 2.5,
-    midPeakFreq: 2600,
+    // True adult male range (~125-138Hz from ~240Hz female) while keeping natural 0.85x male vocal tract formants
+    pitchRatio: 0.53,
+    formantRatio: 0.85,
+    lowShelfDb: 2.2,
+    midPeakFreq: 2200,
     midPeakDb: 2.0,
     highShelfDb: 0.5,
   },
   adult: {
-    pitchFactor: 0.94,
+    // Calm, friendly mature teacher (~170-185Hz)
+    pitchRatio: 0.72,
+    formantRatio: 0.91,
     lowShelfDb: 1.5,
     midPeakFreq: 1900,
     midPeakDb: 2.0,
     highShelfDb: 1.0,
   },
   child: {
-    pitchFactor: 1.24,
+    pitchRatio: 1.28,
+    formantRatio: 1.07,
     lowShelfDb: -2.5,
     midPeakFreq: 2800,
     midPeakDb: 2.0,
@@ -43,116 +51,190 @@ export const PERSONA_ACOUSTIC_PROFILES: Record<TTSVoicePersona, PersonaAcousticP
   },
 };
 
+function resampleLinear(input: Float32Array, targetLen: number): Float32Array {
+  if (targetLen === input.length) return input;
+  const out = new Float32Array(targetLen);
+  const ratio = (input.length - 1) / Math.max(1, targetLen - 1);
+  for (let i = 0; i < targetLen; i++) {
+    const pos = i * ratio;
+    const i0 = Math.floor(pos);
+    const i1 = Math.min(input.length - 1, i0 + 1);
+    const frac = pos - i0;
+    out[i] = input[i0] * (1 - frac) + input[i1] * frac;
+  }
+  return out;
+}
+
+interface PitchMark {
+  pos: number;
+  t0: number;
+  voiced: boolean;
+}
+
 /**
- * Pure time-domain WSOLA (Waveform Similarity Overlap-Add) time-stretcher
- * using Energy-Normalized Cross-Correlation (NCC) and a crisp ~26ms speech window.
- * Stretches or compresses a Float32Array by `stretchFactor` WITHOUT altering pitch,
- * so subsequent resampling via AudioBufferSourceNode.playbackRate shifts pitch cleanly
- * while preserving speaking tempo, consonants, and Mandarin tones.
+ * Formant-Independent TD-PSOLA (Time-Domain Pitch-Synchronous Overlap-Add).
+ * Independently scales vocal tract formants (`formantRatio`) and fundamental pitch F0 (`pitchRatio`)
+ * while preserving exact output duration (`output.length === input.length`) and leaving unvoiced
+ * Mandarin consonants crisp.
  */
-export function timeStretchFloat32(
+export function transformVoiceTDPSOLA(
   input: Float32Array,
   sampleRate: number,
-  stretchFactor: number
+  pitchRatio: number,
+  formantRatio: number
 ): Float32Array {
   if (
     !input ||
     input.length < 1024 ||
-    !Number.isFinite(stretchFactor) ||
-    Math.abs(stretchFactor - 1.0) < 0.015
+    (Math.abs(pitchRatio - 1.0) < 0.02 && Math.abs(formantRatio - 1.0) < 0.02)
   ) {
     return input;
   }
 
-  const factor = Math.max(0.65, Math.min(1.55, stretchFactor));
+  const safePitch = Math.max(0.45, Math.min(1.6, pitchRatio));
+  const safeFormant = Math.max(0.72, Math.min(1.25, formantRatio));
 
-  // Tight ~26ms speech window (preserves Mandarin initials & avoids metallic smearing)
-  const winSize = Math.max(480, Math.min(1024, Math.round((sampleRate * 0.026) / 4) * 4));
-  const hopS = winSize / 4; // 75% overlap for constant-overlap-add Hann
-  const hopA = hopS / factor;
-  const searchRadius = Math.max(40, Math.round(sampleRate * 0.008));
+  // 1. Shift vocal-tract formants cleanly via linear resampling (1 / safeFormant)
+  const work =
+    Math.abs(safeFormant - 1.0) > 0.015
+      ? resampleLinear(input, Math.max(1024, Math.round(input.length / safeFormant)))
+      : input;
 
-  const outLen = Math.max(winSize, Math.round(input.length * factor));
+  // Remaining pitch shift required inside TD-PSOLA without moving formants
+  const psolaPitchRatio = safePitch / safeFormant;
+
+  // 2. Analyze pitch marks sequentially on `work`
+  const lagMin = Math.max(20, Math.floor(sampleRate / 400));
+  const lagMax = Math.min(480, Math.ceil(sampleRate / 75));
+  const marks: PitchMark[] = [];
+  const unvoicedHop = Math.max(64, Math.round(sampleRate * 0.008));
+  let pos = Math.round(sampleRate * 0.01);
+  let prevVoicedLag = 0;
+
+  while (pos + lagMax + 64 < work.length) {
+    let rms = 0;
+    const rmsSpan = Math.min(200, work.length - pos);
+    for (let i = 0; i < rmsSpan; i++) {
+      rms += work[pos + i] * work[pos + i];
+    }
+    rms = Math.sqrt(rms / Math.max(1, rmsSpan));
+
+    let bestLag = 0;
+    let bestR = 0;
+    if (rms > 0.014) {
+      const localMin =
+        prevVoicedLag > 0 ? Math.max(lagMin, Math.round(prevVoicedLag * 0.72)) : lagMin;
+      const localMax =
+        prevVoicedLag > 0 ? Math.min(lagMax, Math.round(prevVoicedLag * 1.38)) : lagMax;
+      const win = Math.min(280, work.length - pos - localMax);
+
+      if (win > 32) {
+        for (let lag = localMin; lag <= localMax; lag++) {
+          let dot = 0;
+          let e1 = 0;
+          let e2 = 0;
+          for (let i = 0; i < win; i += 2) {
+            const a = work[pos + i];
+            const b = work[pos + i + lag];
+            dot += a * b;
+            e1 += a * a;
+            e2 += b * b;
+          }
+          const r = e1 > 1e-8 && e2 > 1e-8 ? dot / Math.sqrt(e1 * e2) : 0;
+          if (r > bestR) {
+            bestR = r;
+            bestLag = lag;
+          }
+        }
+      }
+
+      if (bestR < 0.45 && prevVoicedLag > 0) {
+        const win2 = Math.min(280, work.length - pos - lagMax);
+        if (win2 > 32) {
+          bestR = 0;
+          for (let lag = lagMin; lag <= lagMax; lag++) {
+            let dot = 0;
+            let e1 = 0;
+            let e2 = 0;
+            for (let i = 0; i < win2; i += 2) {
+              const a = work[pos + i];
+              const b = work[pos + i + lag];
+              dot += a * b;
+              e1 += a * a;
+              e2 += b * b;
+            }
+            const r = e1 > 1e-8 && e2 > 1e-8 ? dot / Math.sqrt(e1 * e2) : 0;
+            if (r > bestR) {
+              bestR = r;
+              bestLag = lag;
+            }
+          }
+        }
+      }
+    }
+
+    if (bestR > 0.42 && bestLag > 0) {
+      const halfSearch = Math.max(8, Math.round(bestLag * 0.4));
+      const pStart = Math.max(0, pos - halfSearch);
+      const pEnd = Math.min(work.length - 1, pos + halfSearch);
+      let peakIdx = pos;
+      let peakVal = -Infinity;
+      for (let p = pStart; p <= pEnd; p++) {
+        if (work[p] > peakVal) {
+          peakVal = work[p];
+          peakIdx = p;
+        }
+      }
+      marks.push({ pos: peakIdx, t0: bestLag, voiced: true });
+      prevVoicedLag = bestLag;
+      pos = peakIdx + bestLag;
+    } else {
+      marks.push({ pos, t0: unvoicedHop, voiced: false });
+      prevVoicedLag = 0;
+      pos += unvoicedHop;
+    }
+  }
+
+  if (marks.length === 0) {
+    return input;
+  }
+
+  // 3. Pitch-synchronous overlap-add onto output buffer of exact original duration
+  const outLen = input.length;
   const output = new Float32Array(outLen);
   const weightSum = new Float32Array(outLen);
+  const timeMap = work.length / outLen;
+  // Guarantee adjacent voiced Hann grains always overlap without zero gaps
+  const grainScale = Math.max(0.98, 0.65 / Math.max(0.45, psolaPitchRatio));
 
-  // Periodic Hann window
-  const win = new Float32Array(winSize);
-  for (let i = 0; i < winSize; i++) {
-    win[i] = 0.5 * (1 - Math.cos((2 * Math.PI * i) / winSize));
-  }
+  let outPos = Math.round(sampleRate * 0.01);
+  let markIdx = 0;
 
-  // First frame at index 0
-  const firstLimit = Math.min(winSize, input.length, outLen);
-  for (let i = 0; i < firstLimit; i++) {
-    output[i] += input[i] * win[i];
-    weightSum[i] += win[i];
-  }
+  while (outPos < outLen - 16) {
+    const targetWorkPos = outPos * timeMap;
+    while (markIdx + 1 < marks.length && marks[markIdx + 1].pos < targetWorkPos) {
+      markIdx++;
+    }
+    const m = marks[markIdx];
+    const halfW = m.voiced
+      ? Math.max(24, Math.round(m.t0 * grainScale))
+      : Math.round(sampleRate * 0.011);
 
-  let outPos = hopS;
-  let idealInPos = hopA;
-  let prevInPos = 0;
-
-  while (outPos + winSize < outLen && idealInPos + winSize < input.length) {
-    const natPos = prevInPos + hopS;
-
-    let bestInPos = Math.round(idealInPos);
-    if (natPos + winSize / 2 < input.length) {
-      let bestScore = -Infinity;
-      const minSearch = Math.max(0, Math.round(idealInPos) - searchRadius);
-      const maxSearch = Math.min(
-        input.length - winSize,
-        Math.round(idealInPos) + searchRadius
-      );
-      const cmpLen = hopS * 2;
-
-      // Normalized Cross-Correlation (NCC) coarse-to-fine search avoids amplitude bias
-      for (let cand = minSearch; cand <= maxSearch; cand += 2) {
-        let dot = 0;
-        let energyCand = 0;
-        for (let k = 0; k < cmpLen && natPos + k < input.length; k += 2) {
-          const a = input[natPos + k];
-          const b = input[cand + k];
-          dot += a * b;
-          energyCand += b * b;
-        }
-        const score = energyCand > 1e-8 ? dot / Math.sqrt(energyCand) : dot;
-        if (score > bestScore) {
-          bestScore = score;
-          bestInPos = cand;
-        }
-      }
-
-      const refineStart = Math.max(minSearch, bestInPos - 1);
-      const refineEnd = Math.min(maxSearch, bestInPos + 1);
-      for (let cand = refineStart; cand <= refineEnd; cand++) {
-        let dot = 0;
-        let energyCand = 0;
-        for (let k = 0; k < cmpLen && natPos + k < input.length; k += 2) {
-          const a = input[natPos + k];
-          const b = input[cand + k];
-          dot += a * b;
-          energyCand += b * b;
-        }
-        const score = energyCand > 1e-8 ? dot / Math.sqrt(energyCand) : dot;
-        if (score > bestScore) {
-          bestScore = score;
-          bestInPos = cand;
-        }
+    for (let k = -halfW; k <= halfW; k++) {
+      const wi = m.pos + k;
+      const oi = outPos + k;
+      if (wi >= 0 && wi < work.length && oi >= 0 && oi < outLen) {
+        const w = 0.5 * (1 + Math.cos((Math.PI * k) / halfW));
+        output[oi] += work[wi] * w;
+        weightSum[oi] += w;
       }
     }
 
-    bestInPos = Math.max(0, Math.min(input.length - winSize, bestInPos));
-
-    for (let i = 0; i < winSize; i++) {
-      const w = win[i];
-      output[outPos + i] += input[bestInPos + i] * w;
-      weightSum[outPos + i] += w;
+    if (m.voiced) {
+      outPos += Math.max(24, Math.round(m.t0 / psolaPitchRatio));
+    } else {
+      outPos += Math.max(24, Math.round(halfW * 0.65));
     }
-
-    prevInPos = bestInPos;
-    outPos += hopS;
-    idealInPos += hopA;
   }
 
   for (let i = 0; i < outLen; i++) {
@@ -165,31 +247,39 @@ export function timeStretchFloat32(
 }
 
 /**
- * Produces a new AudioBuffer time-stretched by `pitchFactor` so playing it at
- * `playbackRate = pitchFactor * desiredSpeed` changes pitch cleanly without altering tempo.
+ * Produces a new AudioBuffer transformed to the target persona's vocal pitch & formant profile
+ * while preserving exact buffer duration (so AudioBufferSourceNode.playbackRate controls speed only).
  */
 export function createPersonaShiftedBuffer(
   ctx: AudioContext,
   source: AudioBuffer,
-  pitchFactor: number
+  profile: PersonaAcousticProfile
 ): AudioBuffer {
-  if (Math.abs(pitchFactor - 1.0) < 0.015) {
+  if (
+    Math.abs(profile.pitchRatio - 1.0) < 0.02 &&
+    Math.abs(profile.formantRatio - 1.0) < 0.02
+  ) {
     return source;
   }
 
-  const ch0 = timeStretchFloat32(source.getChannelData(0), source.sampleRate, pitchFactor);
-  const targetLen = ch0.length;
-  const out = ctx.createBuffer(source.numberOfChannels, targetLen, source.sampleRate);
+  const ch0 = transformVoiceTDPSOLA(
+    source.getChannelData(0),
+    source.sampleRate,
+    profile.pitchRatio,
+    profile.formantRatio
+  );
+  const out = ctx.createBuffer(source.numberOfChannels, ch0.length, source.sampleRate);
   out.copyToChannel(new Float32Array(ch0), 0);
 
   for (let ch = 1; ch < source.numberOfChannels; ch++) {
-    const stretched = timeStretchFloat32(
+    const transformed = transformVoiceTDPSOLA(
       source.getChannelData(ch),
       source.sampleRate,
-      pitchFactor
+      profile.pitchRatio,
+      profile.formantRatio
     );
-    const copy = new Float32Array(targetLen);
-    copy.set(stretched.subarray(0, targetLen));
+    const copy = new Float32Array(ch0.length);
+    copy.set(transformed.subarray(0, ch0.length));
     out.copyToChannel(copy, ch);
   }
 
