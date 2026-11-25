@@ -48,20 +48,17 @@ export function Header() {
     <header className="sticky top-0 z-40 w-full border-b border-slate-200 bg-white/95 backdrop-blur-sm">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Brand / Logo */}
-        <Link href="/dashboard" className="flex items-center gap-3 group">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-700 text-white font-bold text-lg shadow-xs group-hover:bg-emerald-800 transition-colors">
-            <span className="font-chinese">汉</span>
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-base font-extrabold tracking-tight text-slate-900">
-                Chinese Journey
-              </span>
-              <span className="text-xs font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                {profile.currentHskLevel || 'HSK 1'}
-              </span>
-            </div>
-          </div>
+        <Link href="/dashboard" className="flex items-center gap-2.5 shrink-0">
+          <img
+            src="/assets/globy-chinese-logo-compact.svg"
+            alt="GLOBY Chinese"
+            width={196}
+            height={34}
+            className="w-[156px] sm:w-[192px] h-auto block"
+          />
+          <span className="hidden sm:inline-block text-xs font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+            {profile.currentHskLevel || 'HSK 1'}
+          </span>
         </Link>
 
         {/* Desktop Links */}

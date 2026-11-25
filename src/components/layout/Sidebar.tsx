@@ -37,18 +37,14 @@ export function Sidebar() {
   return (
     <aside className="hidden lg:flex w-64 flex-col fixed inset-y-0 left-0 border-r border-slate-200 bg-white p-4 pt-6 z-30">
       {/* Brand */}
-      <Link href="/dashboard" className="flex items-center gap-3 px-2 mb-6 group">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-700 text-white font-bold text-xl shadow-xs group-hover:bg-emerald-800 transition-colors">
-          <span className="font-chinese">汉</span>
-        </div>
-        <div>
-          <span className="text-base font-bold text-slate-900 tracking-tight block">
-            Chinese Journey
-          </span>
-          <span className="text-xs font-medium text-slate-500 tracking-wide block">
-            Lộ trình HSK 3.0
-          </span>
-        </div>
+      <Link href="/dashboard" className="block px-2 mb-6">
+        <img
+          src="/assets/globy-chinese-logo.svg"
+          alt="GLOBY Chinese – Học tiếng Trung thông minh"
+          width={220}
+          height={38}
+          className="w-[212px] h-auto block"
+        />
       </Link>
 
       {/* Mini Profile Card */}

@@ -74,12 +74,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <div className="flex items-center justify-between h-16">
             {/* Brand Logo & Admin Badge */}
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-white shadow-inner">
-                <GraduationCap className="w-6 h-6" />
-              </div>
+              <img
+                src="/assets/app-icon.svg"
+                alt="GLOBY Chinese"
+                width={38}
+                height={38}
+                className="w-[38px] h-auto block shrink-0"
+              />
               <div>
                 <div className="flex items-center space-x-2">
-                  <span className="font-bold text-lg tracking-tight">Chinese LMS</span>
+                  <span className="font-bold text-lg tracking-tight">GLOBY Chinese</span>
                   <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
                     {sessionUser?.role === 'super_admin' ? (
                       <>
@@ -188,7 +192,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
       {/* Admin Footer */}
       <footer className="border-t border-slate-200 bg-white py-4 text-center text-xs text-slate-500">
-        Chinese Learning Journey Admin CMS • Strict Server-Side Authorization • Timezone Asia/Ho_Chi_Minh
+        GLOBY Chinese Admin CMS • Strict Server-Side Authorization • Timezone Asia/Ho_Chi_Minh
       </footer>
     </div>
   );

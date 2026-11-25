@@ -1,0 +1,115 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024" role="img" aria-label="GLOBY Chinese app icon nền trắng"><title>GLOBY Chinese app icon nền trắng</title><rect x="2" y="2" width="1020" height="1020" rx="248" fill="white" stroke="#E0E9E5" stroke-width="4"/><g transform="translate(-132 197) scale(1.57)"><defs>
+    <linearGradient id="light-c" x1="531" y1="53" x2="531" y2="320" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0CE5AC"/><stop offset=".46" stop-color="#08C48D"/><stop offset="1" stop-color="#00A36C"/>
+    </linearGradient>
+    <linearGradient id="light-g" x1="237" y1="80" x2="382" y2="307" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#12EDBC"/><stop offset=".35" stop-color="#079B75"/><stop offset="1" stop-color="#005C45"/>
+    </linearGradient>
+    <linearGradient id="light-fold" x1="284" y1="105" x2="399" y2="300" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#005A43" stop-opacity=".65"/><stop offset=".56" stop-color="#00664B" stop-opacity=".12"/><stop offset="1" stop-color="#003E2D" stop-opacity=".48"/>
+    </linearGradient>
+    <linearGradient id="light-cap" x1="352" y1="148" x2="408" y2="207" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#12DBAA"/><stop offset="1" stop-color="#00744F"/>
+    </linearGradient>
+    <linearGradient id="light-c-fold" x1="537" y1="254" x2="597" y2="316" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#00BF86" stop-opacity="0"/><stop offset="1" stop-color="#00845E" stop-opacity=".63"/>
+    </linearGradient>
+    <linearGradient id="light-gold" x1="595" y1="155" x2="638" y2="213" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFE42A"/><stop offset=".52" stop-color="#FFC20A"/><stop offset="1" stop-color="#F6A300"/>
+    </linearGradient>
+    <radialGradient id="light-shine" cx="236" cy="89" r="117" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#74FFE0" stop-opacity=".48"/><stop offset=".55" stop-color="#23F1C1" stop-opacity=".13"/><stop offset="1" stop-color="#23F1C1" stop-opacity="0"/>
+    </radialGradient>
+    <clipPath id="light-g-clip"><path d="M440 49 C448 49 453 52 451 60
+C447 88 429 108 398 112 L353 112
+C318 112 291 124 273 144
+C255 164 252 183 258 205
+C265 234 290 253 321 253
+C351 253 379 238 395 205
+L328 205 C319 205 316 201 319 192
+C326 168 344 149 367 149
+L460 149 C469 149 472 152 470 160
+C468 211 447 253 411 280
+C377 307 333 321 284 321
+C215 321 171 283 168 225
+C164 183 182 137 216 103
+C253 65 301 49 355 49 Z"/></clipPath>
+    <clipPath id="light-c-clip"><path d="M650 53 C658 53 662 56 659 64
+C650 93 629 112 603 113
+L567 112 C529 112 499 131 484 161
+C470 190 476 219 499 240
+C516 254 540 256 571 250
+L644 250 C652 250 655 253 652 261
+C640 291 615 312 580 317
+L543 319 C486 321 447 308 421 278
+C394 247 391 202 408 156
+C425 112 458 78 504 62
+C527 54 550 53 574 53 Z"/></clipPath>
+    </defs><path d="M650 53 C658 53 662 56 659 64
+C650 93 629 112 603 113
+L567 112 C529 112 499 131 484 161
+C470 190 476 219 499 240
+C516 254 540 256 571 250
+L644 250 C652 250 655 253 652 261
+C640 291 615 312 580 317
+L543 319 C486 321 447 308 421 278
+C394 247 391 202 408 156
+C425 112 458 78 504 62
+C527 54 550 53 574 53 Z" fill="#008561" transform="translate(0 3)"/><path d="M650 53 C658 53 662 56 659 64
+C650 93 629 112 603 113
+L567 112 C529 112 499 131 484 161
+C470 190 476 219 499 240
+C516 254 540 256 571 250
+L644 250 C652 250 655 253 652 261
+C640 291 615 312 580 317
+L543 319 C486 321 447 308 421 278
+C394 247 391 202 408 156
+C425 112 458 78 504 62
+C527 54 550 53 574 53 Z" fill="url(#light-c)"/><g clip-path="url(#light-c-clip)">
+      <path d="M496 318 C532 312 556 284 576 250 L654 249 L632 307 L580 324Z" fill="#04D394" opacity=".5"/>
+      <path d="M419 263 C444 288 476 314 511 317 C541 318 561 300 577 278 C588 264 596 255 606 250 L660 250 L660 328 L421 328Z" fill="url(#light-c-fold)"/>
+      <path d="M482 166 C499 132 530 104 569 104 C585 104 596 108 608 107 C629 106 646 83 656 62 L667 62 L656 119 L535 130Z" fill="#008D64" opacity=".52"/>
+    </g><path d="M440 49 C448 49 453 52 451 60
+C447 88 429 108 398 112 L353 112
+C318 112 291 124 273 144
+C255 164 252 183 258 205
+C265 234 290 253 321 253
+C351 253 379 238 395 205
+L328 205 C319 205 316 201 319 192
+C326 168 344 149 367 149
+L460 149 C469 149 472 152 470 160
+C468 211 447 253 411 280
+C377 307 333 321 284 321
+C215 321 171 283 168 225
+C164 183 182 137 216 103
+C253 65 301 49 355 49 Z" fill="#004E3A" transform="translate(0 3)"/><path d="M440 49 C448 49 453 52 451 60
+C447 88 429 108 398 112 L353 112
+C318 112 291 124 273 144
+C255 164 252 183 258 205
+C265 234 290 253 321 253
+C351 253 379 238 395 205
+L328 205 C319 205 316 201 319 192
+C326 168 344 149 367 149
+L460 149 C469 149 472 152 470 160
+C468 211 447 253 411 280
+C377 307 333 321 284 321
+C215 321 171 283 168 225
+C164 183 182 137 216 103
+C253 65 301 49 355 49 Z" fill="url(#light-g)"/>
+    <g clip-path="url(#light-g-clip)">
+      <path d="M180 278 C176 227 205 193 253 152 C303 109 350 69 386 56 C413 45 443 47 458 52 L485 160 L440 272 L371 323 L214 330Z" fill="url(#light-fold)"/>
+      <path d="M319 206 C335 203 346 195 364 194 C386 194 403 201 425 191 C444 183 459 167 470 150 L315 144Z" fill="url(#light-cap)"/>
+    </g><path d="M440 49 C448 49 453 52 451 60
+C447 88 429 108 398 112 L353 112
+C318 112 291 124 273 144
+C255 164 252 183 258 205
+C265 234 290 253 321 253
+C351 253 379 238 395 205
+L328 205 C319 205 316 201 319 192
+C326 168 344 149 367 149
+L460 149 C469 149 472 152 470 160
+C468 211 447 253 411 280
+C377 307 333 321 284 321
+C215 321 171 283 168 225
+C164 183 182 137 216 103
+C253 65 301 49 355 49 Z" fill="url(#light-shine)"/><circle cx="619" cy="183" r="35" fill="url(#light-gold)"/></g></svg>

@@ -23,19 +23,15 @@ export default function ForgotPasswordPage() {
   return (
     <div className="min-h-screen bg-[#fdfbf7] flex flex-col justify-center items-center p-4">
       <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-600 text-white font-bold text-2xl shadow-md shadow-emerald-700/20">
-              <span className="font-chinese">汉</span>
-            </div>
-            <div className="text-left">
-              <span className="text-xl font-extrabold text-gray-900 block leading-tight">
-                Chinese Journey
-              </span>
-              <span className="text-xs font-semibold text-emerald-700 uppercase tracking-wider block">
-                Khôi phục mật khẩu
-              </span>
-            </div>
+        <div className="text-center mb-7">
+          <Link href="/" className="inline-block">
+            <img
+              src="/assets/globy-chinese-logo.svg"
+              alt="GLOBY Chinese – Học tiếng Trung thông minh"
+              width={280}
+              height={48}
+              className="w-[255px] sm:w-[280px] h-auto mx-auto block"
+            />
           </Link>
         </div>
 

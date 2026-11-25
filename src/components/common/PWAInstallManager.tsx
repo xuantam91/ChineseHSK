@@ -130,12 +130,16 @@ export function PWAInstallManager() {
           aria-label="Cài đặt shortcut ứng dụng"
           className="fixed bottom-4 right-4 z-50 max-w-[calc(100vw-2rem)] sm:max-w-sm rounded-2xl border border-emerald-200 bg-white/95 backdrop-blur-md p-3.5 shadow-xl shadow-slate-900/10 flex items-center gap-3"
         >
-          <div className="w-10 h-10 rounded-xl bg-emerald-700 text-white flex items-center justify-center shrink-0 shadow-xs">
-            <MonitorSmartphone className="w-5 h-5" />
-          </div>
+          <img
+            src="/assets/app-icon.svg"
+            alt="GLOBY Chinese"
+            width={40}
+            height={40}
+            className="w-10 h-auto block shrink-0"
+          />
           <div className="min-w-0 flex-1">
             <div className="text-xs font-extrabold text-slate-900 truncate">
-              Cài shortcut Chinese HSK
+              Cài shortcut GLOBY Chinese
             </div>
             <div className="text-[11px] text-slate-500 leading-snug">
               Mở nhanh như app riêng trên Mac & Windows
@@ -168,9 +172,13 @@ export function PWAInstallManager() {
           <div className="w-full max-w-md rounded-2xl bg-white border border-slate-200 shadow-2xl p-6 space-y-4">
             <div className="flex items-start justify-between gap-3">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-emerald-700 text-white flex items-center justify-center shrink-0">
-                  <MonitorSmartphone className="w-5 h-5" />
-                </div>
+                <img
+                  src="/assets/app-icon.svg"
+                  alt="GLOBY Chinese"
+                  width={40}
+                  height={40}
+                  className="w-10 h-auto block shrink-0"
+                />
                 <div>
                   <h3 className="text-base font-extrabold text-slate-900">
                     Cài Shortcut về máy tính / điện thoại
@@ -215,7 +223,7 @@ export function PWAInstallManager() {
                   <div className="font-bold text-emerald-900">Trên Chrome / Edge (Windows & Mac):</div>
                   <ol className="list-decimal pl-4 space-y-1">
                     <li>Nhìn góc phải thanh địa chỉ URL, bấm biểu tượng <strong>Install (Cài đặt)</strong> giống ứng dụng Facebook.</li>
-                    <li>Hoặc bấm menu <code>⋮</code> (góc trên phải) → <strong>Cast, save, and share / Apps → Install Chinese HSK</strong>.</li>
+                    <li>Hoặc bấm menu <code>⋮</code> (góc trên phải) → <strong>Cast, save, and share / Apps → Install GLOBY Chinese</strong>.</li>
                   </ol>
                 </div>
               )}
