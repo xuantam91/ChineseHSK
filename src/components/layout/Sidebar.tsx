@@ -36,8 +36,12 @@ export function Sidebar() {
 
   return (
     <aside className="hidden lg:flex w-64 flex-col fixed inset-y-0 left-0 border-r border-slate-200 bg-white p-4 pt-6 z-30">
-      {/* Brand */}
-      <Link href="/dashboard" className="block px-2 mb-6">
+      {/* Brand -> Always navigates to Landing Page */}
+      <Link
+        href="/"
+        title="Về trang giới thiệu GLOBY Chinese"
+        className="block px-2 mb-6"
+      >
         <img
           src="/assets/globy-chinese-logo.svg"
           alt="GLOBY Chinese – Học tiếng Trung thông minh"

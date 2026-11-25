@@ -1128,13 +1128,29 @@ export default function LessonReaderPage({
       {/* Clean Sticky Header */}
       <div className="sticky top-0 z-30 w-full border-b border-slate-200 bg-white/95 backdrop-blur-sm">
         <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4 sm:px-6 gap-3">
-          <Link
-            href="/roadmap"
-            className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-slate-600 hover:text-slate-900 transition-colors shrink-0"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span className="hidden sm:inline">Lộ trình</span>
-          </Link>
+          <div className="flex items-center gap-2.5 shrink-0">
+            <Link
+              href="/"
+              title="Về trang giới thiệu GLOBY Chinese"
+              className="inline-flex items-center hover:opacity-90 transition-opacity"
+            >
+              <img
+                src="/assets/app-icon.svg"
+                alt="GLOBY Chinese"
+                width={28}
+                height={28}
+                className="w-7 h-auto block"
+              />
+            </Link>
+            <span className="h-4 w-px bg-slate-200" aria-hidden="true" />
+            <Link
+              href="/roadmap"
+              className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-slate-600 hover:text-slate-900 transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span className="hidden sm:inline">Lộ trình</span>
+            </Link>
+          </div>
 
           {/* Progress Bar */}
           <div className="flex items-center gap-3 flex-1 max-w-md">

@@ -74,16 +74,22 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <div className="flex items-center justify-between h-16">
             {/* Brand Logo & Admin Badge */}
             <div className="flex items-center space-x-3">
-              <img
-                src="/assets/app-icon.svg"
-                alt="GLOBY Chinese"
-                width={38}
-                height={38}
-                className="w-[38px] h-auto block shrink-0"
-              />
+              <Link
+                href="/"
+                title="Về trang giới thiệu GLOBY Chinese"
+                className="flex items-center space-x-3 hover:opacity-90 transition"
+              >
+                <img
+                  src="/assets/app-icon.svg"
+                  alt="GLOBY Chinese"
+                  width={38}
+                  height={38}
+                  className="w-[38px] h-auto block shrink-0"
+                />
+                <span className="font-bold text-lg tracking-tight text-white">GLOBY Chinese</span>
+              </Link>
               <div>
                 <div className="flex items-center space-x-2">
-                  <span className="font-bold text-lg tracking-tight">GLOBY Chinese</span>
                   <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
                     {sessionUser?.role === 'super_admin' ? (
                       <>

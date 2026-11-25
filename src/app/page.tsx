@@ -197,7 +197,12 @@ export default function LandingPage() {
 
       <header className="site-header">
         <div className="wrap navrow">
-          <a className="brand" href="#dau" aria-label="GLOBY Chinese – Trang chủ">
+          <Link
+            className="brand"
+            href="/"
+            aria-label="GLOBY Chinese – Trang chủ"
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          >
             <picture>
               <source media="(max-width:600px)" srcSet="/assets/globy-chinese-logo-compact.svg" />
               <img
@@ -208,7 +213,7 @@ export default function LandingPage() {
                 fetchPriority="high"
               />
             </picture>
-          </a>
+          </Link>
 
           <nav
             className={`nav-menu${menuOpen ? ' open' : ''}`}
@@ -1314,7 +1319,11 @@ export default function LandingPage() {
       <footer className="footer">
         <div className="wrap">
           <div className="footer-inner">
-            <a href="#dau" aria-label="GLOBY Chinese – Về đầu trang">
+            <Link
+              href="/"
+              aria-label="GLOBY Chinese – Trang chủ"
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            >
               <img
                 src="/assets/globy-chinese-logo.svg"
                 alt="GLOBY Chinese – Học tiếng Trung thông minh"
@@ -1322,7 +1331,7 @@ export default function LandingPage() {
                 height={56}
                 loading="lazy"
               />
-            </a>
+            </Link>
             <div className="footer-links">
               <a href="#ky-nang">Kỹ năng</a>
               <a href="#lo-trinh">Lộ trình</a>

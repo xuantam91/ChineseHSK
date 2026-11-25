@@ -47,8 +47,12 @@ export function Header() {
   return (
     <header className="sticky top-0 z-40 w-full border-b border-slate-200 bg-white/95 backdrop-blur-sm">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        {/* Brand / Logo */}
-        <Link href="/dashboard" className="flex items-center gap-2.5 shrink-0">
+        {/* Brand / Logo -> Always navigates to Landing Page */}
+        <Link
+          href="/"
+          title="Về trang giới thiệu GLOBY Chinese"
+          className="flex items-center gap-2.5 shrink-0"
+        >
           <img
             src="/assets/globy-chinese-logo-compact.svg"
             alt="GLOBY Chinese"
