@@ -496,7 +496,7 @@ export function VocabBlock({ data }: VocabBlockProps) {
               <div>
                 {/* Active phase indicator on card */}
                 {isThisSeqActive && seqPhase && (
-                  <div className="mb-2.5 flex items-center justify-between text-xs font-extrabold text-emerald-900 bg-emerald-100/80 px-3 py-1 rounded-lg border border-emerald-200">
+                  <div className="mb-2 flex items-center justify-between text-xs font-extrabold text-emerald-900 bg-emerald-100/80 px-3 py-1 rounded-lg border border-emerald-200">
                     <span>🔊 {getPhaseLabelVi(seqPhase)}</span>
                     <span>
                       Từ {idx + 1}/{data.items.length}
@@ -504,39 +504,28 @@ export function VocabBlock({ data }: VocabBlockProps) {
                   </div>
                 )}
 
-                <div className="flex items-start justify-between gap-3 mb-2.5">
+                {/* Top Row: Icon + Hanzi + Pinyin on left, Actions on right */}
+                <div className="flex items-center justify-between gap-2.5">
                   <button
                     type="button"
                     onClick={() => playSingleWord(item)}
-                    className="flex items-center gap-3 text-left group/word"
+                    className="flex items-center gap-2.5 text-left group/word min-w-0"
                     title="Bấm để nghe phát âm từ"
                   >
                     <VocabVisualIcon hanzi={item.hanzi} pinyin={item.pinyin} size="md" />
-                    <div>
-                      <div
-                        className={`flex items-baseline gap-2.5 flex-wrap px-2 py-0.5 rounded-lg transition-colors ${
-                          isPlayingWord ? 'bg-amber-100 ring-1 ring-amber-300' : ''
-                        }`}
-                      >
-                        <span className="font-chinese text-2xl md:text-3xl font-extrabold text-slate-900 group-hover/word:text-emerald-700 transition-colors tracking-tight">
-                          {item.hanzi}
+                    <div
+                      className={`flex items-baseline gap-2 flex-wrap px-2 py-0.5 rounded-lg transition-colors ${
+                        isPlayingWord ? 'bg-amber-100 ring-1 ring-amber-300' : ''
+                      }`}
+                    >
+                      <span className="font-chinese text-2xl md:text-3xl font-extrabold text-slate-900 group-hover/word:text-emerald-700 transition-colors tracking-tight">
+                        {item.hanzi}
+                      </span>
+                      {showPinyin && (
+                        <span className="text-sm md:text-base font-bold text-emerald-700 tracking-wide">
+                          {item.pinyin}
                         </span>
-                        {showPinyin && (
-                          <span className="text-sm md:text-base font-bold text-emerald-700 tracking-wide">
-                            {item.pinyin}
-                          </span>
-                        )}
-                      </div>
-
-                      <div
-                        className={`text-sm font-bold text-slate-800 mt-1 px-2 py-0.5 rounded-lg transition-colors ${
-                          isPlayingMeaning
-                            ? 'bg-amber-100 text-amber-950 ring-1 ring-amber-300'
-                            : ''
-                        }`}
-                      >
-                        {item.meaningVi}
-                      </div>
+                      )}
                     </div>
                   </button>
 
@@ -586,6 +575,17 @@ export function VocabBlock({ data }: VocabBlockProps) {
                       )}
                     </button>
                   </div>
+                </div>
+
+                {/* Full-width Vietnamese Meaning Row (compact, easy to read across full card width) */}
+                <div
+                  className={`mt-2 w-full text-sm font-bold text-slate-800 px-2.5 py-1 rounded-lg transition-colors ${
+                    isPlayingMeaning
+                      ? 'bg-amber-100 text-amber-950 ring-1 ring-amber-300'
+                      : 'bg-slate-50/60'
+                  }`}
+                >
+                  {item.meaningVi}
                 </div>
               </div>
 

@@ -515,12 +515,15 @@ async function playUniversalNeuralTTS(params: {
 
     if (token !== activePlaybackToken) return;
 
-    // For Chinese: synthesize distinct persona timbre (Female / Male / Adult Teacher / Child)
-    // via Web Audio API WSOLA pitch-shift + 3-band vocal formant EQ while keeping exact tempo.
-    const ctx = lang === 'zh-CN' ? getOrCreateAudioContext() : null;
-    if (ctx && lang === 'zh-CN') {
+    // Default 'female' persona uses native HTMLAudioElement directly for pristine studio onset
+    // (avoids AudioContext hardware wake-up clipping on the very first word).
+    // Other personas (male, adult, child) apply TD-PSOLA + 3-band EQ cleanly.
+    const usePersonaDsp = lang === 'zh-CN' && persona !== 'female';
+    const ctx = usePersonaDsp ? getOrCreateAudioContext() : null;
+    if (ctx && usePersonaDsp) {
       try {
-        if (ctx.state === 'suspended') {
+        const wasSuspended = ctx.state === 'suspended';
+        if (wasSuspended) {
           await ctx.resume();
         }
         if (token !== activePlaybackToken) return;
@@ -599,7 +602,7 @@ async function playUniversalNeuralTTS(params: {
 
         isCurrentlySpeaking = true;
         onStart?.();
-        source.start(0);
+        source.start(ctx.currentTime + (wasSuspended ? 0.06 : 0.01));
         return;
       } catch {
         // Fall through seamlessly to HTMLAudioElement if Web Audio decode/resume fails
