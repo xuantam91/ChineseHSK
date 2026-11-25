@@ -22,12 +22,13 @@ function stripId3Header(buf: Buffer): Buffer {
   return buf;
 }
 
-async function fetchChunkMp3(chunk: string, lang: 'vi' | 'zh-CN', speed: number): Promise<Buffer> {
+async function fetchChunkMp3(chunk: string, lang: 'vi' | 'zh-CN'): Promise<Buffer> {
   const encoded = encodeURIComponent(chunk);
-  const ttsSpeed = Math.max(0.4, Math.min(1.2, speed)).toFixed(2);
+  // Always request ttsspeed=1.0 from Google Neural TTS for clean natural studio prosody;
+  // client <audio>.playbackRate handles user/persona speed cleanly without distortion.
   const endpoints = [
-    `https://translate.googleapis.com/translate_tts?ie=UTF-8&client=gtx&tl=${lang}&ttsspeed=${ttsSpeed}&q=${encoded}`,
-    `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=${lang}&ttsspeed=${ttsSpeed}&q=${encoded}`,
+    `https://translate.googleapis.com/translate_tts?ie=UTF-8&client=gtx&tl=${lang}&ttsspeed=1&q=${encoded}`,
+    `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=${lang}&ttsspeed=1&q=${encoded}`,
   ];
 
   let lastError: unknown = null;
@@ -60,7 +61,7 @@ async function fetchChunkMp3(chunk: string, lang: 'vi' | 'zh-CN', speed: number)
   throw lastError || new Error('Failed to synthesize TTS audio');
 }
 
-async function handleTTS(text: string, rawLang: string | null, rawSpeed: string | null) {
+async function handleTTS(text: string, rawLang: string | null) {
   const cleanText = text.replace(/[\x00-\x1F\x7F]/g, ' ').trim();
   if (!cleanText) {
     return NextResponse.json({ error: 'Text parameter is required' }, { status: 400 });
@@ -70,13 +71,11 @@ async function handleTTS(text: string, rawLang: string | null, rawSpeed: string 
   }
 
   const lang: 'vi' | 'zh-CN' = rawLang === 'vi' ? 'vi' : 'zh-CN';
-  const parsedSpeed = Number(rawSpeed);
-  const speed = Number.isFinite(parsedSpeed) ? parsedSpeed : lang === 'vi' ? 0.96 : 0.88;
 
   const chunks = splitTextIntoTTSChunks(cleanText, CHUNK_CHAR_LIMIT);
   const buffers: Buffer[] = [];
   for (let i = 0; i < chunks.length; i++) {
-    const mp3 = await fetchChunkMp3(chunks[i], lang, speed);
+    const mp3 = await fetchChunkMp3(chunks[i], lang);
     buffers.push(i === 0 ? mp3 : stripId3Header(mp3));
   }
 
@@ -96,8 +95,7 @@ export async function GET(req: NextRequest) {
     const { searchParams } = req.nextUrl;
     const text = searchParams.get('text') || '';
     const lang = searchParams.get('lang');
-    const speed = searchParams.get('speed');
-    return await handleTTS(text, lang, speed);
+    return await handleTTS(text, lang);
   } catch (err: any) {
     return NextResponse.json(
       { error: err?.message || 'TTS synthesis failed' },
@@ -111,8 +109,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json().catch(() => ({}));
     return await handleTTS(
       typeof body.text === 'string' ? body.text : '',
-      typeof body.lang === 'string' ? body.lang : null,
-      body.speed !== undefined ? String(body.speed) : null
+      typeof body.lang === 'string' ? body.lang : null
     );
   } catch (err: any) {
     return NextResponse.json(

@@ -13,6 +13,7 @@ import {
   speakVietnamese,
   stopChineseSpeech,
   isSpeaking,
+  cleanChineseTextForTTS,
 } from '@/lib/tts/tts-service';
 import { splitTextIntoTTSChunks } from '@/lib/tts/chunker';
 
@@ -105,5 +106,12 @@ describe('TTS Engine & Voice Personas', () => {
 
   it('handles speakVietnamese cleanly in non-browser environment', () => {
     expect(() => speakVietnamese('Xin chào, đây là câu tiếng Việt thử nghiệm.')).not.toThrow();
+  });
+
+  it('strips parenthetical Pinyin and Latin annotations cleanly for Chinese TTS', () => {
+    expect(cleanChineseTextForTTS('好（hào）读书')).toBe('好读书');
+    expect(cleanChineseTextForTTS('你好 (nǐ hǎo)')).toBe('你好');
+    expect(cleanChineseTextForTTS('银行 (háng) / 行为 (xíng)')).toBe('银行 / 行为');
+    expect(cleanChineseTextForTTS('我们一起学习汉语。')).toBe('我们一起学习汉语。');
   });
 });

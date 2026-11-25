@@ -546,6 +546,15 @@ async function playUniversalNeuralTTS(params: {
 }
 
 /**
+ * Strips parenthetical Pinyin/Latin annotations (e.g. "好（hào）" or "(Nǐ hǎo)")
+ * so Chinese TTS only speaks authentic Chinese characters cleanly.
+ */
+export function cleanChineseTextForTTS(text: string): string {
+  const withoutParens = text.replace(/[（(][^）)]*[A-Za-zāáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ][^）)]*[）)]/g, '');
+  return withoutParens.replace(/\s+/g, ' ').trim();
+}
+
+/**
  * Core Chinese TTS speaking function: uses OS-independent Neural MP3 (/api/tts)
  * with local browser fallback so every machine pronounces clearly.
  */
@@ -558,7 +567,7 @@ export function speakChinese(text: string, options: SpeakOptions = {}): () => vo
     return () => {};
   }
 
-  const cleanText = text.trim();
+  const cleanText = cleanChineseTextForTTS(text);
   if (!cleanText) {
     options.onEnd?.();
     return () => {};
@@ -572,54 +581,25 @@ export function speakChinese(text: string, options: SpeakOptions = {}): () => vo
 
   const baseSpeed = options.speedRate !== undefined ? options.speedRate : settings.speedRate;
   const personaRateFactor = personaConfig.defaultRate / 0.88;
-  const effectiveRate = Math.max(0.65, Math.min(1.35, baseSpeed * personaRateFactor));
+  const effectiveRate = Math.max(0.7, Math.min(1.25, baseSpeed * personaRateFactor));
   const effectivePitch = options.pitch !== undefined ? options.pitch : personaConfig.defaultPitch;
   const effectiveVolume = options.volume !== undefined ? options.volume : settings.volume;
 
-  // If user explicitly picked a local voice URI and Web Speech exists, try that first;
-  // otherwise always use universal server Neural MP3 (/api/tts) so corporate/managed PCs work 100%.
-  if (settings.preferredVoiceURI && 'speechSynthesis' in window && getAvailableChineseVoices().length > 0) {
-    speakViaWebSpeechFallback(
-      cleanText,
-      'zh-CN',
-      effectiveRate,
-      effectivePitch,
-      effectiveVolume,
-      activePersonaId,
-      settings.preferredVoiceURI,
-      activePlaybackToken,
-      options.onStart,
-      options.onEnd,
-      () => {
-        // Auto-retry via universal server Neural TTS if browser voice is blocked (e.g. service-not-allowed)
-        void playUniversalNeuralTTS({
-          text: cleanText,
-          lang: 'zh-CN',
-          serverSpeed: effectiveRate,
-          playbackRate: 1.0,
-          pitch: effectivePitch,
-          volume: effectiveVolume,
-          persona: activePersonaId,
-          onStart: options.onStart,
-          onEnd: options.onEnd,
-          onError: options.onError,
-        });
-      }
-    );
-  } else {
-    void playUniversalNeuralTTS({
-      text: cleanText,
-      lang: 'zh-CN',
-      serverSpeed: effectiveRate,
-      playbackRate: 1.0,
-      pitch: effectivePitch,
-      volume: effectiveVolume,
-      persona: activePersonaId,
-      onStart: options.onStart,
-      onEnd: options.onEnd,
-      onError: options.onError,
-    });
-  }
+  // Always prefer universal server Neural MP3 (/api/tts) at studio speed=1.0
+  // with smooth client playbackRate scaling so Chinese never gets misread as Pinyin.
+  void playUniversalNeuralTTS({
+    text: cleanText,
+    lang: 'zh-CN',
+    serverSpeed: 1.0,
+    playbackRate: effectiveRate,
+    pitch: effectivePitch,
+    volume: effectiveVolume,
+    persona: activePersonaId,
+    preferredURI: settings.preferredVoiceURI,
+    onStart: options.onStart,
+    onEnd: options.onEnd,
+    onError: options.onError,
+  });
 
   return () => {
     stopChineseSpeech();
@@ -730,8 +710,8 @@ export function speakVietnamese(
   void playUniversalNeuralTTS({
     text: cleanText,
     lang: 'vi',
-    serverSpeed: viRate,
-    playbackRate: 1.0,
+    serverSpeed: 1.0,
+    playbackRate: viRate,
     pitch: 1.0,
     volume: settings.volume,
     persona: settings.persona,

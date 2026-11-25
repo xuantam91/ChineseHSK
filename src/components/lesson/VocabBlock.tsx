@@ -31,7 +31,7 @@ type SeqPhase =
   | 'meaning-1'
   | 'example-1'
   | 'example-2'
-  | 'example-3'
+  | 'example-meaning-1'
   | null;
 
 function getPhaseLabelVi(phase: SeqPhase): string {
@@ -43,13 +43,13 @@ function getPhaseLabelVi(phase: SeqPhase): string {
     case 'word-3':
       return 'Từ tiếng Trung (Lần 3/3)';
     case 'meaning-1':
-      return 'Nghĩa tiếng Việt (1 lần)';
+      return 'Nghĩa từ tiếng Việt (1 lần)';
     case 'example-1':
-      return 'Câu mẫu (Lần 1/3)';
+      return 'Câu tiếng Trung (Lần 1/2)';
     case 'example-2':
-      return 'Câu mẫu (Lần 2/3)';
-    case 'example-3':
-      return 'Câu mẫu (Lần 3/3)';
+      return 'Câu tiếng Trung (Lần 2/2)';
+    case 'example-meaning-1':
+      return 'Nghĩa câu tiếng Việt (1 lần)';
     default:
       return '';
   }
@@ -150,9 +150,9 @@ export function VocabBlock({ data }: VocabBlockProps) {
         for (const wp of wordPhases) {
           if (runIdRef.current !== myRunId) return;
           setSeqPhase(wp);
-          const ok = await speakZhOnce(item.hanzi, myRunId, 0.78);
+          const ok = await speakZhOnce(item.hanzi, myRunId, 0.86);
           if (!ok) return;
-          const waited = await waitMs(520, myRunId);
+          const waited = await waitMs(480, myRunId);
           if (!waited) return;
         }
 
@@ -161,19 +161,28 @@ export function VocabBlock({ data }: VocabBlockProps) {
         setSeqPhase('meaning-1');
         const okVi = await speakViOnce(item.meaningVi, myRunId);
         if (!okVi) return;
-        const waitedVi = await waitMs(580, myRunId);
+        const waitedVi = await waitMs(520, myRunId);
         if (!waitedVi) return;
 
-        // 3. Speak Chinese example sentence 3 times (if present)
+        // 3. Speak Chinese example sentence 2 times + Vietnamese sentence meaning 1 time
         if (item.exampleSentence) {
-          const exPhases: SeqPhase[] = ['example-1', 'example-2', 'example-3'];
+          const exPhases: SeqPhase[] = ['example-1', 'example-2'];
           for (const ep of exPhases) {
             if (runIdRef.current !== myRunId) return;
             setSeqPhase(ep);
-            const okEx = await speakZhOnce(item.exampleSentence, myRunId, 0.76);
+            const okEx = await speakZhOnce(item.exampleSentence, myRunId, 0.85);
             if (!okEx) return;
-            const waitedEx = await waitMs(620, myRunId);
+            const waitedEx = await waitMs(540, myRunId);
             if (!waitedEx) return;
+          }
+
+          if (item.exampleTranslation) {
+            if (runIdRef.current !== myRunId) return;
+            setSeqPhase('example-meaning-1');
+            const okExVi = await speakViOnce(item.exampleTranslation, myRunId);
+            if (!okExVi) return;
+            const waitedExVi = await waitMs(520, myRunId);
+            if (!waitedExVi) return;
           }
         }
 
@@ -203,20 +212,35 @@ export function VocabBlock({ data }: VocabBlockProps) {
     stopSequentialPlay();
     setPlayingId(item.id);
     speakChinese(item.hanzi, {
-      speedRate: 0.78,
+      speedRate: 0.86,
       onEnd: () => setPlayingId((prev) => (prev === item.id ? null : prev)),
       onError: () => setPlayingId((prev) => (prev === item.id ? null : prev)),
     });
   };
 
-  const playSingleSentence = (sentence: string, id: string) => {
+  const playSingleSentence = async (item: VocabItem, id: string) => {
+    if (!item.exampleSentence) return;
     stopSequentialPlay();
+    const myRunId = runIdRef.current + 1;
+    runIdRef.current = myRunId;
     setPlayingId(id);
-    speakChinese(sentence, {
-      speedRate: 0.76,
-      onEnd: () => setPlayingId((prev) => (prev === id ? null : prev)),
-      onError: () => setPlayingId((prev) => (prev === id ? null : prev)),
-    });
+
+    for (let rep = 0; rep < 2; rep++) {
+      if (runIdRef.current !== myRunId) return;
+      const ok = await speakZhOnce(item.exampleSentence, myRunId, 0.85);
+      if (!ok) return;
+      const waited = await waitMs(450, myRunId);
+      if (!waited) return;
+    }
+
+    if (item.exampleTranslation) {
+      if (runIdRef.current !== myRunId) return;
+      await speakViOnce(item.exampleTranslation, myRunId);
+    }
+
+    if (runIdRef.current === myRunId) {
+      setPlayingId((prev) => (prev === id ? null : prev));
+    }
   };
 
   const copyToClipboard = (item: VocabItem) => {
@@ -360,10 +384,10 @@ export function VocabBlock({ data }: VocabBlockProps) {
           <div className="flex flex-wrap items-center gap-2">
             <span className="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider text-emerald-900 bg-white px-2.5 py-1 rounded-lg border border-emerald-200 shadow-2xs">
               <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-              <span>Chế độ đọc 3–1–3 tự động</span>
+              <span>Chế độ đọc Từ 3–1 & Câu 2–1</span>
             </span>
             <span className="text-xs font-semibold text-emerald-800">
-              Từ tiếng Trung ×3 → Nghĩa tiếng Việt ×1 → Câu mẫu ×3
+              Từ Trung ×3 → Nghĩa Việt ×1 → Câu Trung ×2 → Nghĩa câu Việt ×1
             </span>
           </div>
 
@@ -383,7 +407,7 @@ export function VocabBlock({ data }: VocabBlockProps) {
             </div>
           ) : (
             <p className="text-xs text-slate-600">
-              Bấm &ldquo;Phát lần lượt toàn bộ&rdquo; hoặc bấm nút &ldquo;Đọc 3-1-3&rdquo; trên từng thẻ từ vựng.
+              Bấm &ldquo;Phát lần lượt toàn bộ&rdquo; hoặc bấm nút &ldquo;Đọc 3-1-2-1&rdquo; trên từng thẻ từ vựng.
             </p>
           )}
         </div>
@@ -419,7 +443,7 @@ export function VocabBlock({ data }: VocabBlockProps) {
               leftIcon={<Play className="w-3.5 h-3.5 fill-current" />}
               className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs px-4"
             >
-              Phát lần lượt toàn bộ (3-1-3)
+              Phát lần lượt toàn bộ (3-1-2-1)
             </Button>
           )}
 
@@ -453,7 +477,7 @@ export function VocabBlock({ data }: VocabBlockProps) {
             (isThisSeqActive &&
               (seqPhase === 'example-1' ||
                 seqPhase === 'example-2' ||
-                seqPhase === 'example-3'));
+                seqPhase === 'example-meaning-1'));
           const isCopied = copiedId === item.id;
 
           return (
@@ -514,11 +538,11 @@ export function VocabBlock({ data }: VocabBlockProps) {
                   </button>
 
                   <div className="flex items-center gap-1 shrink-0">
-                    {/* Play 3-1-3 from this word */}
+                    {/* Play 3-1-2-1 from this word */}
                     <button
                       type="button"
                       onClick={() => startSequentialPlay(idx)}
-                      title="Đọc 3 lần từ + 1 lần nghĩa + 3 lần câu mẫu"
+                      title="Đọc 3 lần từ + 1 lần nghĩa + 2 lần câu Trung + 1 lần nghĩa câu Việt"
                       className={`px-2.5 py-1.5 rounded-xl text-xs font-bold transition-colors flex items-center gap-1 border ${
                         isThisSeqActive
                           ? 'bg-emerald-700 text-white border-emerald-700'
@@ -526,7 +550,7 @@ export function VocabBlock({ data }: VocabBlockProps) {
                       }`}
                     >
                       <Volume2 className="w-3.5 h-3.5" />
-                      <span>3-1-3</span>
+                      <span>3-1-2-1</span>
                     </button>
 
                     {/* Practice Writing Button */}
@@ -581,10 +605,8 @@ export function VocabBlock({ data }: VocabBlockProps) {
                   </div>
                   <button
                     type="button"
-                    onClick={() =>
-                      playSingleSentence(item.exampleSentence!, `${item.id}-ex`)
-                    }
-                    title="Nghe câu mẫu"
+                    onClick={() => playSingleSentence(item, `${item.id}-ex`)}
+                    title="Nghe 2 lần câu tiếng Trung + 1 lần nghĩa tiếng Việt"
                     className={`p-1.5 rounded-lg shrink-0 transition-colors ${
                       isPlayingExample
                         ? 'bg-emerald-600 text-white animate-pulse'
