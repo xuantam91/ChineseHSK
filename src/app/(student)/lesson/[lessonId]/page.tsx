@@ -88,6 +88,7 @@ function adaptHskLessonToLesson(hsk: HSKLesson): Lesson {
           pinyin: v.pinyin,
           meaningVi: v.meaningVi,
           exampleSentence: v.exampleSentence,
+          examplePinyin: v.examplePinyin,
           exampleTranslation: v.exampleVi,
           audioUrl: v.audioUrl,
           hskLevel: numericLevel,
@@ -179,7 +180,9 @@ function adaptHskLessonToLesson(hsk: HSKLesson): Lesson {
         hanzi: v.hanzi,
         pinyin: v.pinyin,
         meaningVi: v.meaningVi,
-        tip: v.exampleSentence ? `Ví dụ: ${v.exampleSentence} (${v.exampleVi || ''})` : undefined,
+        tip: v.exampleSentence
+          ? `Ví dụ: ${v.exampleSentence} (${v.examplePinyin ? `${v.examplePinyin} — ` : ''}${v.exampleVi || ''})`
+          : undefined,
         category: 'word',
       });
     }
@@ -351,13 +354,13 @@ function adaptHskLessonToLesson(hsk: HSKLesson): Lesson {
       ].slice(0, 4);
       correctIndex = options.indexOf(correctStr);
     } else if (q.type === 'speaking_response' && q.targetSpeech) {
-      const correctOpt = `${q.targetSpeech} (${
+      const correctOpt = `${q.targetSpeech} (${q.pinyin ? `${q.pinyin} — ` : ''}${
         typeof q.correctAnswer === 'string' ? q.correctAnswer : 'Phản hồi chuẩn'
       })`;
       const fallbackDistractors = [
-        '对不起，我不知道。 (Xin lỗi, tôi không biết.)',
-        '谢谢你，不客气！ (Cảm ơn bạn, đừng khách sáo!)',
-        '请问洗手间在哪里？ (Xin hỏi nhà vệ sinh ở đâu?)',
+        '对不起，我不知道。 (Duìbuqǐ, wǒ bù zhīdào. — Xin lỗi, tôi không biết.)',
+        '谢谢你，不客气！ (Xièxie nǐ, bú kèqi! — Cảm ơn bạn, đừng khách sáo!)',
+        '请问洗手间在哪里？ (Qǐngwèn xǐshǒujiān zài nǎlǐ? — Xin hỏi nhà vệ sinh ở đâu?)',
       ].filter((d) => !d.includes(q.targetSpeech!));
 
       options = [correctOpt, ...fallbackDistractors.slice(0, 3)];
@@ -593,6 +596,7 @@ function buildSectionMiniQuiz(block: LessonBlock, lesson: Lesson): QuizBlockData
     pinyin: string;
     meaningVi: string;
     exampleSentence?: string;
+    examplePinyin?: string;
     exampleTranslation?: string;
   }>;
 
@@ -659,23 +663,33 @@ function buildSectionMiniQuiz(block: LessonBlock, lesson: Lesson): QuizBlockData
       pinyin: 'nǐ hǎo',
       meaningVi: 'Xin chào',
       exampleSentence: '你好，很高兴认识你。',
+      examplePinyin: 'Nǐ hǎo, hěn gāoxìng rènshi nǐ.',
       exampleTranslation: 'Xin chào, rất vui được làm quen với bạn.',
     };
     const vLast = vocabItems[vocabItems.length - 1] || v0;
 
     const exSentence = v0.exampleSentence || v0.hanzi;
+    const exPinyin = v0.examplePinyin || v0.pinyin;
     const exMeaning = v0.exampleTranslation || v0.meaningVi;
+    const lastSent = vLast.exampleSentence || vLast.hanzi;
+    const lastPinyin = vLast.examplePinyin || vLast.pinyin;
+    const lastLabeled = lastPinyin ? `${lastSent} (${lastPinyin})` : lastSent;
+
     const q1Opts = make4Options(
       exMeaning,
       vocabItems.map((x) => x.exampleTranslation || x.meaningVi),
       1
     );
     const q2Opts = make4Options(
-      vLast.exampleSentence || vLast.hanzi,
+      lastLabeled,
       [
-        ...vocabItems.map((x) => x.exampleSentence || x.hanzi),
-        '请问洗手间在哪里？',
-        '明天见！',
+        ...vocabItems.map((x) => {
+          const s = x.exampleSentence || x.hanzi;
+          const p = x.examplePinyin || x.pinyin;
+          return p ? `${s} (${p})` : s;
+        }),
+        '请问洗手间在哪里？ (Qǐngwèn xǐshǒujiān zài nǎlǐ?)',
+        '明天见！ (Míngtiān jiàn!)',
       ],
       2
     );
@@ -688,17 +702,19 @@ function buildSectionMiniQuiz(block: LessonBlock, lesson: Lesson): QuizBlockData
         {
           id: `${block.id}-mq-1`,
           type: 'single_choice',
-          question: `Mẫu câu ví dụ "${exSentence}" trong bài mang ý nghĩa gì?`,
+          question: `Mẫu câu ví dụ "${exSentence}"${exPinyin ? ` (${exPinyin})` : ''} trong bài mang ý nghĩa gì?`,
+          pinyin: exPinyin,
           options: q1Opts.options,
-          explanation: `Câu "${exSentence}" có nghĩa là: "${exMeaning}".`,
+          explanation: `Câu "${exSentence}" (${exPinyin}) có nghĩa là: "${exMeaning}".`,
           correctIndex: q1Opts.correctIndex,
         },
         {
           id: `${block.id}-mq-2`,
           type: 'single_choice',
           question: `Câu tiếng Trung nào dưới đây diễn đạt đúng ý "${vLast.exampleTranslation || vLast.meaningVi}"?`,
+          pinyin: lastPinyin,
           options: q2Opts.options,
-          explanation: `Đáp án chuẩn là: "${vLast.exampleSentence || vLast.hanzi}".`,
+          explanation: `Đáp án chuẩn là: "${lastSent}" (${lastPinyin}).`,
           correctIndex: q2Opts.correctIndex,
         },
       ],
@@ -719,6 +735,7 @@ function buildSectionMiniQuiz(block: LessonBlock, lesson: Lesson): QuizBlockData
     const l1 = rawLines[Math.min(1, rawLines.length - 1)];
     const l0Meaning = l0.meaningVi || l0.vietnamese || 'Xin chào';
     const l1Meaning = l1.meaningVi || l1.vietnamese || 'Rất vui được gặp bạn';
+    const l1Labeled = l1.pinyin ? `${l1.hanzi} (${l1.pinyin})` : l1.hanzi;
 
     const q1Opts = make4Options(
       l0Meaning,
@@ -726,8 +743,12 @@ function buildSectionMiniQuiz(block: LessonBlock, lesson: Lesson): QuizBlockData
       0
     );
     const q2Opts = make4Options(
-      l1.hanzi,
-      [...rawLines.map((x) => x.hanzi), '对不起，我不知道。', '再见！'],
+      l1Labeled,
+      [
+        ...rawLines.map((x) => (x.pinyin ? `${x.hanzi} (${x.pinyin})` : x.hanzi)),
+        '对不起，我不知道。 (Duìbuqǐ, wǒ bù zhīdào.)',
+        '再见！ (Zàijiàn!)',
+      ],
       1
     );
 
@@ -739,7 +760,7 @@ function buildSectionMiniQuiz(block: LessonBlock, lesson: Lesson): QuizBlockData
         {
           id: `${block.id}-mq-1`,
           type: 'single_choice',
-          question: `Khi nhân vật mở đầu nói "${l0.hanzi}", câu này có nghĩa là gì?`,
+          question: `Khi nhân vật mở đầu nói "${l0.hanzi}" (${l0.pinyin}), câu này có nghĩa là gì?`,
           pinyin: l0.pinyin,
           options: q1Opts.options,
           explanation: `"${l0.hanzi}" (${l0.pinyin}) có nghĩa là: "${l0Meaning}".`,
@@ -749,6 +770,7 @@ function buildSectionMiniQuiz(block: LessonBlock, lesson: Lesson): QuizBlockData
           id: `${block.id}-mq-2`,
           type: 'single_choice',
           question: `Để đáp lại với ý "${l1Meaning}", nhân vật tiếp theo đã nói câu nào?`,
+          pinyin: l1.pinyin,
           options: q2Opts.options,
           explanation: `Câu thoại đáp lại là: "${l1.hanzi}" (${l1.pinyin}).`,
           correctIndex: q2Opts.correctIndex,
@@ -768,6 +790,7 @@ function buildSectionMiniQuiz(block: LessonBlock, lesson: Lesson): QuizBlockData
 
     const s0 = items[0];
     const sLast = items[items.length - 1];
+    const sLastLabeled = sLast.pinyin ? `${sLast.hanzi} (${sLast.pinyin})` : sLast.hanzi;
 
     const q1Opts = make4Options(
       s0.pinyin,
@@ -775,8 +798,12 @@ function buildSectionMiniQuiz(block: LessonBlock, lesson: Lesson): QuizBlockData
       0
     );
     const q2Opts = make4Options(
-      sLast.hanzi,
-      [...items.map((x) => x.hanzi), '谢谢你', '没关系'],
+      sLastLabeled,
+      [
+        ...items.map((x) => (x.pinyin ? `${x.hanzi} (${x.pinyin})` : x.hanzi)),
+        '谢谢你 (Xièxie nǐ)',
+        '没关系 (Méi guānxi)',
+      ],
       2
     );
 
@@ -797,6 +824,7 @@ function buildSectionMiniQuiz(block: LessonBlock, lesson: Lesson): QuizBlockData
           id: `${block.id}-mq-2`,
           type: 'single_choice',
           question: `Khi muốn nói "${sLast.meaningVi}" bằng tiếng Trung, bạn đọc câu nào?`,
+          pinyin: sLast.pinyin,
           options: q2Opts.options,
           explanation: `Câu chuẩn là "${sLast.hanzi}" (${sLast.pinyin}).`,
           correctIndex: q2Opts.correctIndex,
@@ -818,6 +846,7 @@ function buildSectionMiniQuiz(block: LessonBlock, lesson: Lesson): QuizBlockData
     const sh1 = sentences[Math.min(1, sentences.length - 1)];
     const sh0Meaning = sh0.meaningVi || sh0.vietnamese || 'Xin chào';
     const sh1Meaning = sh1.meaningVi || sh1.vietnamese || 'Cảm ơn';
+    const sh1Labeled = sh1.pinyin ? `${sh1.hanzi} (${sh1.pinyin})` : sh1.hanzi;
 
     const q1Opts = make4Options(
       sh0Meaning,
@@ -825,8 +854,12 @@ function buildSectionMiniQuiz(block: LessonBlock, lesson: Lesson): QuizBlockData
       1
     );
     const q2Opts = make4Options(
-      sh1.hanzi,
-      [...sentences.map((x) => x.hanzi), '我不知道。', '明天见！'],
+      sh1Labeled,
+      [
+        ...sentences.map((x) => (x.pinyin ? `${x.hanzi} (${x.pinyin})` : x.hanzi)),
+        '我不知道。 (Wǒ bù zhīdào.)',
+        '明天见！ (Míngtiān jiàn!)',
+      ],
       0
     );
 
@@ -848,6 +881,7 @@ function buildSectionMiniQuiz(block: LessonBlock, lesson: Lesson): QuizBlockData
           id: `${block.id}-mq-2`,
           type: 'single_choice',
           question: `Câu nào trong bài nhại âm mang ý nghĩa "${sh1Meaning}"?`,
+          pinyin: sh1.pinyin,
           options: q2Opts.options,
           explanation: `"${sh1Meaning}" tương ứng với câu "${sh1.hanzi}" (${sh1.pinyin}).`,
           correctIndex: q2Opts.correctIndex,

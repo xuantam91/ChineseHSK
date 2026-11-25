@@ -16,6 +16,10 @@ import {
   cleanChineseTextForTTS,
 } from '@/lib/tts/tts-service';
 import { splitTextIntoTTSChunks } from '@/lib/tts/chunker';
+import {
+  PERSONA_ACOUSTIC_PROFILES,
+  timeStretchFloat32,
+} from '@/lib/tts/pitch-shifter';
 
 describe('TTS Engine & Voice Personas', () => {
   beforeEach(() => {
@@ -113,5 +117,38 @@ describe('TTS Engine & Voice Personas', () => {
     expect(cleanChineseTextForTTS('你好 (nǐ hǎo)')).toBe('你好');
     expect(cleanChineseTextForTTS('银行 (háng) / 行为 (xíng)')).toBe('银行 / 行为');
     expect(cleanChineseTextForTTS('我们一起学习汉语。')).toBe('我们一起学习汉语。');
+  });
+
+  it('defines distinct acoustic pitch profiles for female, male, adult, and child voices', () => {
+    expect(PERSONA_ACOUSTIC_PROFILES.male.pitchFactor).toBeLessThan(0.8);
+    expect(PERSONA_ACOUSTIC_PROFILES.adult.pitchFactor).toBeGreaterThan(
+      PERSONA_ACOUSTIC_PROFILES.male.pitchFactor
+    );
+    expect(PERSONA_ACOUSTIC_PROFILES.adult.pitchFactor).toBeLessThan(
+      PERSONA_ACOUSTIC_PROFILES.female.pitchFactor
+    );
+    expect(PERSONA_ACOUSTIC_PROFILES.child.pitchFactor).toBeGreaterThan(1.2);
+  });
+
+  it('time-stretches audio cleanly via WSOLA without NaN or zeroed output', () => {
+    const sampleRate = 24000;
+    const len = 12000; // 0.5s sine wave at 220Hz
+    const input = new Float32Array(len);
+    for (let i = 0; i < len; i++) {
+      input[i] = Math.sin((2 * Math.PI * 220 * i) / sampleRate) * 0.5;
+    }
+
+    const maleBuf = timeStretchFloat32(input, sampleRate, PERSONA_ACOUSTIC_PROFILES.male.pitchFactor);
+    const childBuf = timeStretchFloat32(input, sampleRate, PERSONA_ACOUSTIC_PROFILES.child.pitchFactor);
+
+    expect(maleBuf.length).toBeLessThan(input.length);
+    expect(childBuf.length).toBeGreaterThan(input.length);
+
+    let maleEnergy = 0;
+    for (let i = 0; i < maleBuf.length; i++) {
+      expect(Number.isFinite(maleBuf[i])).toBe(true);
+      maleEnergy += Math.abs(maleBuf[i]);
+    }
+    expect(maleEnergy).toBeGreaterThan(100);
   });
 });

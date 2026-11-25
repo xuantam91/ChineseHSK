@@ -7,6 +7,7 @@ import {
   TTS_PERSONAS,
   TTSPersonaConfig,
 } from './types';
+import { PERSONA_ACOUSTIC_PROFILES, createPersonaShiftedBuffer } from './pitch-shifter';
 
 const STORAGE_KEY_TTS = 'chinese_journey_tts_settings';
 export const TTS_SETTINGS_EVENT = 'tts_settings_changed';
@@ -16,6 +17,8 @@ let cachedVoices: SpeechSynthesisVoice[] = [];
 let isCurrentlySpeaking = false;
 let currentSafetyTimeout: ReturnType<typeof setTimeout> | null = null;
 let activeAudioElement: HTMLAudioElement | null = null;
+let activeBufferSource: AudioBufferSourceNode | null = null;
+let sharedAudioCtx: AudioContext | null = null;
 let activeAbortController: AbortController | null = null;
 let activePlaybackToken = 0;
 let charSequenceCancelled = false;
@@ -23,6 +26,30 @@ let charSequenceTimeout: ReturnType<typeof setTimeout> | null = null;
 
 const MAX_AUDIO_CACHE_SIZE = 80;
 const audioBlobUrlCache = new Map<string, string>();
+const rawArrayBufferCache = new Map<string, ArrayBuffer>();
+const shiftedAudioBufferCache = new Map<string, AudioBuffer>();
+
+function getOrCreateAudioContext(): AudioContext | null {
+  if (typeof window === 'undefined') return null;
+  const Ctor = window.AudioContext || (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+  if (!Ctor) return null;
+  if (!sharedAudioCtx) {
+    try {
+      sharedAudioCtx = new Ctor();
+    } catch {
+      return null;
+    }
+  }
+  return sharedAudioCtx;
+}
+
+function setBoundedCache<T>(map: Map<string, T>, key: string, val: T) {
+  if (map.size >= MAX_AUDIO_CACHE_SIZE) {
+    const oldestKey = map.keys().next().value;
+    if (oldestKey) map.delete(oldestKey);
+  }
+  map.set(key, val);
+}
 
 function setCachedAudioUrl(cacheKey: string, blobUrl: string) {
   if (audioBlobUrlCache.size >= MAX_AUDIO_CACHE_SIZE) {
@@ -210,6 +237,17 @@ function stopCurrentPlaybackInternal() {
       // ignore
     }
     activeAbortController = null;
+  }
+
+  if (activeBufferSource) {
+    try {
+      activeBufferSource.onended = null;
+      activeBufferSource.stop();
+      activeBufferSource.disconnect();
+    } catch {
+      // ignore
+    }
+    activeBufferSource = null;
   }
 
   if (activeAudioElement) {
@@ -432,11 +470,13 @@ async function playUniversalNeuralTTS(params: {
     return;
   }
 
-  const cacheKey = `${lang}:${serverSpeed.toFixed(2)}:${text}`;
-  let objectUrl = audioBlobUrlCache.get(cacheKey);
+  const rawCacheKey = `${lang}:${serverSpeed.toFixed(2)}:${text}`;
+  const shiftedCacheKey = `${lang}:${persona}:${serverSpeed.toFixed(2)}:${text}`;
 
   try {
-    if (!objectUrl) {
+    let rawBytes = rawArrayBufferCache.get(rawCacheKey);
+
+    if (!rawBytes) {
       const controller = new AbortController();
       activeAbortController = controller;
       const fetchTimeout = setTimeout(() => controller.abort(), 9000);
@@ -464,15 +504,115 @@ async function playUniversalNeuralTTS(params: {
         throw new Error(`TTS API HTTP ${res.status}`);
       }
 
-      const blob = await res.blob();
-      if (blob.size < 100) {
+      const arr = await res.arrayBuffer();
+      if (arr.byteLength < 100) {
         throw new Error('Empty TTS audio received');
       }
-      objectUrl = URL.createObjectURL(blob);
-      setCachedAudioUrl(cacheKey, objectUrl);
+      rawBytes = arr;
+      setBoundedCache(rawArrayBufferCache, rawCacheKey, rawBytes);
     }
 
     if (token !== activePlaybackToken) return;
+
+    // For Chinese: synthesize distinct persona timbre (Female / Male / Adult Teacher / Child)
+    // via Web Audio API WSOLA pitch-shift + 3-band vocal formant EQ while keeping exact tempo.
+    const ctx = lang === 'zh-CN' ? getOrCreateAudioContext() : null;
+    if (ctx && lang === 'zh-CN') {
+      try {
+        if (ctx.state === 'suspended') {
+          await ctx.resume();
+        }
+        if (token !== activePlaybackToken) return;
+
+        const profile = PERSONA_ACOUSTIC_PROFILES[persona] || PERSONA_ACOUSTIC_PROFILES.female;
+        let playBuffer = shiftedAudioBufferCache.get(shiftedCacheKey);
+        if (!playBuffer) {
+          const decoded = await ctx.decodeAudioData(rawBytes.slice(0));
+          if (token !== activePlaybackToken) return;
+          playBuffer = createPersonaShiftedBuffer(ctx, decoded, profile.pitchFactor);
+          setBoundedCache(shiftedAudioBufferCache, shiftedCacheKey, playBuffer);
+        }
+
+        if (token !== activePlaybackToken) return;
+
+        const source = ctx.createBufferSource();
+        source.buffer = playBuffer;
+        source.playbackRate.value = Math.max(0.55, Math.min(1.65, profile.pitchFactor * playbackRate));
+
+        const lowShelf = ctx.createBiquadFilter();
+        lowShelf.type = 'lowshelf';
+        lowShelf.frequency.value = 160;
+        lowShelf.gain.value = profile.lowShelfDb;
+
+        const midPeak = ctx.createBiquadFilter();
+        midPeak.type = 'peaking';
+        midPeak.frequency.value = profile.midPeakFreq;
+        midPeak.Q.value = 1.1;
+        midPeak.gain.value = profile.midPeakDb;
+
+        const highShelf = ctx.createBiquadFilter();
+        highShelf.type = 'highshelf';
+        highShelf.frequency.value = 3200;
+        highShelf.gain.value = profile.highShelfDb;
+
+        const gainNode = ctx.createGain();
+        gainNode.gain.value = Math.max(0, Math.min(1, volume));
+
+        source.connect(lowShelf);
+        lowShelf.connect(midPeak);
+        midPeak.connect(highShelf);
+        highShelf.connect(gainNode);
+        gainNode.connect(ctx.destination);
+
+        activeBufferSource = source;
+
+        let ended = false;
+        const finishWebAudio = () => {
+          if (ended) return;
+          ended = true;
+          if (currentSafetyTimeout) {
+            clearTimeout(currentSafetyTimeout);
+            currentSafetyTimeout = null;
+          }
+          if (activeBufferSource === source) {
+            activeBufferSource = null;
+          }
+          try {
+            source.disconnect();
+            lowShelf.disconnect();
+            midPeak.disconnect();
+            highShelf.disconnect();
+            gainNode.disconnect();
+          } catch {
+            // ignore
+          }
+          if (token === activePlaybackToken) {
+            isCurrentlySpeaking = false;
+            onEnd?.();
+          }
+        };
+
+        source.onended = finishWebAudio;
+        const estDurationMs = (playBuffer.duration / source.playbackRate.value) * 1000;
+        currentSafetyTimeout = setTimeout(finishWebAudio, Math.max(3500, estDurationMs + 2500));
+
+        isCurrentlySpeaking = true;
+        onStart?.();
+        source.start(0);
+        return;
+      } catch {
+        // Fall through seamlessly to HTMLAudioElement if Web Audio decode/resume fails
+      }
+    }
+
+    if (token !== activePlaybackToken) return;
+
+    let objectUrl = audioBlobUrlCache.get(rawCacheKey);
+    if (!objectUrl) {
+      const blob = new Blob([rawBytes], { type: 'audio/mpeg' });
+      objectUrl = URL.createObjectURL(blob);
+      setCachedAudioUrl(rawCacheKey, objectUrl);
+    }
 
     const audio = new Audio(objectUrl);
     activeAudioElement = audio;

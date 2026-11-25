@@ -373,6 +373,9 @@ export default function RoadmapPage() {
                               <span className="font-chinese font-bold text-slate-900">
                                 {v.hanzi}
                               </span>
+                              <span className="font-semibold text-emerald-700">
+                                {v.pinyin}
+                              </span>
                               <span className="text-slate-500">{v.meaningVi}</span>
                             </button>
                           ))}

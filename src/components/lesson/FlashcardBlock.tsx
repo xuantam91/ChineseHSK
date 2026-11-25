@@ -172,6 +172,11 @@ export function FlashcardBlock({ data }: FlashcardBlockProps) {
                   <p className="font-chinese text-sm font-semibold mb-0.5 text-white">
                     {currentCard.example}
                   </p>
+                  {currentCard.examplePinyin && (
+                    <p className="text-emerald-200 font-semibold mb-0.5 tracking-wide">
+                      {currentCard.examplePinyin}
+                    </p>
+                  )}
                   {currentCard.exampleTranslation && (
                     <p className="text-emerald-300 opacity-90">{currentCard.exampleTranslation}</p>
                   )}

@@ -599,6 +599,11 @@ export function VocabBlock({ data }: VocabBlockProps) {
                     <div className="font-chinese text-sm font-bold text-slate-900 mb-0.5">
                       {item.exampleSentence}
                     </div>
+                    {item.examplePinyin && (
+                      <div className="text-xs font-semibold text-emerald-700 mb-0.5 tracking-wide">
+                        {item.examplePinyin}
+                      </div>
+                    )}
                     {item.exampleTranslation && (
                       <div className="text-slate-600">{item.exampleTranslation}</div>
                     )}
@@ -645,21 +650,31 @@ export function VocabBlock({ data }: VocabBlockProps) {
             </div>
 
             {Array.from(writingItem.hanzi).length > 1 && (
-              <div className="flex items-center justify-center gap-2">
-                {Array.from(writingItem.hanzi).map((ch, idx) => (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={() => setActiveCharIdx(idx)}
-                    className={`w-11 h-11 rounded-xl font-chinese text-xl font-bold border transition-all ${
-                      activeCharIdx === idx
-                        ? 'border-emerald-600 bg-emerald-50 text-emerald-800 shadow-2xs'
-                        : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
-                    }`}
-                  >
-                    {ch}
-                  </button>
-                ))}
+              <div className="flex items-center justify-center gap-2 flex-wrap">
+                {Array.from(writingItem.hanzi).map((ch, idx) => {
+                  const charList = Array.from(writingItem.hanzi);
+                  const pyTokens = (writingItem.pinyin || '').trim().split(/\s+/);
+                  const charPy = pyTokens.length === charList.length ? pyTokens[idx] : '';
+                  return (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => setActiveCharIdx(idx)}
+                      className={`min-w-[48px] px-2 py-1.5 rounded-xl border transition-all flex flex-col items-center justify-center ${
+                        activeCharIdx === idx
+                          ? 'border-emerald-600 bg-emerald-50 text-emerald-800 shadow-2xs'
+                          : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
+                      }`}
+                    >
+                      <span className="font-chinese text-xl font-bold leading-none">{ch}</span>
+                      {charPy && (
+                        <span className="text-[11px] font-semibold text-emerald-700 mt-1 leading-none">
+                          {charPy}
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
               </div>
             )}
 

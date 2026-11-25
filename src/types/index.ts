@@ -42,6 +42,7 @@ export interface VocabItem {
   pinyin: string;
   meaningVi: string;
   exampleSentence?: string;
+  examplePinyin?: string;
   exampleTranslation?: string;
   audioUrl?: string;
   hskLevel?: 1 | 2 | 3 | 4 | 5 | 6;
@@ -53,6 +54,7 @@ export interface FlashcardItem {
   pinyin: string;
   back: string; // Meaning & tips
   example?: string;
+  examplePinyin?: string;
   exampleTranslation?: string;
   mastered?: boolean;
 }

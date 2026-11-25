@@ -68,7 +68,15 @@ export function TTSVoiceSelector({
           title="Chọn giọng đọc tiếng Trung"
         >
           <Volume2 className="w-3.5 h-3.5 text-emerald-700" />
-          <span>{currentPersonaConfig.nameVi.split(' ')[1] || currentPersonaConfig.nameVi}</span>
+          <span>
+            {settings.persona === 'female'
+              ? 'Nữ'
+              : settings.persona === 'male'
+              ? 'Nam'
+              : settings.persona === 'adult'
+              ? 'Người lớn'
+              : 'Trẻ em'}
+          </span>
           <span className="text-[10px] text-slate-400 font-mono">
             {settings.speedRate === 0.75 ? '0.75x' : settings.speedRate === 1.0 ? '1.0x' : '0.88x'}
           </span>
