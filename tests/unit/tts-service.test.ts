@@ -120,7 +120,7 @@ describe('TTS Engine & Voice Personas', () => {
   });
 
   it('defines distinct acoustic pitch profiles for female, male, adult, and child voices', () => {
-    expect(PERSONA_ACOUSTIC_PROFILES.male.pitchFactor).toBeLessThan(0.8);
+    expect(PERSONA_ACOUSTIC_PROFILES.male.pitchFactor).toBeLessThan(0.88);
     expect(PERSONA_ACOUSTIC_PROFILES.adult.pitchFactor).toBeGreaterThan(
       PERSONA_ACOUSTIC_PROFILES.male.pitchFactor
     );

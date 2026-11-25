@@ -1,56 +1,54 @@
 import { TTSVoicePersona } from './types';
 
 export interface PersonaAcousticProfile {
-  /** Pitch multiplier (< 1.0 deeper, > 1.0 brighter, 1.0 = original) */
+  /** Pitch multiplier (< 1.0 deeper, > 1.0 brighter, 1.0 = pristine studio original) */
   pitchFactor: number;
-  /** Low-shelf gain in dB at ~160Hz (chest warmth vs thinning) */
+  /** Low-shelf gain in dB at ~150Hz (gentle chest warmth vs thinning) */
   lowShelfDb: number;
-  /** Mid/body peaking gain in dB */
+  /** Mid/presence peaking gain in dB (keeps voice friendly, warm & articulate) */
   midPeakFreq: number;
   midPeakDb: number;
-  /** High-shelf gain in dB at ~3200Hz (brightness vs warmth) */
+  /** High-shelf gain in dB at ~3400Hz (preserves consonant clarity & smile) */
   highShelfDb: number;
 }
 
 export const PERSONA_ACOUSTIC_PROFILES: Record<TTSVoicePersona, PersonaAcousticProfile> = {
   female: {
-    pitchFactor: 1.03,
-    lowShelfDb: 0.5,
-    midPeakFreq: 2200,
-    midPeakDb: 1.5,
-    highShelfDb: 1.5,
+    pitchFactor: 1.0,
+    lowShelfDb: 0,
+    midPeakFreq: 2400,
+    midPeakDb: 1.0,
+    highShelfDb: 1.0,
   },
   male: {
-    pitchFactor: 0.75,
-    lowShelfDb: 5.5,
-    midPeakFreq: 250,
-    midPeakDb: 3.0,
-    highShelfDb: -4.0,
+    pitchFactor: 0.84,
+    lowShelfDb: 2.5,
+    midPeakFreq: 2600,
+    midPeakDb: 2.0,
+    highShelfDb: 0.5,
   },
   adult: {
-    pitchFactor: 0.88,
-    lowShelfDb: 2.5,
-    midPeakFreq: 950,
-    midPeakDb: 2.8,
-    highShelfDb: -1.5,
+    pitchFactor: 0.94,
+    lowShelfDb: 1.5,
+    midPeakFreq: 1900,
+    midPeakDb: 2.0,
+    highShelfDb: 1.0,
   },
   child: {
-    pitchFactor: 1.28,
-    lowShelfDb: -4.0,
-    midPeakFreq: 2600,
-    midPeakDb: 2.5,
-    highShelfDb: 3.5,
+    pitchFactor: 1.24,
+    lowShelfDb: -2.5,
+    midPeakFreq: 2800,
+    midPeakDb: 2.0,
+    highShelfDb: 2.5,
   },
 };
 
 /**
- * Pure time-domain WSOLA (Waveform Similarity Overlap-Add) time-stretcher.
- * Compresses or stretches a Float32Array by `stretchFactor` WITHOUT altering pitch,
+ * Pure time-domain WSOLA (Waveform Similarity Overlap-Add) time-stretcher
+ * using Energy-Normalized Cross-Correlation (NCC) and a crisp ~26ms speech window.
+ * Stretches or compresses a Float32Array by `stretchFactor` WITHOUT altering pitch,
  * so subsequent resampling via AudioBufferSourceNode.playbackRate shifts pitch cleanly
- * while preserving speaking tempo and Beijing Mandarin tones.
- *
- * stretchFactor < 1.0 -> shorter output buffer (used before slower playbackRate -> lower pitch)
- * stretchFactor > 1.0 -> longer output buffer (used before faster playbackRate -> higher pitch)
+ * while preserving speaking tempo, consonants, and Mandarin tones.
  */
 export function timeStretchFloat32(
   input: Float32Array,
@@ -66,14 +64,13 @@ export function timeStretchFloat32(
     return input;
   }
 
-  // Clamp reasonable factor range
-  const factor = Math.max(0.6, Math.min(1.6, stretchFactor));
+  const factor = Math.max(0.65, Math.min(1.55, stretchFactor));
 
-  // Scale window to sampleRate (~42ms window, ~10.5ms synthesis hop, ±7ms search)
-  const winSize = Math.max(512, Math.min(2048, Math.round((sampleRate * 0.042) / 4) * 4));
+  // Tight ~26ms speech window (preserves Mandarin initials & avoids metallic smearing)
+  const winSize = Math.max(480, Math.min(1024, Math.round((sampleRate * 0.026) / 4) * 4));
   const hopS = winSize / 4; // 75% overlap for constant-overlap-add Hann
   const hopA = hopS / factor;
-  const searchRadius = Math.max(32, Math.round(sampleRate * 0.007));
+  const searchRadius = Math.max(40, Math.round(sampleRate * 0.008));
 
   const outLen = Math.max(winSize, Math.round(input.length * factor));
   const output = new Float32Array(outLen);
@@ -85,7 +82,7 @@ export function timeStretchFloat32(
     win[i] = 0.5 * (1 - Math.cos((2 * Math.PI * i) / winSize));
   }
 
-  // First frame direct copy at index 0
+  // First frame at index 0
   const firstLimit = Math.min(winSize, input.length, outLen);
   for (let i = 0; i < firstLimit; i++) {
     output[i] += input[i] * win[i];
@@ -97,28 +94,31 @@ export function timeStretchFloat32(
   let prevInPos = 0;
 
   while (outPos + winSize < outLen && idealInPos + winSize < input.length) {
-    // Expected natural continuation point from previous analysis frame
     const natPos = prevInPos + hopS;
 
-    // Find best phase-aligned offset around idealInPos matching waveform at natPos
     let bestInPos = Math.round(idealInPos);
     if (natPos + winSize / 2 < input.length) {
-      let bestCorr = -Infinity;
+      let bestScore = -Infinity;
       const minSearch = Math.max(0, Math.round(idealInPos) - searchRadius);
       const maxSearch = Math.min(
         input.length - winSize,
         Math.round(idealInPos) + searchRadius
       );
-      const cmpLen = hopS;
+      const cmpLen = hopS * 2;
 
-      // Coarse-to-fine search (step 2 then ±1 refinement) for speed & precision
+      // Normalized Cross-Correlation (NCC) coarse-to-fine search avoids amplitude bias
       for (let cand = minSearch; cand <= maxSearch; cand += 2) {
-        let corr = 0;
-        for (let k = 0; k < cmpLen; k += 2) {
-          corr += input[natPos + k] * input[cand + k];
+        let dot = 0;
+        let energyCand = 0;
+        for (let k = 0; k < cmpLen && natPos + k < input.length; k += 2) {
+          const a = input[natPos + k];
+          const b = input[cand + k];
+          dot += a * b;
+          energyCand += b * b;
         }
-        if (corr > bestCorr) {
-          bestCorr = corr;
+        const score = energyCand > 1e-8 ? dot / Math.sqrt(energyCand) : dot;
+        if (score > bestScore) {
+          bestScore = score;
           bestInPos = cand;
         }
       }
@@ -126,12 +126,17 @@ export function timeStretchFloat32(
       const refineStart = Math.max(minSearch, bestInPos - 1);
       const refineEnd = Math.min(maxSearch, bestInPos + 1);
       for (let cand = refineStart; cand <= refineEnd; cand++) {
-        let corr = 0;
-        for (let k = 0; k < cmpLen; k += 2) {
-          corr += input[natPos + k] * input[cand + k];
+        let dot = 0;
+        let energyCand = 0;
+        for (let k = 0; k < cmpLen && natPos + k < input.length; k += 2) {
+          const a = input[natPos + k];
+          const b = input[cand + k];
+          dot += a * b;
+          energyCand += b * b;
         }
-        if (corr > bestCorr) {
-          bestCorr = corr;
+        const score = energyCand > 1e-8 ? dot / Math.sqrt(energyCand) : dot;
+        if (score > bestScore) {
+          bestScore = score;
           bestInPos = cand;
         }
       }
@@ -150,7 +155,6 @@ export function timeStretchFloat32(
     idealInPos += hopA;
   }
 
-  // Normalize by Hann overlap weights to guarantee flat amplitude envelope
   for (let i = 0; i < outLen; i++) {
     if (weightSum[i] > 1e-4) {
       output[i] /= weightSum[i];
