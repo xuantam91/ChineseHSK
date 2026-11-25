@@ -99,14 +99,13 @@ export function VocabBlock({ data }: VocabBlockProps) {
       }, ms);
     });
 
-  const speakZhOnce = (text: string, runId: number, speedRate = 0.8): Promise<boolean> =>
+  const speakZhOnce = (text: string, runId: number): Promise<boolean> =>
     new Promise((resolve) => {
       if (runIdRef.current !== runId) {
         resolve(false);
         return;
       }
       speakChinese(text, {
-        speedRate,
         onEnd: () => resolve(runIdRef.current === runId),
         onError: () => resolve(runIdRef.current === runId),
       });
@@ -152,7 +151,7 @@ export function VocabBlock({ data }: VocabBlockProps) {
         for (const wp of wordPhases) {
           if (runIdRef.current !== myRunId) return;
           setSeqPhase(wp);
-          const ok = await speakZhOnce(item.hanzi, myRunId, 0.86);
+          const ok = await speakZhOnce(item.hanzi, myRunId);
           if (!ok) return;
           const waited = await waitMs(480, myRunId);
           if (!waited) return;
@@ -172,7 +171,7 @@ export function VocabBlock({ data }: VocabBlockProps) {
           for (const ep of exPhases) {
             if (runIdRef.current !== myRunId) return;
             setSeqPhase(ep);
-            const okEx = await speakZhOnce(item.exampleSentence, myRunId, 0.85);
+            const okEx = await speakZhOnce(item.exampleSentence, myRunId);
             if (!okEx) return;
             const waitedEx = await waitMs(540, myRunId);
             if (!waitedEx) return;
@@ -214,7 +213,6 @@ export function VocabBlock({ data }: VocabBlockProps) {
     stopSequentialPlay();
     setPlayingId(item.id);
     speakChinese(item.hanzi, {
-      speedRate: 0.86,
       onEnd: () => setPlayingId((prev) => (prev === item.id ? null : prev)),
       onError: () => setPlayingId((prev) => (prev === item.id ? null : prev)),
     });
@@ -229,7 +227,7 @@ export function VocabBlock({ data }: VocabBlockProps) {
 
     for (let rep = 0; rep < 2; rep++) {
       if (runIdRef.current !== myRunId) return;
-      const ok = await speakZhOnce(item.exampleSentence, myRunId, 0.85);
+      const ok = await speakZhOnce(item.exampleSentence, myRunId);
       if (!ok) return;
       const waited = await waitMs(450, myRunId);
       if (!waited) return;

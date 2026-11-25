@@ -57,7 +57,7 @@ describe('TTS Engine & Voice Personas', () => {
 
   it('has default TTS settings initialized cleanly', () => {
     expect(DEFAULT_TTS_SETTINGS.persona).toBe('female');
-    expect(DEFAULT_TTS_SETTINGS.speedRate).toBe(0.88);
+    expect(DEFAULT_TTS_SETTINGS.speedRate).toBe(1.0);
     expect(DEFAULT_TTS_SETTINGS.volume).toBe(1.0);
   });
 

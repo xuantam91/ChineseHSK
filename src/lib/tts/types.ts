@@ -33,7 +33,7 @@ export const TTS_PERSONAS: Record<TTSVoicePersona, TTSPersonaConfig> = {
     badge: 'Chuẩn phổ thông',
     descriptionVi: 'Phát âm truyền cảm, tròn vành rõ chữ, chuẩn khẩu âm tiếng Phổ thông Bắc Kinh.',
     defaultPitch: 1.0,
-    defaultRate: 0.90,
+    defaultRate: 1.0,
     sampleSentenceZh: '你好！欢迎来到中文学习系统，祝你学习进步！',
     sampleSentencePinyin: 'Nǐ hǎo! Huānyíng lái dào zhōngwén xuéxí xìtǒng, zhù nǐ xuéxí jìnbù!',
     sampleSentenceVi: 'Xin chào! Chào mừng bạn đến với hệ thống học tiếng Trung, chúc bạn tiến bộ!',
@@ -47,7 +47,7 @@ export const TTS_PERSONAS: Record<TTSVoicePersona, TTSPersonaConfig> = {
     badge: 'Ấm áp & Nam tính',
     descriptionVi: 'Âm sắc nam giới rõ ràng, trầm ấm và thân thiện, phù hợp luyện phản xạ hội thoại thực tế.',
     defaultPitch: 0.55,
-    defaultRate: 0.90,
+    defaultRate: 1.0,
     sampleSentenceZh: '你好！每天坚持练习口语，汉语水平一定会突飞猛进！',
     sampleSentencePinyin: 'Nǐ hǎo! Měitiān jiānchí liànxí kǒuyǔ, hànyǔ shuǐpíng yídìng huì tūfēiměngjìn!',
     sampleSentenceVi: 'Xin chào! Kiên trì luyện khẩu ngữ mỗi ngày, trình độ tiếng Trung của bạn nhất định sẽ tiến bộ vượt bậc!',
@@ -61,7 +61,7 @@ export const TTS_PERSONAS: Record<TTSVoicePersona, TTSPersonaConfig> = {
     badge: 'Ôn hòa & Dễ nghe',
     descriptionVi: 'Giọng ôn hòa, nhẹ nhàng, nhấn nhá rõ ràng 4 thanh điệu và quy tắc biến điệu thanh 3, phù hợp người mới học.',
     defaultPitch: 0.74,
-    defaultRate: 0.87,
+    defaultRate: 0.94,
     sampleSentenceZh: '请注意听准声调和发音，掌握正确的舌位和口型。',
     sampleSentencePinyin: 'Qǐng zhùyì tīng zhǔn shēngdiào hé fāyīn, zhǎngwò zhèngquè de shéwèi hé kǒuxíng.',
     sampleSentenceVi: 'Xin chú ý nghe chuẩn thanh điệu và phát âm, nắm vững vị trí đặt lưỡi và khẩu hình chính xác.',
@@ -84,7 +84,7 @@ export const TTS_PERSONAS: Record<TTSVoicePersona, TTSPersonaConfig> = {
 
 export const DEFAULT_TTS_SETTINGS: TTSSettings = {
   persona: 'female',
-  speedRate: 0.88,
+  speedRate: 1.0,
   volume: 1.0,
   showPinyin: true,
 };

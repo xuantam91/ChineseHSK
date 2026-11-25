@@ -721,7 +721,7 @@ export function speakChinese(text: string, options: SpeakOptions = {}): () => vo
   const personaConfig: TTSPersonaConfig = TTS_PERSONAS[activePersonaId] || TTS_PERSONAS.female;
 
   const baseSpeed = options.speedRate !== undefined ? options.speedRate : settings.speedRate;
-  const personaRateFactor = personaConfig.defaultRate / 0.88;
+  const personaRateFactor = personaConfig.defaultRate;
   const effectiveRate = Math.max(0.7, Math.min(1.25, baseSpeed * personaRateFactor));
   const effectivePitch = options.pitch !== undefined ? options.pitch : personaConfig.defaultPitch;
   const effectiveVolume = options.volume !== undefined ? options.volume : settings.volume;
