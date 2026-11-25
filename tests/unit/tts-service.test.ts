@@ -10,9 +10,11 @@ import {
   findBestVoiceForPersona,
   getAvailableChineseVoices,
   speakChinese,
+  speakVietnamese,
   stopChineseSpeech,
   isSpeaking,
 } from '@/lib/tts/tts-service';
+import { splitTextIntoTTSChunks } from '@/lib/tts/chunker';
 
 describe('TTS Engine & Voice Personas', () => {
   beforeEach(() => {
@@ -87,5 +89,21 @@ describe('TTS Engine & Voice Personas', () => {
 
     // In node environment without window.speechSynthesis, onError is called immediately
     expect(errorReceived).toBe(true);
+  });
+
+  it('splits long Vietnamese and Chinese sentences into chunks <= 160 chars cleanly', () => {
+    const longVi =
+      'Xin chào các bạn học viên thân mến, hôm nay chúng ta sẽ cùng luyện tập phát âm tiếng Trung chuẩn Bắc Kinh với bốn thanh điệu cơ bản, quy tắc biến điệu thanh ba đi liền nhau, và các mẫu câu giao tiếp thực tế dùng hàng ngày trong cuộc sống và công việc tại văn phòng.';
+    const chunks = splitTextIntoTTSChunks(longVi, 160);
+    expect(chunks.length).toBeGreaterThanOrEqual(2);
+    for (const c of chunks) {
+      expect(c.length).toBeLessThanOrEqual(160);
+      expect(c.length).toBeGreaterThan(0);
+    }
+    expect(chunks.join(' ')).toContain('bốn thanh điệu cơ bản');
+  });
+
+  it('handles speakVietnamese cleanly in non-browser environment', () => {
+    expect(() => speakVietnamese('Xin chào, đây là câu tiếng Việt thử nghiệm.')).not.toThrow();
   });
 });

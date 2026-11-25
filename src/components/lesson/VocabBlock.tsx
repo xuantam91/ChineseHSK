@@ -191,17 +191,12 @@ export function VocabBlock({ data }: VocabBlockProps) {
     [data.items, stopSequentialPlay]
   );
 
-  // Auto-start sequential playback when entering Vocabulary block
+  // Stop sequential playback if user leaves or changes lesson without auto-playing on entry
   useEffect(() => {
-    const startTimer = setTimeout(() => {
-      startSequentialPlay(0);
-    }, 450);
-
     return () => {
-      clearTimeout(startTimer);
       stopSequentialPlay();
     };
-  }, [data.items, startSequentialPlay, stopSequentialPlay]);
+  }, [data.items, stopSequentialPlay]);
 
   // Single play handlers (when user clicks a single word or sentence speaker icon)
   const playSingleWord = (item: VocabItem) => {

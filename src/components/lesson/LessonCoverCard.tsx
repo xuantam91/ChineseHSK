@@ -212,7 +212,7 @@ export const LessonCoverCard: React.FC<LessonCoverCardProps> = ({
   totalLessonsInLevel = 20,
 }) => {
   const { speak } = useTTS();
-  const [showVideoPlayer, setShowVideoPlayer] = useState(false);
+  const [showVideoPlayer, setShowVideoPlayer] = useState(true);
   const [isCoverExpanded, setIsCoverExpanded] = useState(true);
 
   const level = hskLesson?.level || 'HSK1';

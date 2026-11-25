@@ -11,16 +11,39 @@ import {
 const STORAGE_KEY_TTS = 'chinese_journey_tts_settings';
 export const TTS_SETTINGS_EVENT = 'tts_settings_changed';
 
-// In-memory cached voices
+// In-memory cached voices & synthesized audio cache
 let cachedVoices: SpeechSynthesisVoice[] = [];
-let voicesLoaded = false;
 let isCurrentlySpeaking = false;
 let currentSafetyTimeout: ReturnType<typeof setTimeout> | null = null;
+let activeAudioElement: HTMLAudioElement | null = null;
+let activeAbortController: AbortController | null = null;
+let activePlaybackToken = 0;
 let charSequenceCancelled = false;
 let charSequenceTimeout: ReturnType<typeof setTimeout> | null = null;
 
+const MAX_AUDIO_CACHE_SIZE = 80;
+const audioBlobUrlCache = new Map<string, string>();
+
+function setCachedAudioUrl(cacheKey: string, blobUrl: string) {
+  if (audioBlobUrlCache.size >= MAX_AUDIO_CACHE_SIZE) {
+    const oldestKey = audioBlobUrlCache.keys().next().value;
+    if (oldestKey) {
+      const oldUrl = audioBlobUrlCache.get(oldestKey);
+      if (oldUrl && typeof URL !== 'undefined') {
+        try {
+          URL.revokeObjectURL(oldUrl);
+        } catch {
+          // ignore
+        }
+      }
+      audioBlobUrlCache.delete(oldestKey);
+    }
+  }
+  audioBlobUrlCache.set(cacheKey, blobUrl);
+}
+
 /**
- * Initializes and fetches available system voices.
+ * Initializes and fetches available system voices (used for Settings inspection and offline fallback).
  */
 export function initTTSVoices(): Promise<SpeechSynthesisVoice[]> {
   if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
@@ -32,7 +55,6 @@ export function initTTSVoices(): Promise<SpeechSynthesisVoice[]> {
       const voices = window.speechSynthesis.getVoices();
       if (voices && voices.length > 0) {
         cachedVoices = voices;
-        voicesLoaded = true;
         resolve(voices);
         return true;
       }
@@ -41,12 +63,10 @@ export function initTTSVoices(): Promise<SpeechSynthesisVoice[]> {
 
     if (checkVoices()) return;
 
-    // Listen to async voice change event (needed for Chrome, Safari, Edge)
     window.speechSynthesis.onvoiceschanged = () => {
       checkVoices();
     };
 
-    // Fallback timer if event never triggers
     setTimeout(() => {
       checkVoices();
       resolve(cachedVoices);
@@ -85,38 +105,44 @@ export function findBestVoiceForPersona(
   const chineseVoices = getAvailableChineseVoices();
   if (chineseVoices.length === 0) return null;
 
-  // 1. Check if user has explicitly saved preferred voice URI
   if (preferredURI) {
     const match = chineseVoices.find((v) => v.voiceURI === preferredURI);
     if (match) return match;
   }
 
-  // Helper matchers
-  const femaleKeywords = ['tingting', 'ting-ting', 'huihui', 'xiaoxiao', 'xiaoyi', 'meijia', 'sinji', 'female', 'woman', 'zhimin', 'google 普通话'];
+  const femaleKeywords = [
+    'tingting',
+    'ting-ting',
+    'huihui',
+    'xiaoxiao',
+    'xiaoyi',
+    'meijia',
+    'sinji',
+    'female',
+    'woman',
+    'zhimin',
+    'google 普通话',
+  ];
   const maleKeywords = ['kangkang', 'yunxi', 'yunyang', 'yunjian', 'limu', 'danny', 'male', 'man'];
   const childKeywords = ['yaoyao', 'yushu', 'child', 'kid', 'young'];
 
   if (persona === 'child') {
-    const childMatch = chineseVoices.find((v) => {
-      const name = v.name.toLowerCase();
-      return childKeywords.some((k) => name.includes(k));
-    });
+    const childMatch = chineseVoices.find((v) =>
+      childKeywords.some((k) => v.name.toLowerCase().includes(k))
+    );
     if (childMatch) return childMatch;
   } else if (persona === 'male') {
-    const maleMatch = chineseVoices.find((v) => {
-      const name = v.name.toLowerCase();
-      return maleKeywords.some((k) => name.includes(k));
-    });
+    const maleMatch = chineseVoices.find((v) =>
+      maleKeywords.some((k) => v.name.toLowerCase().includes(k))
+    );
     if (maleMatch) return maleMatch;
   } else if (persona === 'female' || persona === 'adult') {
-    const femaleMatch = chineseVoices.find((v) => {
-      const name = v.name.toLowerCase();
-      return femaleKeywords.some((k) => name.includes(k));
-    });
+    const femaleMatch = chineseVoices.find((v) =>
+      femaleKeywords.some((k) => v.name.toLowerCase().includes(k))
+    );
     if (femaleMatch) return femaleMatch;
   }
 
-  // Prioritize Mainland Mandarin (zh-CN) over others
   const zhCnVoice = chineseVoices.find((v) => {
     const lang = (v.lang || '').toLowerCase().replace(/_/g, '-');
     return lang === 'zh-cn' || lang === 'cmn-hans-cn';
@@ -166,23 +192,39 @@ export function saveTTSSettings(settings: Partial<TTSSettings>): TTSSettings {
 
 export interface SpeakOptions {
   persona?: TTSVoicePersona;
-  speedRate?: number; // Override speed
-  pitch?: number; // Override pitch
+  speedRate?: number;
+  pitch?: number;
   volume?: number;
   onStart?: () => void;
   onEnd?: () => void;
   onError?: (err: any) => void;
 }
 
-/**
- * Stops any active Chinese speech playback immediately.
- */
-export function stopChineseSpeech(): void {
-  charSequenceCancelled = true;
-  if (charSequenceTimeout) {
-    clearTimeout(charSequenceTimeout);
-    charSequenceTimeout = null;
+function stopCurrentPlaybackInternal() {
+  activePlaybackToken += 1;
+
+  if (activeAbortController) {
+    try {
+      activeAbortController.abort();
+    } catch {
+      // ignore
+    }
+    activeAbortController = null;
   }
+
+  if (activeAudioElement) {
+    try {
+      activeAudioElement.onended = null;
+      activeAudioElement.onerror = null;
+      activeAudioElement.onplay = null;
+      activeAudioElement.pause();
+      activeAudioElement.currentTime = 0;
+    } catch {
+      // ignore
+    }
+    activeAudioElement = null;
+  }
+
   if (currentSafetyTimeout) {
     clearTimeout(currentSafetyTimeout);
     currentSafetyTimeout = null;
@@ -200,19 +242,316 @@ export function stopChineseSpeech(): void {
 }
 
 /**
- * Checks if Speech Synthesis is currently speaking.
+ * Stops any active speech playback immediately.
+ */
+export function stopChineseSpeech(): void {
+  charSequenceCancelled = true;
+  if (charSequenceTimeout) {
+    clearTimeout(charSequenceTimeout);
+    charSequenceTimeout = null;
+  }
+  stopCurrentPlaybackInternal();
+}
+
+/**
+ * Checks if Speech Synthesis or Neural Audio is currently speaking.
  */
 export function isSpeaking(): boolean {
   return isCurrentlySpeaking;
 }
 
 /**
- * Core Chinese TTS speaking function with native persona optimization.
+ * Splits long text for Web Speech fallback so Chrome doesn't silently truncate >180 char sentences.
+ */
+function splitFallbackUtterances(text: string, maxLen = 140): string[] {
+  const clean = text.replace(/\s+/g, ' ').trim();
+  if (!clean) return [];
+  if (clean.length <= maxLen) return [clean];
+
+  const parts = clean
+    .split(/(?<=[。！？；，、.!?;,:])\s*/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+  const out: string[] = [];
+  let buf = '';
+  for (const part of parts) {
+    if (!buf) {
+      buf = part;
+    } else if (buf.length + 1 + part.length <= maxLen) {
+      buf = `${buf} ${part}`;
+    } else {
+      out.push(buf);
+      buf = part;
+    }
+  }
+  if (buf) out.push(buf);
+  return out;
+}
+
+function speakViaWebSpeechFallback(
+  text: string,
+  lang: 'zh-CN' | 'vi-VN',
+  rate: number,
+  pitch: number,
+  volume: number,
+  persona: TTSVoicePersona,
+  preferredURI: string | undefined,
+  token: number,
+  onStart?: () => void,
+  onEnd?: () => void,
+  onError?: (err: any) => void
+) {
+  if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
+    isCurrentlySpeaking = false;
+    onError?.(new Error('Speech playback unavailable'));
+    onEnd?.();
+    return;
+  }
+
+  const segments = splitFallbackUtterances(text, 140);
+  if (segments.length === 0) {
+    isCurrentlySpeaking = false;
+    onEnd?.();
+    return;
+  }
+
+  const voices = cachedVoices.length > 0 ? cachedVoices : window.speechSynthesis.getVoices();
+  const matchedVoice =
+    lang === 'zh-CN'
+      ? findBestVoiceForPersona(persona, preferredURI)
+      : voices.find((v) => {
+          const vl = (v.lang || '').toLowerCase();
+          const vn = (v.name || '').toLowerCase();
+          return vl.startsWith('vi') || vn.includes('viet') || vn.includes('hoaimy') || vn.includes('namminh') || vn.includes('linh');
+        }) || null;
+
+  let started = false;
+
+  const speakSegment = (idx: number) => {
+    if (token !== activePlaybackToken) return;
+    if (idx >= segments.length) {
+      isCurrentlySpeaking = false;
+      onEnd?.();
+      return;
+    }
+
+    const utterance = new SpeechSynthesisUtterance(segments[idx]);
+    utterance.lang = matchedVoice?.lang || lang;
+    utterance.rate = rate;
+    utterance.pitch = pitch;
+    utterance.volume = volume;
+    if (matchedVoice) {
+      utterance.voice = matchedVoice;
+    }
+
+    let finishedSeg = false;
+    const next = (isErr = false, err?: any) => {
+      if (finishedSeg) return;
+      finishedSeg = true;
+      if (currentSafetyTimeout) {
+        clearTimeout(currentSafetyTimeout);
+        currentSafetyTimeout = null;
+      }
+      if (token !== activePlaybackToken) return;
+      if (isErr) {
+        isCurrentlySpeaking = false;
+        onError?.(err);
+        onEnd?.();
+        return;
+      }
+      speakSegment(idx + 1);
+    };
+
+    utterance.onstart = () => {
+      if (token !== activePlaybackToken) return;
+      isCurrentlySpeaking = true;
+      if (!started) {
+        started = true;
+        onStart?.();
+      }
+    };
+    utterance.onend = () => next(false);
+    utterance.onerror = (e) => {
+      if (e.error === 'interrupted' || e.error === 'canceled') {
+        isCurrentlySpeaking = false;
+        return;
+      }
+      next(true, e);
+    };
+
+    const estMs = Math.max(3000, (segments[idx].length * 360) / Math.max(0.5, rate) + 1800);
+    currentSafetyTimeout = setTimeout(() => next(false), estMs);
+
+    try {
+      window.speechSynthesis.speak(utterance);
+    } catch (err) {
+      next(true, err);
+    }
+  };
+
+  speakSegment(0);
+}
+
+/**
+ * Plays Neural TTS MP3 via /api/tts (works identically across Mac, Windows, Linux & locked corporate PCs),
+ * falling back to chunked browser SpeechSynthesis only if network or Audio playback fails.
+ */
+async function playUniversalNeuralTTS(params: {
+  text: string;
+  lang: 'zh-CN' | 'vi';
+  serverSpeed: number;
+  playbackRate: number;
+  pitch: number;
+  volume: number;
+  persona: TTSVoicePersona;
+  preferredURI?: string;
+  onStart?: () => void;
+  onEnd?: () => void;
+  onError?: (err: any) => void;
+}) {
+  const token = activePlaybackToken;
+  const { text, lang, serverSpeed, playbackRate, pitch, volume, persona, preferredURI, onStart, onEnd, onError } = params;
+
+  const fallbackLang = lang === 'vi' ? 'vi-VN' : 'zh-CN';
+
+  // If browser cannot construct Audio or fetch, fall back cleanly
+  if (typeof window === 'undefined' || typeof Audio === 'undefined' || typeof fetch === 'undefined') {
+    speakViaWebSpeechFallback(
+      text,
+      fallbackLang,
+      playbackRate,
+      pitch,
+      volume,
+      persona,
+      preferredURI,
+      token,
+      onStart,
+      onEnd,
+      onError
+    );
+    return;
+  }
+
+  const cacheKey = `${lang}:${serverSpeed.toFixed(2)}:${text}`;
+  let objectUrl = audioBlobUrlCache.get(cacheKey);
+
+  try {
+    if (!objectUrl) {
+      const controller = new AbortController();
+      activeAbortController = controller;
+      const fetchTimeout = setTimeout(() => controller.abort(), 9000);
+
+      const useGet = text.length <= 400;
+      const res = useGet
+        ? await fetch(
+            `/api/tts?lang=${encodeURIComponent(lang)}&speed=${encodeURIComponent(serverSpeed.toFixed(2))}&text=${encodeURIComponent(text)}`,
+            { signal: controller.signal }
+          )
+        : await fetch('/api/tts', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text, lang, speed: serverSpeed }),
+            signal: controller.signal,
+          });
+
+      clearTimeout(fetchTimeout);
+      if (activeAbortController === controller) {
+        activeAbortController = null;
+      }
+
+      if (token !== activePlaybackToken) return;
+      if (!res.ok) {
+        throw new Error(`TTS API HTTP ${res.status}`);
+      }
+
+      const blob = await res.blob();
+      if (blob.size < 100) {
+        throw new Error('Empty TTS audio received');
+      }
+      objectUrl = URL.createObjectURL(blob);
+      setCachedAudioUrl(cacheKey, objectUrl);
+    }
+
+    if (token !== activePlaybackToken) return;
+
+    const audio = new Audio(objectUrl);
+    activeAudioElement = audio;
+    audio.volume = Math.max(0, Math.min(1, volume));
+    audio.playbackRate = Math.max(0.65, Math.min(1.4, playbackRate));
+    if ('preservesPitch' in audio) {
+      (audio as any).preservesPitch = true;
+    }
+
+    let ended = false;
+    const finishAudio = () => {
+      if (ended) return;
+      ended = true;
+      if (currentSafetyTimeout) {
+        clearTimeout(currentSafetyTimeout);
+        currentSafetyTimeout = null;
+      }
+      if (activeAudioElement === audio) {
+        activeAudioElement = null;
+      }
+      if (token === activePlaybackToken) {
+        isCurrentlySpeaking = false;
+        onEnd?.();
+      }
+    };
+
+    audio.onplay = () => {
+      if (token !== activePlaybackToken) return;
+      isCurrentlySpeaking = true;
+      onStart?.();
+    };
+    audio.onended = finishAudio;
+    audio.onerror = () => {
+      if (token !== activePlaybackToken) return;
+      if (activeAudioElement === audio) activeAudioElement = null;
+      speakViaWebSpeechFallback(
+        text,
+        fallbackLang,
+        playbackRate,
+        pitch,
+        volume,
+        persona,
+        preferredURI,
+        token,
+        onStart,
+        onEnd,
+        onError
+      );
+    };
+
+    const maxWaitMs = Math.max(5000, text.length * 260 + 4000);
+    currentSafetyTimeout = setTimeout(finishAudio, maxWaitMs);
+
+    await audio.play();
+  } catch {
+    if (token !== activePlaybackToken) return;
+    speakViaWebSpeechFallback(
+      text,
+      fallbackLang,
+      playbackRate,
+      pitch,
+      volume,
+      persona,
+      preferredURI,
+      token,
+      onStart,
+      onEnd,
+      onError
+    );
+  }
+}
+
+/**
+ * Core Chinese TTS speaking function: uses OS-independent Neural MP3 (/api/tts)
+ * with local browser fallback so every machine pronounces clearly.
  */
 export function speakChinese(text: string, options: SpeakOptions = {}): () => void {
-  if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
-    options.onError?.(new Error('Web Speech API is not supported in this browser.'));
-    // Graceful callback
+  if (typeof window === 'undefined' || (!('speechSynthesis' in window) && typeof Audio === 'undefined')) {
+    options.onError?.(new Error('Audio synthesis is not supported in this environment.'));
     setTimeout(() => {
       options.onEnd?.();
     }, 1000);
@@ -225,89 +564,63 @@ export function speakChinese(text: string, options: SpeakOptions = {}): () => vo
     return () => {};
   }
 
-  // Cancel prior speech
-  stopChineseSpeech();
+  stopCurrentPlaybackInternal();
 
   const settings = getStoredTTSSettings();
   const activePersonaId = options.persona || settings.persona;
   const personaConfig: TTSPersonaConfig = TTS_PERSONAS[activePersonaId] || TTS_PERSONAS.female;
 
-  const utterance = new SpeechSynthesisUtterance(cleanText);
-
-  // Set Chinese language tag
-  utterance.lang = 'zh-CN';
-
-  // Calculate speed: combine user speedRate setting with persona defaultRate
   const baseSpeed = options.speedRate !== undefined ? options.speedRate : settings.speedRate;
-  const personaRateFactor = personaConfig.defaultRate / 0.88; // relative adjustment
-  utterance.rate = Math.max(0.5, Math.min(1.5, baseSpeed * personaRateFactor));
+  const personaRateFactor = personaConfig.defaultRate / 0.88;
+  const effectiveRate = Math.max(0.65, Math.min(1.35, baseSpeed * personaRateFactor));
+  const effectivePitch = options.pitch !== undefined ? options.pitch : personaConfig.defaultPitch;
+  const effectiveVolume = options.volume !== undefined ? options.volume : settings.volume;
 
-  // Calculate pitch
-  utterance.pitch = options.pitch !== undefined ? options.pitch : personaConfig.defaultPitch;
-
-  // Calculate volume
-  utterance.volume = options.volume !== undefined ? options.volume : settings.volume;
-
-  // Match optimal Chinese voice
-  const matchingVoice = findBestVoiceForPersona(activePersonaId, settings.preferredVoiceURI);
-  if (matchingVoice) {
-    utterance.voice = matchingVoice;
-    // Align language tag with voice's exact tag if zh
-    if (matchingVoice.lang) {
-      utterance.lang = matchingVoice.lang;
-    }
+  // If user explicitly picked a local voice URI and Web Speech exists, try that first;
+  // otherwise always use universal server Neural MP3 (/api/tts) so corporate/managed PCs work 100%.
+  if (settings.preferredVoiceURI && 'speechSynthesis' in window && getAvailableChineseVoices().length > 0) {
+    speakViaWebSpeechFallback(
+      cleanText,
+      'zh-CN',
+      effectiveRate,
+      effectivePitch,
+      effectiveVolume,
+      activePersonaId,
+      settings.preferredVoiceURI,
+      activePlaybackToken,
+      options.onStart,
+      options.onEnd,
+      () => {
+        // Auto-retry via universal server Neural TTS if browser voice is blocked (e.g. service-not-allowed)
+        void playUniversalNeuralTTS({
+          text: cleanText,
+          lang: 'zh-CN',
+          serverSpeed: effectiveRate,
+          playbackRate: 1.0,
+          pitch: effectivePitch,
+          volume: effectiveVolume,
+          persona: activePersonaId,
+          onStart: options.onStart,
+          onEnd: options.onEnd,
+          onError: options.onError,
+        });
+      }
+    );
+  } else {
+    void playUniversalNeuralTTS({
+      text: cleanText,
+      lang: 'zh-CN',
+      serverSpeed: effectiveRate,
+      playbackRate: 1.0,
+      pitch: effectivePitch,
+      volume: effectiveVolume,
+      persona: activePersonaId,
+      onStart: options.onStart,
+      onEnd: options.onEnd,
+      onError: options.onError,
+    });
   }
 
-  let hasEnded = false;
-  const finish = (isError = false, errorObj?: any) => {
-    if (hasEnded) return;
-    hasEnded = true;
-    isCurrentlySpeaking = false;
-    if (currentSafetyTimeout) {
-      clearTimeout(currentSafetyTimeout);
-      currentSafetyTimeout = null;
-    }
-
-    if (isError) {
-      options.onError?.(errorObj);
-    }
-    options.onEnd?.();
-  };
-
-  utterance.onstart = () => {
-    isCurrentlySpeaking = true;
-    options.onStart?.();
-  };
-
-  utterance.onend = () => {
-    finish(false);
-  };
-
-  utterance.onerror = (e) => {
-    // Interrupted speech is normal on quick user clicking, not a critical error
-    if (e.error === 'interrupted' || e.error === 'canceled') {
-      finish(false);
-    } else {
-      finish(true, e);
-    }
-  };
-
-  // Safety fallback timeout: estimate duration based on character count
-  // (~250ms per Chinese character at standard speed)
-  const estimatedDurationMs = Math.max(2500, (cleanText.length * 350) / utterance.rate + 1500);
-  currentSafetyTimeout = setTimeout(() => {
-    if (isCurrentlySpeaking && !hasEnded) {
-      finish(false);
-    }
-  }, estimatedDurationMs);
-
-  try {
-    window.speechSynthesis.speak(utterance);
-  } catch (err) {
-    finish(true, err);
-  }
-
-  // Return cancel function
   return () => {
     stopChineseSpeech();
   };
@@ -321,8 +634,7 @@ export interface CharByCharOptions {
 }
 
 /**
- * Speaks a Chinese string character-by-character with a clear pause between each syllable,
- * calling onCharIndex(idx) so UI can highlight each character for the learner to follow.
+ * Speaks a Chinese string character-by-character with a clear pause between each syllable.
  */
 export function speakChineseCharByChar(
   text: string,
@@ -338,7 +650,7 @@ export function speakChineseCharByChar(
   charSequenceCancelled = false;
 
   const pauseMs = options.pauseMs ?? 450;
-  const speedRate = options.speedRate ?? 0.68;
+  const speedRate = options.speedRate ?? 0.72;
   const punctuationRegex = /^[，。！？、；：“”‘’（）,.!?;:()"\-—…]+$/;
 
   const speakAtIndex = (index: number) => {
@@ -390,13 +702,14 @@ export function speakChineseCharByChar(
 }
 
 /**
- * Speaks Vietnamese text (meaningVi) using Web Speech API (vi-VN) with reliable callback fallback.
+ * Speaks Vietnamese text cleanly for any sentence length using Neural TTS MP3 (/api/tts)
+ * with chunked Web Speech fallback.
  */
 export function speakVietnamese(
   text: string,
   options: { speedRate?: number; onStart?: () => void; onEnd?: () => void } = {}
 ): () => void {
-  if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
+  if (typeof window === 'undefined' || (!('speechSynthesis' in window) && typeof Audio === 'undefined')) {
     setTimeout(() => {
       options.onEnd?.();
     }, 600);
@@ -409,60 +722,22 @@ export function speakVietnamese(
     return () => {};
   }
 
-  if (currentSafetyTimeout) {
-    clearTimeout(currentSafetyTimeout);
-    currentSafetyTimeout = null;
-  }
+  stopCurrentPlaybackInternal();
 
-  try {
-    window.speechSynthesis.cancel();
-  } catch {
-    // ignore
-  }
+  const settings = getStoredTTSSettings();
+  const viRate = options.speedRate ?? 0.96;
 
-  const utterance = new SpeechSynthesisUtterance(cleanText);
-  utterance.lang = 'vi-VN';
-  utterance.rate = options.speedRate ?? 0.95;
-
-  const voices = cachedVoices.length > 0 ? cachedVoices : window.speechSynthesis.getVoices();
-  const viVoice = voices.find((v) => {
-    const lang = (v.lang || '').toLowerCase();
-    const name = (v.name || '').toLowerCase();
-    return lang.startsWith('vi') || name.includes('viet') || name.includes('linh');
+  void playUniversalNeuralTTS({
+    text: cleanText,
+    lang: 'vi',
+    serverSpeed: viRate,
+    playbackRate: 1.0,
+    pitch: 1.0,
+    volume: settings.volume,
+    persona: settings.persona,
+    onStart: options.onStart,
+    onEnd: options.onEnd,
   });
-  if (viVoice) {
-    utterance.voice = viVoice;
-  }
-
-  let hasFinished = false;
-  const done = () => {
-    if (hasFinished) return;
-    hasFinished = true;
-    isCurrentlySpeaking = false;
-    if (currentSafetyTimeout) {
-      clearTimeout(currentSafetyTimeout);
-      currentSafetyTimeout = null;
-    }
-    options.onEnd?.();
-  };
-
-  utterance.onstart = () => {
-    isCurrentlySpeaking = true;
-    options.onStart?.();
-  };
-  utterance.onend = () => done();
-  utterance.onerror = () => done();
-
-  const estMs = Math.max(1500, cleanText.split(/\s+/).length * 320 + 800);
-  currentSafetyTimeout = setTimeout(() => {
-    done();
-  }, estMs);
-
-  try {
-    window.speechSynthesis.speak(utterance);
-  } catch {
-    done();
-  }
 
   return () => {
     stopChineseSpeech();
