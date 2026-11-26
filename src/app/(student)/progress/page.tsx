@@ -22,7 +22,13 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { Progress } from '@/components/ui/Progress';
 import { Badge } from '@/components/ui/Badge';
 import { DEMO_USER_PROFILE } from '@/lib/mock-data';
-import { getStoredUserProfile, getCompletedLessonIds } from '@/lib/student-store';
+import {
+  getStoredUserProfile,
+  getCompletedLessonIds,
+  syncStudentProgressWithCloud,
+  STUDENT_STATE_SYNCED_EVENT,
+  SyncedStudentState,
+} from '@/lib/student-store';
 
 export default function ProgressPage() {
   const [profile, setProfile] = useState(DEMO_USER_PROFILE);
@@ -31,6 +37,15 @@ export default function ProgressPage() {
   useEffect(() => {
     setProfile(getStoredUserProfile());
     setCompletedLessons(getCompletedLessonIds());
+    void syncStudentProgressWithCloud();
+
+    const handleSync = (e: Event) => {
+      const detail = (e as CustomEvent<SyncedStudentState>).detail;
+      if (detail?.profile) setProfile(detail.profile);
+      if (detail?.completedLessons) setCompletedLessons(detail.completedLessons);
+    };
+    window.addEventListener(STUDENT_STATE_SYNCED_EVENT, handleSync);
+    return () => window.removeEventListener(STUDENT_STATE_SYNCED_EVENT, handleSync);
   }, []);
 
   const totalXp = 1250 + completedLessons.length * 50;

@@ -28,6 +28,9 @@ import {
   saveUserProfile,
   getCompletedLessonIds,
   isDemoAccount,
+  syncStudentProgressWithCloud,
+  STUDENT_STATE_SYNCED_EVENT,
+  SyncedStudentState,
   DEMO_MAX_LESSONS,
 } from '@/lib/student-store';
 import { DEMO_USER_PROFILE } from '@/lib/mock-data';
@@ -75,6 +78,21 @@ export default function StudentDashboardPage() {
     setProfile(loadedProfile);
     setTodayText(getFormattedTodayVi(loadedProfile.timezone));
     setCompletedLessons(getCompletedLessonIds());
+
+    void syncStudentProgressWithCloud();
+
+    const handleSync = (e: Event) => {
+      const detail = (e as CustomEvent<SyncedStudentState>).detail;
+      if (detail?.profile) {
+        setProfile(detail.profile);
+        setTodayText(getFormattedTodayVi(detail.profile.timezone));
+      }
+      if (detail?.completedLessons) {
+        setCompletedLessons(detail.completedLessons);
+      }
+    };
+    window.addEventListener(STUDENT_STATE_SYNCED_EVENT, handleSync);
+    return () => window.removeEventListener(STUDENT_STATE_SYNCED_EVENT, handleSync);
   }, []);
 
   const activeLevel: HSKLevel =

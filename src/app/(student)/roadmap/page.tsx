@@ -25,6 +25,9 @@ import {
   saveUserProfile,
   getCompletedLessonIds,
   isDemoAccount,
+  syncStudentProgressWithCloud,
+  STUDENT_STATE_SYNCED_EVENT,
+  SyncedStudentState,
   DEMO_MAX_LESSONS,
 } from '@/lib/student-store';
 import { HSKLevel } from '@/types';
@@ -67,6 +70,23 @@ export default function RoadmapPage() {
       setActiveLevel(p.currentHskLevel as HSKViewLevel);
     }
     setCompletedLessons(getCompletedLessonIds());
+
+    void syncStudentProgressWithCloud();
+
+    const handleSync = (e: Event) => {
+      const detail = (e as CustomEvent<SyncedStudentState>).detail;
+      if (detail?.profile) {
+        setProfile(detail.profile);
+        if (detail.profile.currentHskLevel) {
+          setActiveLevel(detail.profile.currentHskLevel as HSKViewLevel);
+        }
+      }
+      if (detail?.completedLessons) {
+        setCompletedLessons(detail.completedLessons);
+      }
+    };
+    window.addEventListener(STUDENT_STATE_SYNCED_EVENT, handleSync);
+    return () => window.removeEventListener(STUDENT_STATE_SYNCED_EVENT, handleSync);
   }, []);
 
   const handleSelectLevelTab = (level: HSKViewLevel) => {

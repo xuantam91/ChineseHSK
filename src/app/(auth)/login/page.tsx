@@ -6,7 +6,12 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/Card';
 import { Lock, Mail, ArrowRight, UserCheck, AlertCircle } from 'lucide-react';
-import { getStoredUserProfile, saveUserProfile } from '@/lib/student-store';
+import {
+  getStoredUserProfile,
+  saveUserProfile,
+  clearLocalStudentProgress,
+  syncStudentProgressWithCloud,
+} from '@/lib/student-store';
 import { DEMO_USER_PROFILE } from '@/lib/mock-data';
 import { createClient } from '@/lib/supabase/client';
 
@@ -66,17 +71,27 @@ export default function LoginPage() {
         const serverUser = meJson?.data?.user;
         const resolvedRole = serverUser?.role || 'student';
 
-        saveUserProfile({
-          ...current,
-          id: serverUser?.id || data.user?.id || current.id,
-          email: serverUser?.email || normalizedEmail,
-          displayName:
-            serverUser?.display_name ||
-            data.user?.user_metadata?.display_name ||
-            normalizedEmail.split('@')[0],
-          role: resolvedRole,
-          isDemo: false,
-        });
+        // Avoid mixing previous local user/demo progress into newly signed-in account
+        if (current.email?.toLowerCase() !== normalizedEmail) {
+          clearLocalStudentProgress();
+        }
+
+        saveUserProfile(
+          {
+            ...current,
+            id: serverUser?.id || data.user?.id || current.id,
+            email: serverUser?.email || normalizedEmail,
+            displayName:
+              serverUser?.display_name ||
+              data.user?.user_metadata?.display_name ||
+              normalizedEmail.split('@')[0],
+            role: resolvedRole,
+            isDemo: false,
+          },
+          { syncToCloud: false }
+        );
+
+        await syncStudentProgressWithCloud();
 
         setIsLoading(false);
         router.push(

@@ -118,6 +118,15 @@ export async function POST(req: NextRequest) {
 }
 
 export async function DELETE() {
+  if (isUsingRealSupabase()) {
+    try {
+      const { createClient } = await import('@/lib/supabase/server');
+      const supabase = await createClient();
+      await supabase.auth.signOut();
+    } catch {
+      // ignore signOut failure and clear local cookie
+    }
+  }
   const res = NextResponse.json({ success: true, data: { signed_out: true } });
   res.cookies.delete(LOCAL_SESSION_COOKIE);
   return res;

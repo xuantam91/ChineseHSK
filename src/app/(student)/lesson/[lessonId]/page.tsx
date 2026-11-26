@@ -44,6 +44,9 @@ import {
   markLessonCompleted,
   getStoredUserProfile,
   isDemoAccount,
+  syncStudentProgressWithCloud,
+  STUDENT_STATE_SYNCED_EVENT,
+  SyncedStudentState,
   DEMO_MAX_LESSONS,
 } from '@/lib/student-store';
 import {
@@ -943,6 +946,20 @@ export default function LessonReaderPage({
     setIsDemoUser(isDemoAccount(getStoredUserProfile()));
     setActiveStepIdx(0);
     setShowSupplementary(false);
+
+    void syncStudentProgressWithCloud();
+
+    const handleSync = (e: Event) => {
+      const detail = (e as CustomEvent<SyncedStudentState>).detail;
+      if (detail?.completedBlocks) {
+        setCompletedBlocks(detail.completedBlocks);
+      }
+      if (detail?.profile) {
+        setIsDemoUser(isDemoAccount(detail.profile));
+      }
+    };
+    window.addEventListener(STUDENT_STATE_SYNCED_EVENT, handleSync);
+    return () => window.removeEventListener(STUDENT_STATE_SYNCED_EVENT, handleSync);
   }, [lessonId]);
 
   const markBlockDone = (blockId: string) => {

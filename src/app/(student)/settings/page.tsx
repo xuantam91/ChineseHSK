@@ -21,7 +21,13 @@ import { Badge } from '@/components/ui/Badge';
 import { Toast } from '@/components/ui/Toast';
 import { TTSVoiceSelector } from '@/components/common/TTSVoiceSelector';
 import { AgeGroup, HSKLevel } from '@/types';
-import { getStoredUserProfile, saveUserProfile } from '@/lib/student-store';
+import {
+  getStoredUserProfile,
+  saveUserProfile,
+  syncStudentProgressWithCloud,
+  STUDENT_STATE_SYNCED_EVENT,
+  SyncedStudentState,
+} from '@/lib/student-store';
 import { DEMO_USER_PROFILE } from '@/lib/mock-data';
 
 const HSK_LEVEL_OPTIONS: {
@@ -101,13 +107,26 @@ export default function SettingsPage() {
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
-    const p = getStoredUserProfile();
-    setProfile(p);
-    setDisplayName(p.displayName);
-    setAgeGroup(p.ageGroup);
-    setCurrentHskLevel(p.currentHskLevel || 'HSK1');
-    setDailyGoalMinutes(p.dailyGoalMinutes);
-    setTimezone(p.timezone || 'Asia/Ho_Chi_Minh');
+    const applyProfile = (p: typeof DEMO_USER_PROFILE) => {
+      setProfile(p);
+      setDisplayName(p.displayName);
+      setAgeGroup(p.ageGroup);
+      setCurrentHskLevel(p.currentHskLevel || 'HSK1');
+      setDailyGoalMinutes(p.dailyGoalMinutes);
+      setTimezone(p.timezone || 'Asia/Ho_Chi_Minh');
+    };
+
+    applyProfile(getStoredUserProfile());
+    void syncStudentProgressWithCloud();
+
+    const handleSync = (e: Event) => {
+      const detail = (e as CustomEvent<SyncedStudentState>).detail;
+      if (detail?.profile) {
+        applyProfile(detail.profile);
+      }
+    };
+    window.addEventListener(STUDENT_STATE_SYNCED_EVENT, handleSync);
+    return () => window.removeEventListener(STUDENT_STATE_SYNCED_EVENT, handleSync);
   }, []);
 
   const handleSave = (e: React.FormEvent) => {

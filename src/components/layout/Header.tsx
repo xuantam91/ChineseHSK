@@ -16,7 +16,13 @@ import {
   Download,
 } from 'lucide-react';
 import { DEMO_USER_PROFILE } from '@/lib/mock-data';
-import { getStoredUserProfile } from '@/lib/student-store';
+import {
+  getStoredUserProfile,
+  clearLocalStudentProgress,
+  STUDENT_STATE_SYNCED_EVENT,
+  SyncedStudentState,
+} from '@/lib/student-store';
+import { createClient } from '@/lib/supabase/client';
 import { TTSVoiceSelector } from '@/components/common/TTSVoiceSelector';
 import { triggerInstallPromptModal } from '@/components/common/PWAInstallManager';
 
@@ -33,8 +39,18 @@ export function Header() {
         setDropdownOpen(false);
       }
     }
+    const handleSync = (e: Event) => {
+      const detail = (e as CustomEvent<SyncedStudentState>).detail;
+      if (detail?.profile) {
+        setProfile(detail.profile);
+      }
+    };
     document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    window.addEventListener(STUDENT_STATE_SYNCED_EVENT, handleSync);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      window.removeEventListener(STUDENT_STATE_SYNCED_EVENT, handleSync);
+    };
   }, [pathname]);
 
   const navLinks = [
@@ -168,7 +184,18 @@ export function Header() {
                     href="/login"
                     onClick={() => {
                       setDropdownOpen(false);
+                      clearLocalStudentProgress();
                       fetch('/api/auth/me', { method: 'DELETE' }).catch(() => {});
+                      if (
+                        process.env.NEXT_PUBLIC_SUPABASE_URL &&
+                        !process.env.NEXT_PUBLIC_SUPABASE_URL.includes('your-project')
+                      ) {
+                        try {
+                          void createClient().auth.signOut();
+                        } catch {
+                          // ignore
+                        }
+                      }
                     }}
                     className="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-rose-600 rounded-lg hover:bg-rose-50 transition-colors"
                   >
